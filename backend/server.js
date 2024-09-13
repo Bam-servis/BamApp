@@ -3,6 +3,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const Data = require("./models/data"); // Модель для данных
 const Driver = require("./models/Driver"); // Модель для водителей
+const authRoutes = require("./routes/auth"); // Маршруты для авторизации
 
 const app = express();
 const port = 5000;
@@ -16,7 +17,7 @@ mongoose
 app.use(cors());
 app.use(express.json()); // Используйте встроенный JSON парсер
 
-// Получение данных
+// Маршруты для данных
 app.get("/api/data", async (req, res) => {
   try {
     const data = await Data.find();
@@ -27,7 +28,6 @@ app.get("/api/data", async (req, res) => {
   }
 });
 
-// Добавление данных
 app.post("/api/data", async (req, res) => {
   try {
     console.log("Request body:", req.body); // Логируем тело запроса
@@ -40,7 +40,6 @@ app.post("/api/data", async (req, res) => {
   }
 });
 
-// Обновление данных
 app.put("/api/data/:id", async (req, res) => {
   try {
     const updatedItem = await Data.findByIdAndUpdate(req.params.id, req.body, {
@@ -53,7 +52,7 @@ app.put("/api/data/:id", async (req, res) => {
   }
 });
 
-// Маршрут для получения списка водителей
+// Маршруты для водителей
 app.get("/api/drivers", async (req, res) => {
   try {
     const drivers = await Driver.find();
@@ -63,7 +62,6 @@ app.get("/api/drivers", async (req, res) => {
   }
 });
 
-// Маршрут для добавления нового водителя
 app.post("/api/drivers", async (req, res) => {
   try {
     const newDriver = new Driver(req.body);
@@ -74,6 +72,9 @@ app.post("/api/drivers", async (req, res) => {
     res.status(500).json({ error: "Error adding driver" });
   }
 });
+
+// Подключение маршрутов для авторизации
+app.use("/api", authRoutes);
 
 // Запуск сервера
 app.listen(port, () => {

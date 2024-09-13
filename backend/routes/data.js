@@ -1,4 +1,3 @@
-// backend/routes/data.js
 const express = require("express");
 const router = express.Router();
 const Data = require("../models/data");
@@ -17,6 +16,7 @@ router.post("/api/data", async (req, res) => {
       licensePlate,
       price,
       colorClass,
+      updatedBy, // Добавляем это поле
     } = req.body;
 
     // Convert date string to Date object
@@ -33,6 +33,7 @@ router.post("/api/data", async (req, res) => {
       licensePlate,
       price,
       colorClass,
+      updatedBy, // Сохраняем информацию о том, кто редактирует
     });
 
     const savedData = await newData.save();

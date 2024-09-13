@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { hardcodedData } from "./hardcodedData"; // Убедитесь, что путь правильный
 import "./styles.css"; // Импорт стилей для кнопок
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const [data, setData] = useState([]);
@@ -22,6 +23,8 @@ const Home = () => {
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split("T")[0]
   );
+
+  const navigate = useNavigate();
 
   // Получение данных с сервера
   useEffect(() => {
@@ -47,15 +50,42 @@ const Home = () => {
     fetchDrivers();
   }, []);
 
-  // Сортировка данных по дате
-  const sortedData = data.sort((a, b) => new Date(a.date) - new Date(b.date));
+  // Функция выхода из системы
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("username"); // Очистка имени пользователя при выходе
+    navigate("/login");
+  };
+
+  // Сортировка данных по водителям, затем по дате и перемещение строк с классом 'highlight' в конец
+  const sortData = (data) => {
+    const highlightedItems = data.filter(
+      (item) => item.colorClass === "highlight"
+    );
+    const nonHighlightedItems = data.filter(
+      (item) => item.colorClass !== "highlight"
+    );
+
+    // Сортируем только невыделенные элементы по водителям
+    const sortedNonHighlightedItems = nonHighlightedItems.sort((a, b) => {
+      if (a.driver < b.driver) return -1;
+      if (a.driver > b.driver) return 1;
+      return 0;
+    });
+
+    // Объединяем отсортированные элементы и выделенные элементы
+    return [...sortedNonHighlightedItems, ...highlightedItems];
+  };
+
+  const sortedData = sortData(data);
 
   // Функция для добавления строк на каждый новый день
   const addEntriesForSelectedDate = async () => {
     try {
-      const newEntries = hardcodedData.map((item, index) => ({
+      const newEntries = hardcodedData.map((item) => ({
         ...item,
         date: selectedDate,
+        updatedBy: localStorage.getItem("username"), // Добавляем имя пользователя
       }));
 
       // Добавление новых записей
@@ -78,7 +108,7 @@ const Home = () => {
     try {
       const response = await axios.post(
         "http://localhost:5000/api/data",
-        newItem
+        { ...newItem, updatedBy: localStorage.getItem("username") } // Добавляем имя пользователя
       );
       setData([...data, response.data]);
     } catch (error) {
@@ -92,6 +122,7 @@ const Home = () => {
       const response = await axios.post("http://localhost:5000/api/data", {
         ...newItem,
         colorClass: className, // Добавляем класс
+        updatedBy: localStorage.getItem("username"), // Добавляем имя пользователя
       });
       setData([...data, response.data]);
     } catch (error) {
@@ -102,6 +133,7 @@ const Home = () => {
   const handleInputChange = (e, itemId, fieldName) => {
     const { value, type, checked } = e.target;
     const updatedValue = type === "checkbox" ? checked : value;
+    const username = localStorage.getItem("username");
 
     setData(
       data.map((item) =>
@@ -113,12 +145,14 @@ const Home = () => {
       .put(`http://localhost:5000/api/data/${itemId}`, {
         ...data.find((item) => item._id === itemId),
         [fieldName]: updatedValue,
+        updatedBy: username, // Добавляем имя пользователя
       })
       .catch((error) => console.error("Error saving data:", error));
   };
 
   const handleDateChange = (e, itemId) => {
     const { value } = e.target;
+    const username = localStorage.getItem("username");
 
     setData(
       data.map((item) =>
@@ -130,6 +164,7 @@ const Home = () => {
       .put(`http://localhost:5000/api/data/${itemId}`, {
         ...data.find((item) => item._id === itemId),
         date: value,
+        updatedBy: username, // Добавляем имя пользователя
       })
       .catch((error) => console.error("Error updating date:", error));
   };
@@ -178,7 +213,7 @@ const Home = () => {
       <button onClick={() => addNewItemWithClass("highlight")}>
         Add New Item with Highlight
       </button>
-
+      <button onClick={handleLogout}>Logout</button> {/* Кнопка для выхода */}
       <div>
         <input
           type="date"
@@ -193,7 +228,6 @@ const Home = () => {
         />
         <button onClick={handleAddNewDriver}>Add New Driver</button>
       </div>
-
       {Object.entries(groupByMonthAndDay(sortedData)).map(([month, days]) => (
         <div key={month}>
           <h2>{month}</h2>
