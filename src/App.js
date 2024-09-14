@@ -27,6 +27,7 @@ function App() {
         } catch (error) {
           console.error("Error fetching user data:", error);
           localStorage.removeItem("token");
+          localStorage.removeItem("username");
           setAuth({
             isAuthenticated: false,
             user: null,
@@ -40,6 +41,7 @@ function App() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("username");
     setAuth({ isAuthenticated: false, user: null });
   };
 

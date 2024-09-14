@@ -1,3 +1,69 @@
 .highlight {
   background-color: #ffeb3b; /* Яркий желтый цвет для выделения */
 }
+/* Основные стили для кнопок */
+button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 5px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Стиль для выделенных строк в таблице */
+tr.highlight {
+  background-color: #ffeb3b;
+}
+
+/* Стиль для текущего дня */
+tr.current-day {
+  border: 2px solid red;
+}
+
+/* Стили для инпутов */
+input[type="date"], input[type="text"], select {
+  padding: 5px;
+  margin: 5px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+input[type="checkbox"] {
+  margin: 0 5px;
+}
+
+/* Стили для таблицы */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #f4f4f4;
+}
+.today-class {
+  background-color: yellow; /* или любой другой стиль, который вам нравится */
+  font-weight: bold;
+}
+.tooltip {
+  position: absolute;
+  background-color: #333;
+  color: #fff;
+  padding: 5px;
+  border-radius: 4px;
+  font-size: 12px;
+}

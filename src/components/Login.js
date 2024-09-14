@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 const Login = ({ setAuth }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState(""); // Для хранения ошибки
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -19,11 +20,13 @@ const Login = ({ setAuth }) => {
       localStorage.setItem("username", response.data.username);
       setAuth({
         isAuthenticated: true,
-        user: { username }, // Здесь можно добавить данные пользователя из вашего API
+        user: { username },
       });
+      setErrorMessage(""); // Очистка ошибки при успешном логине
       navigate("/");
     } catch (error) {
-      console.error("Login error:", error);
+      // Если логин неудачен, устанавливаем сообщение об ошибке
+      setErrorMessage("Invalid username or password. Please try again.");
     }
   };
 
@@ -45,9 +48,8 @@ const Login = ({ setAuth }) => {
         />
         <button type="submit">Login</button>
       </form>
-      <p>
-        Don't have an account? <Link to="/register">Register here</Link>
-      </p>
+      {/* Вывод сообщения об ошибке */}
+      {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
     </div>
   );
 };

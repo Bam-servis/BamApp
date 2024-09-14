@@ -16,6 +16,22 @@ mongoose
 
 app.use(cors());
 app.use(express.json()); // Используйте встроенный JSON парсер
+app.delete('/api/data/:id', async (req, res) => {
+  try {
+    console.log(`Received request to delete item with ID: ${req.params.id}`);
+    const result = await Data.findByIdAndDelete(req.params.id);
+    if (!result) {
+      console.log('No data found for ID:', req.params.id);
+      return res.status(404).send('Data not found');
+    }
+    console.log('Successfully deleted data for ID:', req.params.id);
+    res.status(200).send('Data deleted successfully');
+  } catch (error) {
+    console.error('Error deleting data:', error);
+    res.status(500).send('Server error');
+  }
+});
+
 
 // Маршруты для данных
 app.get("/api/data", async (req, res) => {
