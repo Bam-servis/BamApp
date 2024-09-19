@@ -29,14 +29,3 @@ The **APCR Software** is designed for efficiently managing and processing client
 
 ---
 
-### 📂 Project Setup:
-
-```bash
-# Clone the repo
-git clone https://github.com/your-repo/APCR-software.git
-
-# Install dependencies
-npm install
-
-# Run the project
-npm start
