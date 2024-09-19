@@ -1,6 +1,14 @@
 .highlight {
   background-color: #ffeb3b; /* Яркий желтый цвет для выделения */
 }
+.highlight-row {
+  background-color: rgba(
+    0,
+    255,
+    0,
+    0.3
+  ) !important; /* Цвет выделенной строки */
+}
 /* Основные стили для кнопок */
 button {
   background-color: #007bff;
@@ -28,7 +36,9 @@ tr.current-day {
 }
 
 /* Стили для инпутов */
-input[type="date"], input[type="text"], select {
+input[type="date"],
+input[type="text"],
+select {
   padding: 5px;
   margin: 5px;
   border-radius: 4px;
@@ -46,7 +56,8 @@ table {
   margin-bottom: 20px;
 }
 
-th, td {
+th,
+td {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;

@@ -4,16 +4,19 @@ import {
   Routes,
   Route,
   Navigate,
+  Link,
 } from "react-router-dom";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Home from "./home";
-const userName = localStorage.getItem("username");
-function App() {
+import Profile from "./components/Profile";
+
+const App = () => {
   const [auth, setAuth] = useState({
     isAuthenticated: false,
     user: null,
   });
+
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem("token");
@@ -50,7 +53,10 @@ function App() {
       <div>
         {auth.isAuthenticated && (
           <nav>
-            <span>Welcome, {userName}</span>
+            <span>Welcome, {localStorage.getItem("username")}</span>
+            <Link to="/profile">
+              <button>Go to Profile</button>
+            </Link>
             <button onClick={handleLogout}>Logout</button>
           </nav>
         )}
@@ -73,10 +79,16 @@ function App() {
             path="/"
             element={auth.isAuthenticated ? <Home /> : <Navigate to="/login" />}
           />
+          <Route
+            path="/profile"
+            element={
+              auth.isAuthenticated ? <Profile /> : <Navigate to="/profile" />
+            }
+          />
         </Routes>
       </div>
     </Router>
   );
-}
+};
 
 export default App;
