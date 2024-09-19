@@ -52,8 +52,8 @@ const App = () => {
     <Router>
       <div>
         {auth.isAuthenticated && (
-          <nav>
-            <span>Welcome, {localStorage.getItem("username")}</span>
+          <nav className="nav-profile">
+            <span className="username">{localStorage.getItem("username")}</span>
             <Link to="/profile">
               <button>Go to Profile</button>
             </Link>

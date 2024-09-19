@@ -5,10 +5,15 @@ const Data = require("./models/Data"); // Модель для данных
 const Driver = require("./models/Driver"); // Модель для водителей
 const User = require("./models/User");
 const authRoutes = require("./routes/auth"); // Маршруты для авторизации
+const path = require("path");
 
 const app = express();
-const port = 5000;
+app.use(express.static(path.join(__dirname, "build")));
 
+// Все остальные запросы отправляем на фронтенд
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
+});
 // Подключение к базе данных
 mongoose
   .connect("mongodb://localhost:27017/mydatabase", {})
@@ -32,7 +37,14 @@ app.delete("/api/data/:id", async (req, res) => {
     res.status(500).send("Server error");
   }
 });
-
+app.get("/api/data/count", async (req, res) => {
+  try {
+    const count = await Data.countDocuments();
+    res.json({ count });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching count", error });
+  }
+});
 // Маршруты для данных
 app.get("/api/data", async (req, res) => {
   try {
@@ -99,7 +111,7 @@ app.post("/api/drivers", async (req, res) => {
 // Подключение маршрутов для авторизации
 app.use("/api", authRoutes);
 
-// Запуск сервера
+const port = process.env.PORT || 5000;
 app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+  console.log(`Server running on port ${port}`);
 });

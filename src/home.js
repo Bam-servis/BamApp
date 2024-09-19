@@ -2,9 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { hardcodedData } from "./hardcodedData";
 import "./styles.css";
-import { format, addMonths, subMonths, parseISO } from "date-fns";
+import { format, addMonths, subMonths } from "date-fns";
 import { ru } from "date-fns/locale";
-import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const [data, setData] = useState([]);
@@ -12,6 +11,7 @@ const Home = () => {
   const [users, setUsers] = useState([]);
   const [newDriver, setNewDriver] = useState("");
   const [selectedRows, setSelectedRows] = useState({});
+  const [totalRecords, setTotalRecords] = useState(0);
 
   const [newItem, setNewItem] = useState({
     doneCheck: false,
@@ -39,6 +39,10 @@ const Home = () => {
       try {
         const response = await axios.get("http://localhost:5000/api/data");
         setData(response.data);
+        const countResponse = await axios.get(
+          "http://localhost:5000/api/data/count"
+        );
+        setTotalRecords(countResponse.data.count);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -322,25 +326,13 @@ const Home = () => {
 
   const groupedData = groupByDay(filteredData);
 
-  //prev
-
-  const isToday = (itemDate) => {
-    const today = new Date();
-    const itemDay = new Date(itemDate);
-
-    return (
-      today.getDate() === itemDay.getDate() &&
-      today.getMonth() === itemDay.getMonth() &&
-      today.getFullYear() === itemDay.getFullYear()
-    );
-  };
   const getColor = (value) => {
     switch (value) {
       case "Оплачен":
         return "green";
-      case "Частично Оплачен":
+      case "Частично":
         return "gold";
-      case "Нет Оплаты":
+      case "Нет":
         return "red";
       case "Отсрочка":
         return "yellow";
@@ -348,13 +340,14 @@ const Home = () => {
         return "transporent"; // цвет по умолчанию, если ничего не выбрано
     }
   };
+
   const getBackColor = (value) => {
     switch (value) {
       case "Оплачен":
         return "black";
-      case "Частично Оплачен":
+      case "Частично":
         return "black";
-      case "Нет Оплаты":
+      case "Нет":
         return "black";
       case "Отсрочка":
         return "black";
@@ -369,6 +362,7 @@ const Home = () => {
     }
 
     const today = new Date();
+
     const previousDay = new Date(today);
     previousDay.setDate(previousDay.getDate() - 1);
 
@@ -379,44 +373,119 @@ const Home = () => {
       previousDay.getFullYear() === date.getFullYear()
     );
   };
+  const today = new Date();
+  const formattedToday = format(today, "dd"); // Форматируем только число
+  const countEntriesForMonth = (data, date) => {
+    return data.filter((item) => {
+      const itemDate = new Date(item.date);
+      return (
+        itemDate.getMonth() === date.getMonth() &&
+        itemDate.getFullYear() === date.getFullYear()
+      );
+    }).length;
+  };
+  const getPreviousMonth = (date) => {
+    return subMonths(date, 1);
+  };
+  const currentMonthEntriesCount = countEntriesForMonth(data, currentMonth);
+  const previousMonthEntriesCount = countEntriesForMonth(
+    data,
+    getPreviousMonth(currentMonth)
+  );
 
   return (
     <div>
+      <div className="bam-servis">"ООО Бам-Сервис гарант"</div>
+      <div className="developer">
+        <a href="https://t.me/web_gpy" target="_blanc">
+          &copy; Web-GPY Software.
+        </a>{" "}
+        2024-{currentMonth.getFullYear()} Все права защищены.
+      </div>
+      <div className="wrapper">
+        <div className="data">
+          <div className="month">
+            <button onClick={() => handleMonthChange("prev")}>
+              Пред. Месяц
+            </button>
+            <button onClick={() => handleMonthChange("next")}>
+              След. Месяц
+            </button>
+            <button onClick={() => setCurrentMonth(new Date())}>
+              Текущий Месяц
+            </button>
+          </div>
+
+          <div className="sybarenda">
+            <span className="title">Добавить суб аренду {}</span>
+            <button onClick={() => addNewItemWithClass("highlight")}>
+              Добавить
+            </button>
+          </div>
+          <div>
+            <span className="title">Добавить базу</span>
+            <button onClick={addEntriesForSelectedDate} className="add-entries">
+              Добавить
+            </button>
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+            />
+          </div>
+          <div>
+            <span className="title">Добавить пустую строку</span>
+            <button onClick={addNewItem}>Добавить</button>
+          </div>
+          <div>
+            <span className="title">Добавить нового водителя</span>
+            <button onClick={handleAddNewDriver}>Добавить</button>
+            <input
+              type="text"
+              className="drivers-new"
+              placeholder="Новый Водитель"
+              value={newDriver}
+              onChange={(e) => setNewDriver(e.target.value)}
+            />
+          </div>
+        </div>
+        <div className="statistic">
+          <h2>Статистика</h2>
+          <div>За все время: {totalRecords}</div>
+          <div>За текущий месяц: {currentMonthEntriesCount}</div>
+          <div>За предыдущий месяц {previousMonthEntriesCount}</div>
+        </div>
+        <div className="entry-block">
+          <div className="green">
+            <p>Оплачен</p>
+            <span className="green-span"></span>
+          </div>
+          <div className="gold">
+            <p>Частично</p>
+            <span className="gold-span"></span>
+          </div>
+          <div className="red">
+            <p>Нет оплаты</p>
+            <span className="red-span"></span>
+          </div>
+          <div className="yellow">
+            <p>Отсрочка</p>
+            <span className="yellow-span"></span>
+          </div>
+        </div>
+      </div>
       <h1>
         {getMonthName(currentMonth)} {currentMonth.getFullYear()}
       </h1>
-      <button onClick={() => handleMonthChange("prev")}>Пред. Месяц</button>
-      <button onClick={() => handleMonthChange("next")}>След. Месяц</button>
-      <button onClick={() => setCurrentMonth(new Date())}>Текущий Месяц</button>
-      <button onClick={() => addNewItemWithClass("highlight")}>
-        Добавить субаренду на текущий день
-      </button>
-      <button onClick={addEntriesForSelectedDate} className="add-entries">
-        Добавить строки на выбронный день
-      </button>
-
-      <input
-        type="date"
-        value={selectedDate}
-        onChange={(e) => setSelectedDate(e.target.value)}
-      />
-      <button onClick={addNewItem}>Добавить Строку</button>
-
-      <div>
-        <input
-          type="text"
-          value={newDriver}
-          onChange={(e) => setNewDriver(e.target.value)}
-        />
-        <button onClick={handleAddNewDriver}>Добавить Водителя</button>
-      </div>
-
       <div className="table">
         {Object.keys(groupedData).map((day) => (
           <div key={day}>
-            <h2>Day {day}</h2>
+            <h2 className={formattedToday === day ? "is-today" : ""}>
+              {" "}
+              {day} {getMonthName(currentMonth)}
+            </h2>
             <table>
-              <thead>
+              <thead className="sticky">
                 <tr>
                   <th>Заявка готова</th>
                   <th>Дата</th>
@@ -444,11 +513,6 @@ const Home = () => {
                     className={`${item.colorClass} ${
                       item.doneCheck ? "highlight-row" : ""
                     }`}
-                    style={{
-                      backgroundColor: isPreviousDay(item.date)
-                        ? "#f0f0f0"
-                        : "",
-                    }}
                   >
                     <td>
                       <input
@@ -531,7 +595,7 @@ const Home = () => {
                       style={{
                         display: "flex",
                         justifyContent: "center",
-                        height: "47px",
+                        height: "40px",
                       }}
                     >
                       <input
@@ -568,25 +632,25 @@ const Home = () => {
                           value="Оплачен"
                           style={{ color: "green", fontWeight: "bold" }}
                         >
-                          Оплачен &minus; &gt;
+                          Оплачен
                         </option>
                         <option
-                          value="Частично Оплачен"
+                          value="Частично"
                           style={{ color: "gold", fontWeight: "bold" }}
                         >
-                          Частично Оплачен &minus; &gt;
+                          Частично
                         </option>
                         <option
-                          value="Нет Оплаты"
+                          value="Нет"
                           style={{ color: "red", fontWeight: "bold" }}
                         >
-                          Нет Оплаты &minus; &gt;
+                          Нет
                         </option>
                         <option
                           value="Отсрочка"
                           style={{ color: "yellow", fontWeight: "bold" }}
                         >
-                          Отсрочка &minus; &gt;
+                          Отсрочка
                         </option>
                       </select>
                     </td>
@@ -635,7 +699,7 @@ const Home = () => {
                       <button
                         onClick={() => handleDeleteWithConfirmation(item._id)}
                       >
-                        Delete
+                        Удалить
                       </button>
                     </td>
                   </tr>
