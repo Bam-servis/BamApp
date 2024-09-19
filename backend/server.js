@@ -5,15 +5,9 @@ const Data = require("./models/Data"); // Модель для данных
 const Driver = require("./models/Driver"); // Модель для водителей
 const User = require("./models/User");
 const authRoutes = require("./routes/auth"); // Маршруты для авторизации
-const path = require("path");
 
 const app = express();
-app.use(express.static(path.join(__dirname, "build")));
 
-// Все остальные запросы отправляем на фронтенд
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
-});
 // Подключение к базе данных
 mongoose
   .connect("mongodb://localhost:27017/mydatabase", {})
