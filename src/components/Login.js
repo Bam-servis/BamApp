@@ -9,11 +9,10 @@ const Login = ({ setAuth }) => {
   const navigate = useNavigate();
   const apiUrl = "https://bam-app-489c6c1370a9.herokuapp.com";
 
-     
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-         const response = await axios.get(`${apiUrl}/api/login`), {
+      const response = await axios.get(`${apiUrl}/api/data`, {
         username,
         password,
       });
