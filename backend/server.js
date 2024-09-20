@@ -21,12 +21,9 @@ mongoose
   .catch((error) => console.error("MongoDB connection error:", error));
 
 // Middleware для статической папки
-app.use(express.static(path.join(__dirname, "build")));
+app.use(express.static(path.join(__dirname, "../build")));
 
 // Обработка всех маршрутов
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
-});
 
 app.use(cors());
 app.use(express.json()); // Используйте встроенный JSON парсер
@@ -122,4 +119,7 @@ app.use("/api", authRoutes);
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
+});
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../build", "index.html"));
 });
