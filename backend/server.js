@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -5,14 +6,19 @@ const Data = require("./models/Data"); // Модель для данных
 const Driver = require("./models/Driver"); // Модель для водителей
 const User = require("./models/User");
 const authRoutes = require("./routes/auth"); // Маршруты для авторизации
+const { MongoClient } = require("mongodb");
 
+// Подставь свои данные
+const uri =
+  "mongodb+srv://Web-gpy:AQ626Daven@bam-servis.fjflq.mongodb.net/sample_mflix?retryWrites=true&w=majority";
+
+const client = new MongoClient(uri);
 const app = express();
-
 // Подключение к базе данных
 mongoose
-  .connect("mongodb://localhost:27017/mydatabase", {})
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.error("MongoDB connection error:", err));
+  .connect(uri, {})
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((error) => console.error("MongoDB connection error:", error));
 
 app.use(cors());
 app.use(express.json()); // Используйте встроенный JSON парсер
