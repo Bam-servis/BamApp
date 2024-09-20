@@ -7,7 +7,7 @@ const Driver = require("./models/Driver"); // Модель для водител
 const User = require("./models/User");
 const authRoutes = require("./routes/auth"); // Маршруты для авторизации
 const { MongoClient } = require("mongodb");
-
+const path = require("path");
 // Подставь свои данные
 const uri =
   "mongodb+srv://Web-gpy:AQ626Daven@bam-servis.fjflq.mongodb.net/sample_mflix?retryWrites=true&w=majority";
@@ -20,6 +20,12 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch((error) => console.error("MongoDB connection error:", error));
 
+// Middleware для статической папки
+app.use(express.static(path.join(__dirname, "client/build")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname + "/client/build/index.html"));
+});
 app.use(cors());
 app.use(express.json()); // Используйте встроенный JSON парсер
 app.delete("/api/data/:id", async (req, res) => {
