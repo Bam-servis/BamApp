@@ -219,7 +219,7 @@ th {
 @media (max-width: 800px) {
   .nav-profile {
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
   }
   .developer {
@@ -234,7 +234,7 @@ th {
     flex-direction: column;
   }
   .month {
-    display: flex;
+    display: none;
     flex-direction: row;
   }
   .sybarenda {
@@ -243,26 +243,28 @@ th {
     justify-content: center;
   }
   .baza {
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
   }
   .entrys {
     display: flex;
+    margin-bottom: 20px;
     flex-direction: column;
     align-items: center;
   }
   .driv {
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
   }
   .statistic {
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
   }
   .entry-block {
+    display: none;
     margin-bottom: 15px;
   }
   body {
