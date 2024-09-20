@@ -40,9 +40,9 @@ const Home = () => {
       try {
         const response = await axios.get(`${apiUrl}/api/data`);
         setData(response.data);
-        const countResponse = await axios.get(`${apiUrl}/api/count`);
-        console.log("Total records count fetched:", countResponse.data.count); // Логируем количество
-        setTotalRecords(countResponse.data.count);
+        const totalCount = response.data.length;
+        console.log("Total records count fetched:", totalCount); // Логируем количество
+        setTotalRecords(totalCount);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
