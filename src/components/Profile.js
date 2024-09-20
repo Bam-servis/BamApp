@@ -6,6 +6,7 @@ import dayjs from "dayjs";
 const Profile = () => {
   const [items, setItems] = useState([]);
   const [user, setUser] = useState(null);
+  const apiUrl = "https://bam-app-489c6c1370a9.herokuapp.com";
 
   // Получение данных пользователя и созданных им элементов
   useEffect(() => {
@@ -14,7 +15,7 @@ const Profile = () => {
         const username = localStorage.getItem("username");
         setUser(username);
 
-        const response = await axios.get("http://localhost:5000/api/data");
+        const response = await axios.get(`${apiUrl}/api/data`);
         const userItems = response.data.filter(
           (item) => item.user === username
         );

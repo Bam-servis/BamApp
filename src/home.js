@@ -12,6 +12,7 @@ const Home = () => {
   const [newDriver, setNewDriver] = useState("");
   const [selectedRows, setSelectedRows] = useState({});
   const [totalRecords, setTotalRecords] = useState(0);
+  const apiUrl = "https://bam-app-489c6c1370a9.herokuapp.com";
 
   const [newItem, setNewItem] = useState({
     doneCheck: false,
@@ -33,15 +34,13 @@ const Home = () => {
   );
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const currentDayRef = useRef(null);
-  const apiUrl = "https://bam-app-489c6c1370a9.herokuapp.com";
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(`${apiUrl}/api/data`);
         setData(response.data);
-        const countResponse = await axios.get(
-          "http://localhost:5000/api/data/count"
-        );
+        const countResponse = await axios.get(`${apiUrl}/api/count`);
         setTotalRecords(countResponse.data.count);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -58,7 +57,7 @@ const Home = () => {
     };
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/users");
+        const response = await axios.get(`${apiUrl}/api/users`);
 
         setUsers(response.data);
       } catch (error) {
@@ -88,12 +87,10 @@ const Home = () => {
       }));
 
       await Promise.all(
-        newEntries.map((entry) =>
-          axios.post("http://localhost:5000/api/data", entry)
-        )
+        newEntries.map((entry) => axios.post(`${apiUrl}/api/data`, entry))
       );
 
-      const response = await axios.get("http://localhost:5000/api/data");
+      const response = await axios.get(`${apiUrl}/api/data`);
       setData(response.data);
     } catch (error) {
       console.error("Error adding entries:", error);
@@ -102,7 +99,7 @@ const Home = () => {
 
   const addNewItem = async () => {
     try {
-      const response = await axios.post("http://localhost:5000/api/data", {
+      const response = await axios.post(`${apiUrl}/api/data`, {
         ...newItem,
         updatedBy: localStorage.getItem("username"),
         createdBy: localStorage.getItem("username"),
@@ -132,7 +129,7 @@ const Home = () => {
     setData(updatedData);
 
     axios
-      .put(`http://localhost:5000/api/data/${itemId}`, {
+      .put(`${apiUrl}/api/data/${itemId}`, {
         ...updatedData.find((item) => item._id === itemId),
         [fieldName]: updatedValue,
         updatedBy: username,
@@ -142,7 +139,7 @@ const Home = () => {
 
   const addNewItemWithClass = async (className) => {
     try {
-      const response = await axios.post("http://localhost:5000/api/data", {
+      const response = await axios.post(`${apiUrl}/api/data`, {
         ...newItem,
         colorClass: className,
         updatedBy: localStorage.getItem("username"),
@@ -168,7 +165,7 @@ const Home = () => {
     setData(updatedData);
 
     try {
-      await axios.put(`http://localhost:5000/api/data/${itemId}`, {
+      await axios.put(`${apiUrl}/api/data/${itemId}`, {
         ...updatedData.find((item) => item._id === itemId),
         doneCheck: checked,
       });
@@ -198,7 +195,7 @@ const Home = () => {
     setData(updatedData);
 
     try {
-      await axios.put(`http://localhost:5000/api/data/${itemId}`, {
+      await axios.put(`${apiUrl}/api/data/${itemId}`, {
         ...updatedData.find((item) => item._id === itemId),
         isTrue: checked,
       });
@@ -213,7 +210,7 @@ const Home = () => {
     );
     if (isConfirmed) {
       try {
-        await axios.delete(`http://localhost:5000/api/data/${id}`);
+        await axios.delete(`${apiUrl}/api/data/${id}`);
         setData(data.filter((item) => item._id !== id));
       } catch (error) {
         console.error("Error deleting data:", error);
@@ -235,7 +232,7 @@ const Home = () => {
     setData(updatedData);
 
     axios
-      .put(`http://localhost:5000/api/data/${itemId}`, {
+      .put(`${apiUrl}/api/data/${itemId}`, {
         ...updatedData.find((item) => item._id === itemId),
         date: value,
         updatedBy: username,
@@ -247,7 +244,7 @@ const Home = () => {
     if (newDriver.trim() === "") return;
 
     try {
-      const response = await axios.post("http://localhost:5000/api/drivers", {
+      const response = await axios.post(`${apiUrl}/api/drivers`, {
         name: newDriver,
       });
       setDrivers([...drivers, response.data]);

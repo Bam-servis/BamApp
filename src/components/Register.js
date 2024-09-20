@@ -7,11 +7,12 @@ const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const apiUrl = "https://bam-app-489c6c1370a9.herokuapp.com";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/register", {
+      await axios.post(`${apiUrl}/api/register`, {
         username,
         password,
       });
