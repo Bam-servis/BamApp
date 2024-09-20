@@ -58,6 +58,12 @@ const App = () => {
               <button>Go to Profile</button>
             </Link>
             <button onClick={handleLogout}>Logout</button>
+            <div className="developer">
+              <a href="https://t.me/web_gpy" target="_blanc">
+                &copy; Web-GPY Software.
+              </a>{" "}
+              2024 Все права защищены.
+            </div>
           </nav>
         )}
         <Routes>

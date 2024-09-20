@@ -9,9 +9,11 @@ const authRoutes = require("./routes/auth"); // Маршруты для авто
 const { MongoClient } = require("mongodb");
 const path = require("path");
 // Подставь свои данные
-const uri =
-  "mongodb+srv://Web-gpy:AQ626Daven@bam-servis.fjflq.mongodb.net/sample_mflix?retryWrites=true&w=majority";
 
+const uri =
+  process.env.NODE_ENV === "production"
+    ? "mongodb+srv://Web-gpy:AQ626Daven@bam-servis.fjflq.mongodb.net/sample_mflix?retryWrites=true&w=majority"
+    : "mongodb://localhost:27017/mydatabase"; // Локальная база данных
 const client = new MongoClient(uri);
 const app = express();
 // Подключение к базе данных

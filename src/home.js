@@ -395,12 +395,6 @@ const Home = () => {
   return (
     <div>
       <div className="bam-servis">"ООО Бам-Сервис гарант"</div>
-      <div className="developer">
-        <a href="https://t.me/web_gpy" target="_blanc">
-          &copy; Web-GPY Software.
-        </a>{" "}
-        2024-{currentMonth.getFullYear()} Все права защищены.
-      </div>
       <div className="wrapper">
         <div className="data">
           <div className="month">
@@ -421,7 +415,7 @@ const Home = () => {
               Добавить
             </button>
           </div>
-          <div>
+          <div className="baza">
             <span className="title">Добавить базу</span>
             <button onClick={addEntriesForSelectedDate} className="add-entries">
               Добавить
@@ -432,11 +426,11 @@ const Home = () => {
               onChange={(e) => setSelectedDate(e.target.value)}
             />
           </div>
-          <div>
+          <div className="entrys">
             <span className="title">Добавить пустую строку</span>
             <button onClick={addNewItem}>Добавить</button>
           </div>
-          <div>
+          <div className="driv">
             <span className="title">Добавить нового водителя</span>
             <button onClick={handleAddNewDriver}>Добавить</button>
             <input
@@ -449,10 +443,17 @@ const Home = () => {
           </div>
         </div>
         <div className="statistic">
-          <h2>Статистика</h2>
-          <div>За все время: {totalRecords}</div>
-          <div>За текущий месяц: {currentMonthEntriesCount}</div>
-          <div>За предыдущий месяц {previousMonthEntriesCount}</div>
+          <div className="time">
+            За все время: <spam className="total">{totalRecords}</spam>
+          </div>
+          <div className="time">
+            За текущий месяц:
+            <span className="total">{currentMonthEntriesCount}</span>
+          </div>
+          <div className="time">
+            За предыдущий месяц:
+            <span className="total"> {previousMonthEntriesCount}</span>
+          </div>
         </div>
         <div className="entry-block">
           <div className="green">
@@ -499,8 +500,8 @@ const Home = () => {
                   <th>Оплата</th>
                   <th>Сумма Оплаты</th>
                   <th>Комментарий</th>
-                  <th>Менаджер</th>
-                  <th>Последнее редактирования</th>
+                  <th>Менeджер</th>
+                  <th>Последнее ред.</th>
                   <th>Удалить запись</th>
                 </tr>
               </thead>
@@ -532,6 +533,9 @@ const Home = () => {
                     <td>
                       <input
                         type="text"
+                        style={{
+                          width: "180px",
+                        }}
                         value={item.brand || ""}
                         onChange={(e) =>
                           handleInputChange(e, item._id, "brand")
@@ -549,6 +553,9 @@ const Home = () => {
                     </td>
                     <td>
                       <select
+                        style={{
+                          width: "130px",
+                        }}
                         value={item.driver || ""}
                         onChange={(e) =>
                           handleInputChange(e, item._id, "driver")
@@ -575,6 +582,9 @@ const Home = () => {
                     <td>
                       <input
                         type="text"
+                        style={{
+                          width: "50px",
+                        }}
                         value={item.routeNumber || ""}
                         onChange={(e) =>
                           handleInputChange(e, item._id, "routeNumber")
@@ -584,6 +594,9 @@ const Home = () => {
                     <td>
                       <input
                         type="text"
+                        style={{
+                          width: "50px",
+                        }}
                         value={item.hours || ""}
                         onChange={(e) =>
                           handleInputChange(e, item._id, "hours")
@@ -592,8 +605,6 @@ const Home = () => {
                     </td>
                     <td
                       style={{
-                        display: "flex",
-                        justifyContent: "center",
                         height: "40px",
                       }}
                     >
@@ -685,14 +696,7 @@ const Home = () => {
                       </select>
                     </td>
                     <td>
-                      <input
-                        disabled
-                        type="text"
-                        value={item.updatedBy || ""}
-                        onChange={(e) =>
-                          handleInputChange(e, item._id, "updatedBy")
-                        }
-                      />
+                      <span>{item.updatedBy || "Не указано"}</span>
                     </td>
                     <td>
                       <button

@@ -1,6 +1,7 @@
 body {
   background-image: url(../123.jpg);
   color: #fff;
+  padding: 0 25px;
 }
 
 .highlight {
@@ -18,22 +19,35 @@ h2 {
     0.3
   ) !important; /* Цвет выделенной строки */
 }
+.time {
+  font-size: 20px;
+  display: flex;
+}
 .title {
   font-size: 18px;
   font-weight: bold;
 }
 .developer {
-  position: absolute;
-  top: 20px;
-  display: flex;
-  text-align: right;
   right: 20px;
   font-weight: bold;
-  flex-direction: column;
+}
+.total {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: bold;
+  text-decoration: underline;
+  margin-left: 10px;
+}
+.statistic {
+  width: 300px;
 }
 .wrapper {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 0 50px;
 }
 .bam-servis {
@@ -41,7 +55,6 @@ h2 {
   width: 100%;
   font-size: 35px;
   display: flex;
-  padding: 0 50px;
   align-items: center;
   justify-content: center;
   font-weight: bold;
@@ -109,6 +122,9 @@ tr.highlight {
 /* Стиль для текущего дня */
 .is-today {
   border: 2px solid red;
+  width: 170px;
+  padding: 5px 10px;
+  text-align: center;
 }
 textarea {
   padding: 10px;
@@ -127,9 +143,9 @@ select {
   text-align: center;
   padding: 5px;
   margin: 5px;
+  width: 100px;
   border-radius: 15px;
   border: 1px solid #ccc;
-  width: 100px;
 }
 
 input[type="checkbox"] {
@@ -149,11 +165,13 @@ th,
 td {
   border: 1px solid #ddd;
   text-align: center;
+  width: 50px !important;
 }
 
 th {
   background-color: #f4f4f4;
   text-align: center;
+  width: 50px !important;
 }
 .today-class {
   background-color: yellow; /* или любой другой стиль, который вам нравится */
@@ -168,14 +186,9 @@ th {
   font-size: 12px;
 }
 .nav-profile {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border: 2px solid;
   width: 100%;
   padding: 10px;
   margin-bottom: 20px;
-  max-width: 142px;
 }
 .drivers-new {
   padding: 10px !important;
@@ -202,4 +215,57 @@ th {
 .panel {
   font-size: 20px;
   font-weight: bold;
+}
+@media (max-width: 800px) {
+  .nav-profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .developer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .bam-servis {
+    text-align: center;
+  }
+  .wrapper {
+    flex-direction: column;
+  }
+  .month {
+    display: flex;
+    flex-direction: row;
+  }
+  .sybarenda {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .baza {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .entrys {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .driv {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .statistic {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .entry-block {
+    margin-bottom: 15px;
+  }
+  body {
+    padding: 0 25px 0 0;
+  }
 }
