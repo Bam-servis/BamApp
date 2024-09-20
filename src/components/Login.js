@@ -1,18 +1,19 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
 
 const Login = ({ setAuth }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState(""); // Для хранения ошибки
   const navigate = useNavigate();
+  const apiUrl = "https://bam-app-489c6c1370a9.herokuapp.com";
 
+     
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/api/login", {
+         const response = await axios.get(`${apiUrl}/api/login`), {
         username,
         password,
       });

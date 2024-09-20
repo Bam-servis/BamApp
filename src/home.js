@@ -33,11 +33,11 @@ const Home = () => {
   );
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const currentDayRef = useRef(null);
-
+  const apiUrl = "https://bam-app-489c6c1370a9.herokuapp.com";
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/data");
+        const response = await axios.get(`${apiUrl}/api/data`);
         setData(response.data);
         const countResponse = await axios.get(
           "http://localhost:5000/api/data/count"
@@ -50,7 +50,7 @@ const Home = () => {
 
     const fetchDrivers = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/drivers");
+        const response = await axios.get(`${apiUrl}/api/drivers`);
         setDrivers(response.data);
       } catch (error) {
         console.error("Error fetching drivers:", error);
@@ -59,6 +59,7 @@ const Home = () => {
     const fetchUsers = async () => {
       try {
         const response = await axios.get("http://localhost:5000/api/users");
+
         setUsers(response.data);
       } catch (error) {
         console.error("Error fetching setUsers:", error);
