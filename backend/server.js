@@ -27,6 +27,7 @@ app.use(express.static(path.join(__dirname, "build")));
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "build", "index.html"));
 });
+
 app.use(cors());
 app.use(express.json()); // Используйте встроенный JSON парсер
 app.delete("/api/data/:id", async (req, res) => {
