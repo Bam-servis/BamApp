@@ -1,7 +1,7 @@
 // server/routes/auth.js
 const express = require("express");
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const User = require("../models/User"); // Импорт модели пользователя
 const { generateToken } = require("../utils/authService");
 const router = express.Router();
