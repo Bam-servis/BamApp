@@ -29,6 +29,7 @@ h2 {
 }
 .developer {
   right: 20px;
+  color: black;
   font-weight: bold;
 }
 .total {
@@ -43,6 +44,7 @@ h2 {
 }
 .statistic {
   width: 300px;
+  color: black;
 }
 .wrapper {
   display: flex;
@@ -50,9 +52,44 @@ h2 {
   align-items: center;
   padding: 0 50px;
 }
+.order {
+  display: flex;
+  border-top: 1px solid red;
+}
+.order:first-child {
+  border-top: none;
+}
+.order p {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: rgb(59, 20, 20);
+  padding: 5px 10px;
+  width: 100%;
+  max-width: 300px;
+  font-weight: bold;
+}
+.orderZa {
+  border: 1px solid black;
+  max-width: 300px;
+  text-align: center;
+}
+.order span {
+  border-top: 2px solid black;
+  margin-top: 5px;
+  font-size: 20px;
+  color: #fff;
+}
+.arenda {
+  display: flex;
+  justify-content: center;
+  color: black;
+}
 .bam-servis {
   margin: 0 auto;
   width: 100%;
+  color: black;
+  text-decoration: underline;
   font-size: 35px;
   display: flex;
   align-items: center;
@@ -65,6 +102,7 @@ h2 {
   background-color: green;
   display: block;
 }
+
 .entry-block {
   text-align: center;
   display: flex;
@@ -91,6 +129,7 @@ h2 {
 }
 h1 {
   width: 300px;
+  color: black;
   display: flex;
   border-radius: 50px;
   text-transform: capitalize;
@@ -206,7 +245,8 @@ th {
 .username {
   font-size: 20px;
   font-weight: bold;
-  border: 1px solid;
+  color: black;
+  border: 1px solid red;
   padding: 5px;
 }
 .month {

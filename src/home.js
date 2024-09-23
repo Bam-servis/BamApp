@@ -444,7 +444,7 @@ const Home = () => {
         </div>
         <div className="statistic">
           <div className="time">
-            За все время: <spam className="total">{totalRecords}</spam>
+            За все время: <span className="total">{totalRecords}</span>
           </div>
           <div className="time">
             За текущий месяц:
