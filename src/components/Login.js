@@ -17,7 +17,7 @@ const Login = ({ setAuth }) => {
   const apiUrl = "https://bam-app-489c6c1370a9.herokuapp.com";
 
   useEffect(() => {
-    loadCaptchaEnginge(6);
+    loadCaptchaEnginge(4);
   }, []);
 
   const handleSubmit = async (e) => {
@@ -47,7 +47,7 @@ const Login = ({ setAuth }) => {
 
   return (
     <div className="login">
-      <h1>Bam-Servis.by - Учет и обработка заявок клиентов</h1>
+      <h1>Учет и обработка заявок клиентов</h1>
       <h2>Войдите в систему</h2>
       <form onSubmit={handleSubmit}>
         <input
