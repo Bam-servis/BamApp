@@ -1,5 +1,6 @@
 body {
-  background-image: url(../123.jpg);
+  background: radial-gradient(transparent, black);
+
   color: #fff;
   padding: 0 25px;
 }
@@ -55,6 +56,8 @@ h2 {
 .order {
   display: flex;
   border-top: 1px solid red;
+  align-items: center;
+  justify-content: center;
 }
 .order:first-child {
   border-top: none;
@@ -66,7 +69,7 @@ h2 {
   color: rgb(59, 20, 20);
   padding: 5px 10px;
   width: 100%;
-  max-width: 300px;
+  max-width: 250px;
   font-weight: bold;
 }
 .orderZa {

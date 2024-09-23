@@ -9,6 +9,7 @@ const Profile = () => {
   const [selectedDriver, setSelectedDriver] = useState("");
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [user, setUser] = useState(null);
+  const [allItems, setAllItems] = useState([]);
 
   const apiUrl = "https://bam-app-489c6c1370a9.herokuapp.com";
 
@@ -18,15 +19,22 @@ const Profile = () => {
       try {
         const username = localStorage.getItem("username");
         setUser(username);
+
         const response = await axios.get(`${apiUrl}/api/data`);
-        setItems(response.data);
+        setAllItems(response.data);
+
+        // Фильтруем данные по текущему пользователю
         const userItems = response.data.filter(
           (item) => item.user === username
         );
-        const driverList = [
-          ...new Set(response.data.map((item) => item.driver)),
+        setItems(userItems);
+
+        const allDrivers = [
+          ...new Set(
+            response.data.map((item) => item.driver).filter((driver) => driver)
+          ),
         ];
-        setDrivers(driverList);
+        setDrivers(allDrivers);
       } catch (error) {
         console.error("Ошибка при загрузке данных:", error);
       }
@@ -34,11 +42,12 @@ const Profile = () => {
 
     fetchData();
   }, []);
+
   // Вычисляем текущий и предыдущий месяц
   const currentMonth = dayjs().month();
   const previousMonth = dayjs().subtract(1, "month").month();
 
-  // Фильтруем заявки за текущий и предыдущий месяцы
+  // Фильтруем заявки за текущий и предыдущий месяцы для текущего пользователя
   const currentMonthItems = items.filter(
     (item) => dayjs(item.createdAt).month() === currentMonth
   );
@@ -56,16 +65,19 @@ const Profile = () => {
     const calcPay = parseFloat(item.calcPay) || 0;
     return total + calcPay;
   }, 0);
+
+  // Фильтрация заявок по выбранному водителю
   useEffect(() => {
     if (selectedDriver) {
-      const ordersForSelectedDriver = items.filter(
-        (item) => item.driver === selectedDriver && item.colorClass
+      const ordersForSelectedDriver = allItems.filter(
+        (item) =>
+          item.driver === selectedDriver && item.colorClass === "highlight" // Убедитесь, что проверка colorClass правильная
       );
       setFilteredOrders(ordersForSelectedDriver);
     } else {
       setFilteredOrders([]);
     }
-  }, [selectedDriver, items]);
+  }, [selectedDriver, allItems]);
 
   const handleDriverChange = (e) => {
     setSelectedDriver(e.target.value);
@@ -83,6 +95,7 @@ const Profile = () => {
       <p>Общее значение оплаты: {totalCalcPay}</p>
       <p>Количество заявок за текущий месяц: {currentMonthItems.length}</p>
       <p>Количество заявок за предыдущий месяц: {previousMonthItems.length}</p>
+
       <div className="orderZa">
         <h2>Выберите Заказчика:</h2>
         <select onChange={handleDriverChange} value={selectedDriver}>
@@ -94,6 +107,7 @@ const Profile = () => {
           ))}
         </select>
       </div>
+
       <h2 className="arenda">Информация об суб Аренде</h2>
       {filteredOrders.length > 0 ? (
         <ul>
