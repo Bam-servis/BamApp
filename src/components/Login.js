@@ -62,7 +62,7 @@ const Login = ({ setAuth }) => {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
         />
-        <div>
+        <div className="canvas">
           <LoadCanvasTemplate />
           <input
             type="text"

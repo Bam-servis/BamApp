@@ -174,8 +174,11 @@ textarea {
   width: 150px;
   text-align: center;
 }
-canvas {
+.canvas {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 #reload_href {
   display: flex;
