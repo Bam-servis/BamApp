@@ -88,7 +88,7 @@ const App = () => {
           <Route
             path="/profile"
             element={
-              auth.isAuthenticated ? <Profile /> : <Navigate to="/profile" />
+              auth.isAuthenticated ? <Profile /> : <Navigate to="/login" />
             }
           />
         </Routes>

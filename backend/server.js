@@ -24,7 +24,13 @@ mongoose
 
 // Middleware для статической папки
 app.use(express.static(path.join(__dirname, "../build")));
-
+app.use((req, res, next) => {
+  res.setHeader(
+    "Content-Security-Policy",
+    "frame-ancestors 'self' https://www.google.com https://www.recaptcha.net;"
+  );
+  next();
+});
 // Обработка всех маршрутов
 
 app.use(cors());
@@ -44,6 +50,7 @@ app.delete("/api/data/:id", async (req, res) => {
     res.status(500).send("Server error");
   }
 });
+
 app.get("/api/data/count", async (req, res) => {
   try {
     const count = await Data.countDocuments();

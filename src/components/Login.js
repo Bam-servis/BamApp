@@ -1,16 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import {
+  LoadCanvasTemplate,
+  LoadCanvasTemplateNoReload,
+  validateCaptcha,
+  loadCaptchaEnginge,
+} from "react-simple-captcha"; // Исправляем название
 
 const Login = ({ setAuth }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState(""); // Для хранения ошибки
+  const [errorMessage, setErrorMessage] = useState("");
+  const [captchaValue, setCaptchaValue] = useState("");
   const navigate = useNavigate();
   const apiUrl = "https://bam-app-489c6c1370a9.herokuapp.com";
 
+  useEffect(() => {
+    loadCaptchaEnginge(6); // Загружаем капчу с 6 символами
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateCaptcha(captchaValue)) {
+      setErrorMessage("Invalid captcha. Please try again.");
+      return;
+    }
+
     try {
       const response = await axios.post(`${apiUrl}/api/login`, {
         username,
@@ -22,17 +38,17 @@ const Login = ({ setAuth }) => {
         isAuthenticated: true,
         user: { username },
       });
-      setErrorMessage(""); // Очистка ошибки при успешном логине
+      setErrorMessage("");
       navigate("/");
     } catch (error) {
-      // Если логин неудачен, устанавливаем сообщение об ошибке
       setErrorMessage("Invalid username or password. Please try again.");
     }
   };
 
   return (
-    <div>
-      <h2>Login</h2>
+    <div className="login">
+      <h1>APCR</h1>
+      <h2>Войдите в систему</h2>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -46,9 +62,17 @@ const Login = ({ setAuth }) => {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
         />
-        <button type="submit">Login</button>
+        <div>
+          <LoadCanvasTemplate />
+          <input
+            type="text"
+            value={captchaValue}
+            onChange={(e) => setCaptchaValue(e.target.value)}
+            placeholder="Enter captcha"
+          />
+        </div>
+        <button type="submit">Войти</button>
       </form>
-      {/* Вывод сообщения об ошибке */}
       {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
     </div>
   );
