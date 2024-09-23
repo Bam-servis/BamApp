@@ -77,10 +77,10 @@ const App = () => {
               )
             }
           />
-          <Route
+          {/* <Route
             path="/register"
             element={auth.isAuthenticated ? <Navigate to="/" /> : <Register />}
-          />
+          /> */}
           <Route
             path="/"
             element={auth.isAuthenticated ? <Home /> : <Navigate to="/login" />}
