@@ -6,7 +6,7 @@ import {
   LoadCanvasTemplateNoReload,
   validateCaptcha,
   loadCaptchaEnginge,
-} from "react-simple-captcha"; // Исправляем название
+} from "react-simple-captcha";
 
 const Login = ({ setAuth }) => {
   const [username, setUsername] = useState("");
@@ -17,7 +17,7 @@ const Login = ({ setAuth }) => {
   const apiUrl = "https://bam-app-489c6c1370a9.herokuapp.com";
 
   useEffect(() => {
-    loadCaptchaEnginge(6); // Загружаем капчу с 6 символами
+    loadCaptchaEnginge(6);
   }, []);
 
   const handleSubmit = async (e) => {
@@ -47,20 +47,20 @@ const Login = ({ setAuth }) => {
 
   return (
     <div className="login">
-      <h1>APCR</h1>
+      <h1>Bam-Servis.by - Учет и обработка заявок клиентов</h1>
       <h2>Войдите в систему</h2>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          placeholder="Username"
+          placeholder="Логин"
         />
         <input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="Password"
+          placeholder="Пароль"
         />
         <div className="canvas">
           <LoadCanvasTemplate />
@@ -68,7 +68,7 @@ const Login = ({ setAuth }) => {
             type="text"
             value={captchaValue}
             onChange={(e) => setCaptchaValue(e.target.value)}
-            placeholder="Enter captcha"
+            placeholder="Введите Капчу"
           />
         </div>
         <button type="submit">Войти</button>

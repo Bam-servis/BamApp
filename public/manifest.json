@@ -1,6 +1,6 @@
 {
-  "short_name": "APCR",
-  "name": "Accounting and Processing of Client Requests",
+  "short_name": "Bam-Заявки",
+  "name": "Bam-Servis.by - Учет и обработка заявок клиентов",
   "icons": [
     {
       "src": "favicon.ico",
