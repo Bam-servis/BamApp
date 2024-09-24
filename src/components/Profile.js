@@ -85,10 +85,10 @@ const Profile = () => {
 
   return (
     <div>
-      <Link to="/">
-        <button>Главная</button>
-      </Link>
       <h1>Профиль: {user}</h1>
+      <Link className="link-home" to="/">
+        <button>Вернутся на главную</button>
+      </Link>
       <div className="flex">
         <div className="statistic">
           {" "}
@@ -101,7 +101,7 @@ const Profile = () => {
             <span className="total">{totalPrice}</span>
           </p>
           <p className="time-profile">
-            Общее значение оплаты: <spam className="total">{totalCalcPay}</spam>
+            Общее значение оплаты: <span className="total">{totalCalcPay}</span>
           </p>
           <p className="time-profile">
             Количество заявок за текущий месяц:{" "}
@@ -154,7 +154,7 @@ const Profile = () => {
           ))}
         </ul>
       ) : (
-        <p>
+        <p className="no-order">
           Нет заказов для выбранного водителя или записи не содержат `Суб
           Аренду`.
         </p>

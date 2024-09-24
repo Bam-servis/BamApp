@@ -130,7 +130,7 @@ const Home = () => {
     // Проверка для поля с часами
     if (fieldName === "hours" || fieldName === "routeNumber") {
       if (username !== itemUser) {
-        alert("У вас нет прав для редактирования часов.");
+        alert(`У вас нет прав!. Узнать - ${"manager-tanya"}`);
         return;
       }
     }
@@ -188,19 +188,19 @@ const Home = () => {
   const handleCheckboxChange = async (e, itemId) => {
     const { checked } = e.target;
     const username = localStorage.getItem("username");
-    if (username !== "manager-tanya") {
-      alert("У вас нет прав для изменения состояния чекбокса.");
-      return;
-    }
     if (!checked) {
-      const isConfirmed = window.confirm(
-        "Вы уверены, что хотите снять чекбокс?"
-      );
+      const isConfirmed = window.confirm();
       if (!isConfirmed) {
         return;
       }
-    }
 
+      if (username !== "manager-tanya") {
+        alert(
+          `У вас нет прав на снятие флажка! Обратитесь к ${"manager-tanya"}`
+        );
+        return;
+      }
+    }
     const updatedData = data.map((item) =>
       item._id === itemId ? { ...item, isTrue: checked } : item
     );
@@ -217,9 +217,7 @@ const Home = () => {
   };
 
   const handleDeleteWithConfirmation = async (id) => {
-    const isConfirmed = window.confirm(
-      "Are you sure you want to delete this item?"
-    );
+    const isConfirmed = window.confirm("Точно удалить?");
     if (isConfirmed) {
       try {
         await axios.delete(`${apiUrl}/api/data/${id}`);
@@ -234,8 +232,8 @@ const Home = () => {
     const { value } = e.target;
     const username = localStorage.getItem("username");
 
-    if (username !== "2323") {
-      alert("У вас нет прав для изменения состояния чекбокса.");
+    if (username !== "manager-olya") {
+      alert(`У вас нет прав!. Узнать - ${"manager-olya"}`);
       return;
     }
     const updatedData = data.map((item) =>

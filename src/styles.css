@@ -112,13 +112,20 @@ h2 {
   font-size: 25px;
   background: gold;
 }
+.no-order {
+  font-size: 20px;
+  color: red;
+  font-weight: bold;
+}
 .bam-servis {
   margin: 0 auto;
   width: 100%;
   text-shadow: -4px 0px 0px black;
+  background: radial-gradient(gold, transparent);
   color: #fff;
   text-decoration: underline;
   font-size: 35px;
+  padding: 8px 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -174,9 +181,21 @@ h2 {
   text-align: center;
   padding: 15px;
 }
+.link-home {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+.link-home button {
+  padding: 10px;
+  font-weight: bold;
+  font-size: 15px;
+}
 h1 {
   width: 300px;
   color: #fff;
+  text-align: center;
   display: flex;
   border-radius: 50px;
   background: #916767b0;
