@@ -85,7 +85,7 @@ const Profile = () => {
 
   return (
     <div>
-      <h1>Профиль: {user}</h1>
+      <h1 className="login-profile"> {user}</h1>
       <Link className="link-home" to="/">
         <button>Вернутся на главную</button>
       </Link>
@@ -155,7 +155,7 @@ const Profile = () => {
         </ul>
       ) : (
         <p className="no-order">
-          Нет заказов для выбранного водителя или записи не содержат `Суб
+          Нет заказов для выбранного Заказчика или записи не содержат `Суб
           Аренду`.
         </p>
       )}

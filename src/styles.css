@@ -265,6 +265,12 @@ textarea {
   text-align: center;
   background: aliceblue;
 }
+.login h1 {
+  padding: 5px;
+}
+.login-profile {
+  padding: 3px;
+}
 .login h2 {
   color: #fff;
   font-size: 25px;
@@ -358,6 +364,7 @@ th {
   font-size: 20px;
   font-weight: bold;
   color: #fff;
+  text-transform: capitalize;
   border: 1px solid red;
   padding: 5px;
 }
