@@ -369,7 +369,36 @@ th {
   padding: 5px;
 }
 .month {
-  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sybarenda {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+}
+.baza {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.entrys {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex-direction: column;
+}
+.driv {
+  display: flex;
+  text-align: center;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 .panel {
   font-size: 20px;
@@ -433,6 +462,7 @@ th {
   background-repeat: no-repeat;
   border-radius: 80px;
 }
+
 @media (max-width: 800px) {
   .login h1 {
     color: #fff;
