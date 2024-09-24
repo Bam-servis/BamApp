@@ -84,7 +84,6 @@ const Home = () => {
       const newEntries = hardcodedData.map((item) => ({
         ...item,
         date: selectedDate,
-        createdBy: "Static",
       }));
 
       await Promise.all(
@@ -92,7 +91,19 @@ const Home = () => {
       );
 
       const response = await axios.get(`${apiUrl}/api/data`);
-      setData(response.data);
+
+      // Сортировка данных по порядку добавления на основе `hardcodedData`
+      const orderedData = response.data.sort((a, b) => {
+        const indexA = hardcodedData.findIndex(
+          (item) => item.driver === a.driver
+        );
+        const indexB = hardcodedData.findIndex(
+          (item) => item.driver === b.driver
+        );
+        return indexA - indexB; // Сортировка по порядку из `hardcodedData`
+      });
+
+      setData(orderedData);
     } catch (error) {
       console.error("Error adding entries:", error);
     }
@@ -301,18 +312,31 @@ const Home = () => {
     setCurrentMonth(newMonth);
   };
 
-  const sortedData = data.sort((a, b) => {
-    // Если одна из строк выделена, она должна быть внизу
-    if (a.colorClass === "highlight" && b.colorClass !== "highlight") return 1;
-    if (a.colorClass !== "highlight" && b.colorClass === "highlight") return -1;
+  const sortedData = data
+    .reduce((acc, item) => {
+      const index = acc.findIndex((accItem) => accItem.driver === item.driver);
 
-    // Сортировка по дате
-    const dateComparison = new Date(a.date) - new Date(b.date);
-    if (dateComparison !== 0) return dateComparison;
+      if (index === -1) {
+        acc.push(item);
+      } else {
+        acc.splice(index + 1, 0, item); // Вставляем после первого вхождения
+      }
 
-    // Сортировка по водителю
-    return a.driver.localeCompare(b.driver);
-  });
+      return acc;
+    }, [])
+    .sort((a, b) => {
+      // Если обе строки выделены, оставляем их в том же порядке
+      if (a.colorClass === "highlight" && b.colorClass === "highlight")
+        return 0;
+
+      // Если одна из строк выделена, она должна быть внизу
+      if (a.colorClass === "highlight" && b.colorClass !== "highlight")
+        return 1;
+      if (a.colorClass !== "highlight" && b.colorClass === "highlight")
+        return -1;
+
+      return 0; // Оставляем порядок добавления
+    });
 
   // Фильтрация данных по текущему месяцу и сортировка по дням внутри месяца
   const filteredData = sortedData.filter((item) => {

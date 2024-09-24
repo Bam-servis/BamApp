@@ -1,8 +1,8 @@
 body {
-  background: radial-gradient(transparent, black);
-
-  color: #fff;
+  background: url(../54433.jpg);
+  background-repeat: no-repeat;
   padding: 0 25px;
+  background-size: 100%;
 }
 
 .highlight {
@@ -30,7 +30,7 @@ h2 {
 }
 .developer {
   right: 20px;
-  color: black;
+  color: #fff;
   font-weight: bold;
 }
 .total {
@@ -45,7 +45,8 @@ h2 {
 }
 .statistic {
   width: 300px;
-  color: black;
+  text-shadow: -1px 2px 2px rgb(0 0 0);
+  color: #fff;
 }
 .wrapper {
   display: flex;
@@ -91,7 +92,8 @@ h2 {
 .bam-servis {
   margin: 0 auto;
   width: 100%;
-  color: black;
+  text-shadow: -4px 0px 0px black;
+  color: #fff;
   text-decoration: underline;
   font-size: 35px;
   display: flex;
@@ -104,12 +106,17 @@ h2 {
   width: 100px;
   background-color: green;
   display: block;
+  margin-right: 5px;
 }
 
 .entry-block {
   text-align: center;
   display: flex;
+  text-shadow: -1px 2px 2px rgb(0 0 0);
+  color: #fff;
   align-items: center;
+  font-weight: bold;
+  font-size: 20px;
 }
 
 .red-span {
@@ -117,17 +124,21 @@ h2 {
   width: 100px;
   background-color: red;
   display: block;
+  margin-right: 5px;
 }
 .gold-span {
   height: 30px;
   width: 100px;
   background-color: gold;
   display: block;
+  margin-right: 5px;
 }
 .yellow-span {
   height: 30px;
   width: 100px;
   background-color: yellow;
+  margin-right: 5px;
+
   display: block;
 }
 .login h1 {
@@ -197,7 +208,7 @@ textarea {
   display: flex;
   flex-direction: column;
   align-items: center;
-  transform: translateY(30%);
+  transform: translateY(5%);
 }
 .login h2 {
   color: black;
@@ -207,7 +218,7 @@ textarea {
   font-weight: bold;
 }
 .login input {
-  width: 300px !important;
+  width: 225px !important;
 }
 .login button {
   width: 150px !important;
@@ -290,7 +301,7 @@ th {
 .username {
   font-size: 20px;
   font-weight: bold;
-  color: black;
+  color: #fff;
   border: 1px solid red;
   padding: 5px;
 }
@@ -300,6 +311,41 @@ th {
 .panel {
   font-size: 20px;
   font-weight: bold;
+}
+/* Спиннер-контейнер для центрирования */
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Занимает всю высоту экрана */
+}
+
+/* Анимация спиннера */
+.spinner {
+  border: 8px solid rgba(0, 0, 0, 0.1); /* Легкий фон */
+  border-left-color: #4caf50; /* Цвет вращающейся линии */
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  animation: spin 1s linear infinite; /* Бесконечное вращение */
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.logo-login {
+  background-image: url(../123.png);
+  width: 200px;
+  height: 189px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  border-radius: 80px;
 }
 @media (max-width: 800px) {
   .login h1 {
@@ -352,6 +398,8 @@ th {
   .statistic {
     display: none;
     flex-direction: column;
+    text-shadow: -4px 0px 0px black;
+    color: #fff;
     align-items: center;
   }
   .entry-block {
@@ -359,6 +407,9 @@ th {
     margin-bottom: 15px;
   }
   body {
-    padding: 0 25px 0 0;
+    background-image: url(../mobile.jpg);
+    background-position: center;
+    padding: 0;
+    height: 100vh;
   }
 }

@@ -24,14 +24,6 @@ mongoose
 
 // Middleware для статической папки
 app.use(express.static(path.join(__dirname, "../build")));
-app.use((req, res, next) => {
-  res.setHeader(
-    "Content-Security-Policy",
-    "frame-ancestors 'self' https://www.google.com https://www.recaptcha.net;"
-  );
-  next();
-});
-// Обработка всех маршрутов
 
 app.use(cors());
 app.use(express.json()); // Используйте встроенный JSON парсер
@@ -59,11 +51,10 @@ app.get("/api/data/count", async (req, res) => {
     res.status(500).json({ message: "Error fetching count", error });
   }
 });
-// Маршруты для данных
+
 app.get("/api/data", async (req, res) => {
   try {
-    const data = await Data.find();
-    console.log(data); // Логируем данные для проверки
+    const data = await Data.find().sort({ order: 1 });
     res.json(data);
   } catch (error) {
     res.status(500).json({ error: "Error fetching data" });
