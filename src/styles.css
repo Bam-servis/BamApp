@@ -266,10 +266,11 @@ textarea {
   background: aliceblue;
 }
 .login h2 {
-  color: black;
+  color: #fff;
   font-size: 25px;
   text-transform: none;
-
+  width: 100%;
+  margin: 10px 0;
   font-weight: bold;
 }
 .login input {
@@ -420,7 +421,7 @@ th {
 .logo-login {
   background-image: url(../123.png);
   width: 200px;
-  height: 189px;
+  height: 162px;
   background-size: contain;
   background-repeat: no-repeat;
   border-radius: 80px;
