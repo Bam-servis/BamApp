@@ -126,7 +126,7 @@ const Home = () => {
     const { value, type, checked } = e.target;
     const updatedValue = type === "checkbox" ? checked : value;
     const username = localStorage.getItem("username");
-    const itemUser = "2323";
+    const itemUser = "manager-tanya";
     // Проверка для поля с часами
     if (fieldName === "hours" || fieldName === "routeNumber") {
       if (username !== itemUser) {
@@ -188,7 +188,7 @@ const Home = () => {
   const handleCheckboxChange = async (e, itemId) => {
     const { checked } = e.target;
     const username = localStorage.getItem("username");
-    if (username !== "2323") {
+    if (username !== "manager-tanya") {
       alert("У вас нет прав для изменения состояния чекбокса.");
       return;
     }
