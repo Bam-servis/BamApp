@@ -55,15 +55,9 @@ const App = () => {
           <nav className="nav-profile">
             <span className="username">{localStorage.getItem("username")}</span>
             <Link to="/profile">
-              <button>Go to Profile</button>
+              <button>Перейти в профиль</button>
             </Link>
-            <button onClick={handleLogout}>Logout</button>
-            <div className="developer">
-              <a href="https://t.me/web_gpy" target="_blanc">
-                &copy; Web-GPY Software.
-              </a>{" "}
-              2024 Все права защищены.
-            </div>
+            <button onClick={handleLogout}>Выйти</button>
           </nav>
         )}
         <Routes>
@@ -92,6 +86,12 @@ const App = () => {
             }
           />
         </Routes>
+      </div>
+      <div className="developer">
+        <a href="https://t.me/web_gpy" target="_blanc">
+          &copy; Web-GPY Software.
+        </a>{" "}
+        2024 Все права защищены.
       </div>
     </Router>
   );

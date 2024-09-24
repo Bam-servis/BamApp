@@ -86,31 +86,52 @@ const Profile = () => {
   return (
     <div>
       <Link to="/">
-        <button>Go to Home</button>
+        <button>Главная</button>
       </Link>
       <h1>Профиль: {user}</h1>
+      <div className="flex">
+        <div className="statistic">
+          {" "}
+          <p className="time-profile">
+            Общее количество заказов:{" "}
+            <span className="total">{items.length}</span>
+          </p>
+          <p className="time-profile">
+            Общее количество сумм заказов:{" "}
+            <span className="total">{totalPrice}</span>
+          </p>
+          <p className="time-profile">
+            Общее значение оплаты: <spam className="total">{totalCalcPay}</spam>
+          </p>
+          <p className="time-profile">
+            Количество заявок за текущий месяц:{" "}
+            <span className="total">{currentMonthItems.length}</span>
+          </p>
+          <p className="time-profile">
+            Количество заявок за предыдущий месяц:
+            <span className="total"> {previousMonthItems.length}</span>
+          </p>
+        </div>
 
-      <p>Общее количество заказов: {items.length}</p>
-      <p>Общее количество сумм заказов: {totalPrice}</p>
-      <p>Общее значение оплаты: {totalCalcPay}</p>
-      <p>Количество заявок за текущий месяц: {currentMonthItems.length}</p>
-      <p>Количество заявок за предыдущий месяц: {previousMonthItems.length}</p>
-
-      <div className="orderZa">
-        <h2>Выберите Заказчика:</h2>
-        <select onChange={handleDriverChange} value={selectedDriver}>
-          <option value="">Выберите Заказчика</option>
-          {drivers.map((driver, index) => (
-            <option key={index} value={driver}>
-              {driver}
-            </option>
-          ))}
-        </select>
+        <div className="orderZa">
+          <h2>Выберите Заказчика:</h2>
+          <select
+            className="select"
+            onChange={handleDriverChange}
+            value={selectedDriver}
+          >
+            <option value="">Выберите Заказчика</option>
+            {drivers.map((driver, index) => (
+              <option key={index} value={driver}>
+                {driver}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
-
       <h2 className="arenda">Информация об суб Аренде</h2>
       {filteredOrders.length > 0 ? (
-        <ul>
+        <ul className="ula">
           {filteredOrders.map((order) => (
             <li key={order._id} className="order">
               <p>

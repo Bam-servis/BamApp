@@ -434,7 +434,7 @@ const Home = () => {
           </div>
 
           <div className="sybarenda">
-            <span className="title">Добавить суб аренду {}</span>
+            <span className="title">Добавить суб аренду</span>
             <button onClick={() => addNewItemWithClass("highlight")}>
               Добавить
             </button>
@@ -451,7 +451,7 @@ const Home = () => {
             />
           </div>
           <div className="entrys">
-            <span className="title">Добавить пустую строку</span>
+            <span className="title">Добавить Обьект</span>
             <button onClick={addNewItem}>Добавить</button>
           </div>
           <div className="driv">
@@ -505,7 +505,6 @@ const Home = () => {
         {Object.keys(groupedData).map((day) => (
           <div key={day}>
             <h2 className={formattedToday === day ? "is-today" : ""}>
-              {" "}
               {day} {getMonthName(currentMonth)}
             </h2>
             <table>

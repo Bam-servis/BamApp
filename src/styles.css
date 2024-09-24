@@ -1,8 +1,8 @@
 body {
   background: url(../54433.jpg);
   background-repeat: no-repeat;
-  padding: 0 25px;
   background-size: 100%;
+  width: 100%;
 }
 
 .highlight {
@@ -10,13 +10,15 @@ body {
 }
 h2 {
   text-transform: capitalize;
-  color: #fff;
+  width: 170px;
+  padding: 5px 10px;
+  text-align: center;
 }
 .highlight-row {
   background-color: rgba(
-    0,
-    255,
-    0,
+    67,
+    75,
+    67,
     0.3
   ) !important; /* Цвет выделенной строки */
 }
@@ -30,7 +32,7 @@ h2 {
 }
 .developer {
   right: 20px;
-  color: #fff;
+  color: black;
   font-weight: bold;
 }
 .total {
@@ -44,9 +46,18 @@ h2 {
   margin-left: 10px;
 }
 .statistic {
-  width: 300px;
+  width: 500px;
   text-shadow: -1px 2px 2px rgb(0 0 0);
   color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.time-profile {
+  font-size: 17px;
+  display: flex;
+  background: rgb(0 0 0 / 21%);
+  padding: 5px;
 }
 .wrapper {
   display: flex;
@@ -58,6 +69,7 @@ h2 {
   display: flex;
   border-top: 1px solid red;
   align-items: center;
+  background: radial-gradient(gold, transparent);
   justify-content: center;
 }
 .order:first-child {
@@ -67,27 +79,38 @@ h2 {
   display: flex;
   flex-direction: column;
   align-items: center;
+  font-size: 19px;
   color: rgb(59, 20, 20);
   padding: 5px 10px;
   width: 100%;
   max-width: 250px;
   font-weight: bold;
 }
+.select {
+  width: 170px;
+}
 .orderZa {
-  border: 1px solid black;
+  border: 10px solid gold;
   max-width: 300px;
   text-align: center;
+  margin-left: 50px;
+}
+.ula {
+  padding: 0;
 }
 .order span {
   border-top: 2px solid black;
   margin-top: 5px;
-  font-size: 20px;
+  font-size: 24px;
   color: #fff;
 }
 .arenda {
-  display: flex;
-  justify-content: center;
-  color: black;
+  margin: 0 auto;
+  width: 350px;
+  color: #fff;
+  text-transform: none;
+  font-size: 25px;
+  background: gold;
 }
 .bam-servis {
   margin: 0 auto;
@@ -141,6 +164,11 @@ h2 {
 
   display: block;
 }
+.flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .login h1 {
   text-transform: none;
   text-align: center;
@@ -148,9 +176,10 @@ h2 {
 }
 h1 {
   width: 300px;
-  color: black;
+  color: #fff;
   display: flex;
   border-radius: 50px;
+  background: #916767b0;
   text-transform: capitalize;
   align-items: center;
   justify-content: center;
@@ -407,9 +436,8 @@ th {
     margin-bottom: 15px;
   }
   body {
-    background-image: url(../mobile.jpg);
-    background-position: center;
     padding: 0;
+    background-size: cover;
     height: 100vh;
   }
 }
