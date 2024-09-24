@@ -35,7 +35,7 @@ const Login = ({ setAuth }) => {
     setFormLoading(true); // Устанавливаем состояние загрузки для формы
 
     if (!validateCaptcha(captchaValue)) {
-      setErrorMessage("Invalid captcha. Please try again.");
+      setErrorMessage("Все сломалось! Не верная капча!");
       setFormLoading(false); // Устанавливаем загрузку на false при ошибке
       return;
     }
@@ -55,7 +55,9 @@ const Login = ({ setAuth }) => {
       setErrorMessage("");
       navigate("/");
     } catch (error) {
-      setErrorMessage("Invalid username or password. Please try again.");
+      setErrorMessage(
+        "Все сломалось! Не верный логин или пароль. Обнови страницу!"
+      );
     } finally {
       setFormLoading(false); // Сбрасываем состояние загрузки формы
     }
@@ -72,6 +74,11 @@ const Login = ({ setAuth }) => {
         <LoadingSpinner />
       ) : (
         <form onSubmit={handleSubmit}>
+          {errorMessage && (
+            <p className="errro" style={{ color: "red" }}>
+              {errorMessage}
+            </p>
+          )}
           <div className="logo-login"></div>
           <h1>Учет и обработка заявок клиентов</h1>
           <h2>Войдите в систему</h2>
@@ -102,8 +109,6 @@ const Login = ({ setAuth }) => {
           <button type="submit">Войти</button>
         </form>
       )}
-
-      {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
     </div>
   );
 };
