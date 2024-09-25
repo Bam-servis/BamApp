@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const dataSchema = new mongoose.Schema({
-  doneCheck: { type: Boolean, default: false },
+  doneCheck: { type: String, default: "" },
   date: { type: Date, default: Date.now },
   brand: { type: String, default: "" },
   createdBy: { type: String, default: "" },

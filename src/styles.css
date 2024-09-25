@@ -368,6 +368,14 @@ th {
   border: 1px solid red;
   padding: 5px;
 }
+.row-completed {
+  background-color: red; /* Зеленый цвет для завершенных заявок */
+}
+
+.row-in-progress {
+  background-color: #fff3cd; /* Желтый цвет для заявок в процессе */
+}
+
 .month {
   display: flex;
   align-items: center;

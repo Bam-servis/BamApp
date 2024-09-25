@@ -15,7 +15,7 @@ const Home = () => {
   const apiUrl = "https://bam-app-489c6c1370a9.herokuapp.com";
 
   const [newItem, setNewItem] = useState({
-    doneCheck: false,
+    doneCheck: "",
     date: new Date().toISOString().split("T")[0],
     brand: "",
     driver: "",
@@ -161,25 +161,19 @@ const Home = () => {
       console.error("Error adding data with class:", error);
     }
   };
-  const handleRowSelection = async (e, itemId) => {
-    const { checked } = e.target;
+  const handleSelectChange = async (e, itemId) => {
+    const { value } = e.target;
 
-    // Обновляем состояние чекбоксов
-    setSelectedRows((prevSelectedRows) => ({
-      ...prevSelectedRows,
-      [itemId]: checked,
-    }));
-
-    // Обновляем данные в состоянии
+    // Обновляем состояние данных
     const updatedData = data.map((item) =>
-      item._id === itemId ? { ...item, doneCheck: checked } : item
+      item._id === itemId ? { ...item, doneCheck: value } : item
     );
     setData(updatedData);
 
     try {
       await axios.put(`${apiUrl}/api/data/${itemId}`, {
         ...updatedData.find((item) => item._id === itemId),
-        doneCheck: checked,
+        doneCheck: value,
       });
     } catch (error) {
       console.error("Error updating data:", error);
@@ -532,17 +526,22 @@ const Home = () => {
                     key={item._id}
                     ref={isPreviousDay(item.date) ? currentDayRef : null} //prev
                     className={`${item.colorClass} ${
-                      item.doneCheck ? "highlight-row" : ""
+                      item.doneCheck === "completed"
+                        ? "row-completed"
+                        : item.doneCheck === "inProgress"
+                        ? "row-in-progress"
+                        : "row-pending"
                     }`}
                   >
                     <td>
-                      <input
-                        type="checkbox"
-                        checked={item.doneCheck || false}
-                        onChange={(e) =>
-                          handleRowSelection(e, item._id, "doneCheck")
-                        }
-                      />
+                      <select
+                        value={item.doneCheck || "pending"} // Указываем значение по умолчанию
+                        onChange={(e) => handleSelectChange(e, item._id)}
+                      >
+                        <option value="pending">Pending</option>
+                        <option value="inProgress">In Progress</option>
+                        <option value="completed">Completed</option>
+                      </select>
                     </td>
                     <td>
                       <input

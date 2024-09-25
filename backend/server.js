@@ -54,7 +54,7 @@ app.get("/api/data/count", async (req, res) => {
 
 app.get("/api/data", async (req, res) => {
   try {
-    const data = await Data.find().sort({ order: 1 });
+    const data = await Data.find();
     res.json(data);
   } catch (error) {
     res.status(500).json({ error: "Error fetching data" });
