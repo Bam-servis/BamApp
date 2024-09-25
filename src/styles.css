@@ -368,18 +368,24 @@ th {
   border: 1px solid red;
   padding: 5px;
 }
+.select-rem {
+  width: 110px;
+}
 .row-completed {
-  background-color: red; /* Зеленый цвет для завершенных заявок */
+  background-color: #a36c6c !important; /* Зеленый цвет для завершенных заявок */
 }
 
 .row-in-progress {
-  background-color: #fff3cd; /* Желтый цвет для заявок в процессе */
+  background-color: #fff3cd !important; /* Желтый цвет для заявок в процессе */
 }
 
 .month {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.row-#ffeb3b {
+  background-color: #ffeb3b;
 }
 .sybarenda {
   display: flex;

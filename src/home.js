@@ -10,7 +10,6 @@ const Home = () => {
   const [drivers, setDrivers] = useState([]);
   const [users, setUsers] = useState([]);
   const [newDriver, setNewDriver] = useState("");
-  const [selectedRows, setSelectedRows] = useState({});
   const [totalRecords, setTotalRecords] = useState(0);
   const apiUrl = "https://bam-app-489c6c1370a9.herokuapp.com";
 
@@ -502,7 +501,7 @@ const Home = () => {
             <table>
               <thead className="sticky">
                 <tr>
-                  <th>Заявка готова</th>
+                  <th>Статус</th>
                   <th>Дата</th>
                   <th>Марка</th>
                   <th>Гос №</th>
@@ -510,7 +509,7 @@ const Home = () => {
                   <th>Заказчик</th>
                   <th>№ Путевого</th>
                   <th>Часы</th>
-                  <th>Потверждение</th>
+                  <th>Статус</th>
                   <th>Стоимость Заказа</th>
                   <th>Оплата</th>
                   <th>Сумма Оплаты</th>
@@ -535,15 +534,24 @@ const Home = () => {
                   >
                     <td>
                       <select
-                        value={item.doneCheck || "pending"} // Указываем значение по умолчанию
+                        className="select-rem"
+                        value={item.doneCheck || "Выбрать"} // Указываем значение по умолчанию
                         onChange={(e) => handleSelectChange(e, item._id)}
                       >
-                        <option value="pending">Pending</option>
-                        <option value="inProgress">In Progress</option>
-                        <option value="completed">Completed</option>
+                        <option value="pending">Выбрать</option>
+                        <option value="inProgress">ТО/Ремонт</option>
+                        <option value="completed">Свободный</option>
                       </select>
                     </td>
-                    <td>
+                    <td
+                      className={`${item.colorClass} ${
+                        item.doneCheck === "completed"
+                          ? "row-#ffeb3b"
+                          : item.doneCheck === "inProgress"
+                          ? "row-#ffeb3b"
+                          : "row-pending"
+                      }`}
+                    >
                       <input
                         type="date"
                         value={formatDate(item.date) || ""}
