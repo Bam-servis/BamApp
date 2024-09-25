@@ -372,11 +372,11 @@ th {
   width: 110px;
 }
 .row-completed {
-  background-color: #a36c6c !important; /* Зеленый цвет для завершенных заявок */
+  background-color: red !important;
 }
 
 .row-in-progress {
-  background-color: #fff3cd !important; /* Желтый цвет для заявок в процессе */
+  background-color: #a36c6c !important;
 }
 
 .month {
