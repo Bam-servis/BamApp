@@ -11,7 +11,7 @@ const Home = () => {
   const [users, setUsers] = useState([]);
   const [newDriver, setNewDriver] = useState("");
   const [totalRecords, setTotalRecords] = useState(0);
-  const apiUrl = "https://bam-app-489c6c1370a9.herokuapp.com";
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   const [newItem, setNewItem] = useState({
     doneCheck: "",
