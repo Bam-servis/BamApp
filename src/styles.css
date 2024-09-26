@@ -378,7 +378,9 @@ th {
 .row-in-progress {
   background-color: #a36c6c !important;
 }
-
+.input-ovner {
+  font-size: 16px;
+}
 .month {
   display: flex;
   align-items: center;
