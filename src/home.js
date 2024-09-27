@@ -40,7 +40,7 @@ const Home = () => {
         const response = await axios.get(`${apiUrl}/api/data`);
         setData(response.data);
         const totalCount = response.data.length;
-        console.log("Total records count fetched:", totalCount); // Логируем количество
+        console.log("Total records count fetched:", totalCount);
         setTotalRecords(totalCount);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -73,7 +73,7 @@ const Home = () => {
     if (currentDayRef.current) {
       currentDayRef.current.scrollIntoView({
         behavior: "smooth",
-        block: "start", // Или "nearest"
+        block: "start",
       });
     }
   }, [data]);
@@ -90,8 +90,6 @@ const Home = () => {
       );
 
       const response = await axios.get(`${apiUrl}/api/data`);
-
-      // Сортировка данных по порядку добавления на основе `hardcodedData`
       const orderedData = response.data.sort((a, b) => {
         const indexA = hardcodedData.findIndex(
           (item) => item.driver === a.driver
@@ -99,7 +97,7 @@ const Home = () => {
         const indexB = hardcodedData.findIndex(
           (item) => item.driver === b.driver
         );
-        return indexA - indexB; // Сортировка по порядку из `hardcodedData`
+        return indexA - indexB;
       });
 
       setData(orderedData);
@@ -126,7 +124,6 @@ const Home = () => {
     const updatedValue = type === "checkbox" ? checked : value;
     const username = localStorage.getItem("username");
     const itemUser = "manager-tanya";
-    // Проверка для поля с часами
     if (fieldName === "hours" || fieldName === "routeNumber") {
       if (username !== itemUser) {
         alert(`У вас нет прав!. Узнать - ${"manager-tanya"}`);
@@ -163,7 +160,6 @@ const Home = () => {
   const handleSelectChange = async (e, itemId) => {
     const { value } = e.target;
 
-    // Обновляем состояние данных
     const updatedData = data.map((item) =>
       item._id === itemId ? { ...item, doneCheck: value } : item
     );
@@ -310,26 +306,23 @@ const Home = () => {
       if (index === -1) {
         acc.push(item);
       } else {
-        acc.splice(index + 1, 0, item); // Вставляем после первого вхождения
+        acc.splice(index + 1, 0, item);
       }
 
       return acc;
     }, [])
     .sort((a, b) => {
-      // Если обе строки выделены, оставляем их в том же порядке
       if (a.colorClass === "highlight" && b.colorClass === "highlight")
         return 0;
 
-      // Если одна из строк выделена, она должна быть внизу
       if (a.colorClass === "highlight" && b.colorClass !== "highlight")
         return 1;
       if (a.colorClass !== "highlight" && b.colorClass === "highlight")
         return -1;
 
-      return 0; // Оставляем порядок добавления
+      return 0;
     });
 
-  // Фильтрация данных по текущему месяцу и сортировка по дням внутри месяца
   const filteredData = sortedData.filter((item) => {
     const itemDate = new Date(item.date);
     return (
@@ -351,7 +344,7 @@ const Home = () => {
       case "Отсрочка":
         return "yellow";
       default:
-        return "transporent"; // цвет по умолчанию, если ничего не выбрано
+        return "transporent";
     }
   };
 
@@ -366,11 +359,10 @@ const Home = () => {
       case "Отсрочка":
         return "black";
       default:
-        return "transporent"; // цвет по умолчанию, если ничего не выбрано
+        return "transporent";
     }
   };
   const isPreviousDay = (date) => {
-    // Проверяем, что date действительно является объектом Date
     if (!(date instanceof Date)) {
       date = new Date(date);
     }
@@ -380,7 +372,6 @@ const Home = () => {
     const previousDay = new Date(today);
     previousDay.setDate(previousDay.getDate() - 1);
 
-    // Сравниваем только год, месяц и день
     return (
       previousDay.getDate() === date.getDate() &&
       previousDay.getMonth() === date.getMonth() &&
@@ -388,7 +379,7 @@ const Home = () => {
     );
   };
   const today = new Date();
-  const formattedToday = format(today, "dd"); // Форматируем только число
+  const formattedToday = format(today, "dd");
   const countEntriesForMonth = (data, date) => {
     return data.filter((item) => {
       const itemDate = new Date(item.date);
@@ -523,7 +514,7 @@ const Home = () => {
                 {groupedData[day].map((item) => (
                   <tr
                     key={item._id}
-                    ref={isPreviousDay(item.date) ? currentDayRef : null} //prev
+                    ref={isPreviousDay(item.date) ? currentDayRef : null}
                     className={`${item.colorClass} ${
                       item.doneCheck === "completed"
                         ? "row-completed"
@@ -535,7 +526,7 @@ const Home = () => {
                     <td>
                       <select
                         className="select-rem"
-                        value={item.doneCheck || "Выбрать"} // Указываем значение по умолчанию
+                        value={item.doneCheck || "Выбрать"}
                         onChange={(e) => handleSelectChange(e, item._id)}
                       >
                         <option value="pending">Выбрать</option>
@@ -663,7 +654,7 @@ const Home = () => {
                           color: getBackColor(item.colorData),
                           backgroundColor: getColor(item.colorData),
                           fontWeight: "bold",
-                        }} // Используйте item.colorData здесь
+                        }}
                       >
                         <option value="">Выбрать</option>
                         <option

@@ -1,4 +1,3 @@
-// hardcodedData.js
 export const hardcodedData = [
   {
     brand: "16/21 Машека МАЗ",

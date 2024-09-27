@@ -13,35 +13,34 @@ const Login = ({ setAuth }) => {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [captchaValue, setCaptchaValue] = useState("");
-  const [formLoading, setFormLoading] = useState(false); // Состояние загрузки при отправке формы
-  const [pageLoading, setPageLoading] = useState(true); // Состояние загрузки страницы
+  const [formLoading, setFormLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const navigate = useNavigate();
 
-  const apiUrl = "https://bam-app-489c6c1370a9.herokuapp.com";
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
-    // Имитируем задержку для загрузки страницы (например, 2 секунды)
     setTimeout(() => {
-      setPageLoading(false); // После завершения загрузки убираем спиннер
+      setPageLoading(false);
     }, 2000);
   }, []);
   useEffect(() => {
     if (!pageLoading) {
-      loadCaptchaEnginge(4); // Загружаем капчу только когда спиннер исчезнет
+      loadCaptchaEnginge(4);
     }
   }, [pageLoading]);
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setFormLoading(true); // Устанавливаем состояние загрузки для формы
+    setFormLoading(true);
 
     if (!validateCaptcha(captchaValue)) {
       setErrorMessage("Все сломалось! Не верная капча!");
-      setFormLoading(false); // Устанавливаем загрузку на false при ошибке
+      setFormLoading(false);
       return;
     }
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 3000)); // Имитируем задержку
+      await new Promise((resolve) => setTimeout(resolve, 3000));
       const response = await axios.post(`${apiUrl}/api/login`, {
         username,
         password,
@@ -59,11 +58,9 @@ const Login = ({ setAuth }) => {
         "Все сломалось! Не верный логин или пароль. Обнови страницу!"
       );
     } finally {
-      setFormLoading(false); // Сбрасываем состояние загрузки формы
+      setFormLoading(false);
     }
   };
-
-  // Если страница еще загружается, отображаем спиннер
   if (pageLoading) {
     return <LoadingSpinner />;
   }

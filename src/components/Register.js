@@ -5,9 +5,9 @@ import { useNavigate, Link } from "react-router-dom";
 const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [passwordError, setPasswordError] = useState(""); // Состояние для ошибки
+  const [passwordError, setPasswordError] = useState("");
   const navigate = useNavigate();
-  const apiUrl = "https://bam-app-489c6c1370a9.herokuapp.com";
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   const validatePassword = (password) => {
     const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$/;
@@ -17,7 +17,6 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Валидация пароля
     if (!validatePassword(password)) {
       setPasswordError(
         "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character."
@@ -51,7 +50,7 @@ const Register = () => {
           value={password}
           onChange={(e) => {
             setPassword(e.target.value);
-            setPasswordError(""); // Очищаем ошибку при изменении пароля
+            setPasswordError("");
           }}
           placeholder="Password"
         />

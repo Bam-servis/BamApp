@@ -11,9 +11,8 @@ const Profile = () => {
   const [user, setUser] = useState(null);
   const [allItems, setAllItems] = useState([]);
 
-  const apiUrl = "https://bam-app-489c6c1370a9.herokuapp.com";
+  const apiUrl = process.env.REACT_APP_API_URL;
 
-  // Получение всех данных с сервера
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -23,7 +22,6 @@ const Profile = () => {
         const response = await axios.get(`${apiUrl}/api/data`);
         setAllItems(response.data);
 
-        // Фильтруем данные по текущему пользователю
         const userItems = response.data.filter(
           (item) => item.user === username
         );
@@ -43,11 +41,9 @@ const Profile = () => {
     fetchData();
   }, []);
 
-  // Вычисляем текущий и предыдущий месяц
   const currentMonth = dayjs().month();
   const previousMonth = dayjs().subtract(1, "month").month();
 
-  // Фильтруем заявки за текущий и предыдущий месяцы для текущего пользователя
   const currentMonthItems = items.filter(
     (item) => dayjs(item.createdAt).month() === currentMonth
   );
@@ -55,7 +51,6 @@ const Profile = () => {
     (item) => dayjs(item.createdAt).month() === previousMonth
   );
 
-  // Вычисляем сумму всех значений price и calcPay
   const totalPrice = items.reduce((total, item) => {
     const price = parseFloat(item.price) || 0;
     return total + price;
@@ -66,12 +61,11 @@ const Profile = () => {
     return total + calcPay;
   }, 0);
 
-  // Фильтрация заявок по выбранному водителю
   useEffect(() => {
     if (selectedDriver) {
       const ordersForSelectedDriver = allItems.filter(
         (item) =>
-          item.driver === selectedDriver && item.colorClass === "highlight" // Убедитесь, что проверка colorClass правильная
+          item.driver === selectedDriver && item.colorClass === "highlight"
       );
       setFilteredOrders(ordersForSelectedDriver);
     } else {
