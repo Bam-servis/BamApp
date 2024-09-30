@@ -371,6 +371,9 @@ th {
 .select-rem {
   width: 110px;
 }
+.row-inCompleted {
+  background-color: gray !important;
+}
 .row-completed {
   background-color: red !important;
 }

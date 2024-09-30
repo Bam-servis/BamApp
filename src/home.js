@@ -516,7 +516,9 @@ const Home = () => {
                     key={item._id}
                     ref={isPreviousDay(item.date) ? currentDayRef : null}
                     className={`${item.colorClass} ${
-                      item.doneCheck === "completed"
+                      item.doneCheck === "inCompleted"
+                        ? "row-inCompleted"
+                        : item.doneCheck === "completed"
                         ? "row-completed"
                         : item.doneCheck === "inProgress"
                         ? "row-in-progress"
@@ -531,6 +533,7 @@ const Home = () => {
                       >
                         <option value="pending">Выбрать</option>
                         <option value="inProgress">ТО/Ремонт</option>
+                        <option value="inCompleted">В Ожидании</option>
                         <option value="completed">Свободный</option>
                       </select>
                     </td>
