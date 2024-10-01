@@ -224,7 +224,7 @@ button {
   font-size: 14px;
 }
 .btn-del {
-  margin: 2px !important;
+  margin: 3px !important;
   padding: 0 4px !important;
 }
 button:hover {
@@ -318,7 +318,7 @@ input[type="checkbox"] {
 
 /* Стили для таблицы */
 table {
-  width: 85%;
+  width: 90%;
   color: black;
   background-color: #fff;
   border-collapse: collapse;
@@ -514,10 +514,12 @@ th {
     flex-direction: column;
     align-items: center;
     position: absolute;
-    color: #fff;
-    bottom: 0;
+    color: #000;
 
     left: 50px;
+  }
+  .table-flex {
+    display: block;
   }
   .bam-servis {
     text-align: center;
