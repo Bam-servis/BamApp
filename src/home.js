@@ -30,6 +30,7 @@ const Home = () => {
     comment: "",
     user: "",
     colorClass: "",
+    orderIndex: Number,
   });
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split("T")[0]
@@ -86,9 +87,10 @@ const Home = () => {
 
   const addEntriesForSelectedDate = async () => {
     try {
-      const newEntries = hardcodedData.map((item) => ({
+      const newEntries = hardcodedData.map((item, index) => ({
         ...item,
         date: selectedDate,
+        orderIndex: index, // Добавляем поле для сохранения порядка
       }));
 
       await Promise.all(
@@ -96,15 +98,11 @@ const Home = () => {
       );
 
       const response = await axios.get(`${apiUrl}/api/data`);
-      const orderedData = response.data.sort((a, b) => {
-        const indexA = hardcodedData.findIndex(
-          (item) => item.driver === a.driver
-        );
-        const indexB = hardcodedData.findIndex(
-          (item) => item.driver === b.driver
-        );
-        return indexA - indexB;
-      });
+
+      // Сортируем данные по полю orderIndex
+      const orderedData = response.data.sort(
+        (a, b) => a.orderIndex - b.orderIndex
+      );
 
       setData(orderedData);
     } catch (error) {

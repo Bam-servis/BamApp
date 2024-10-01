@@ -30,7 +30,7 @@ export const hardcodedData = [
     price: "",
   },
   {
-    brand: "25/28 Клинцы  МАЗ",
+    brand: "25/28 Клинцы МАЗ",
     driver: "Назаров Е.Н.",
     customer: "",
     routeNumber: "",
@@ -41,7 +41,7 @@ export const hardcodedData = [
   },
   {
     brand: "25/28 Клинцы МАЗ",
-    driver: "Кирик  М.Н.",
+    driver: "Кирик М.Н.",
     customer: "",
     routeNumber: "",
     hours: "",
@@ -61,7 +61,7 @@ export const hardcodedData = [
   },
   {
     brand: "25/28 Клинцы МАЗ",
-    driver: "Сенюкович С.В",
+    driver: "Сенюкович С.В.",
     customer: "",
     routeNumber: "",
     hours: "",
@@ -120,8 +120,8 @@ export const hardcodedData = [
     price: "",
   },
   {
-    brand: "25/31 Клинцы  МАЗ",
-    driver: "Михайловский  А.А.",
+    brand: "25/31 Клинцы МАЗ",
+    driver: "Михайловский А.А.",
     customer: "",
     routeNumber: "",
     hours: "",
@@ -140,7 +140,7 @@ export const hardcodedData = [
     price: "",
   },
   {
-    brand: "25/31 Клинцы  МАЗ",
+    brand: "25/31 Клинцы МАЗ",
     driver: "Демидович К.В.",
     customer: "",
     routeNumber: "",
@@ -156,7 +156,7 @@ export const hardcodedData = [
     routeNumber: "",
     hours: "",
     isTrue: false,
-    vehicleNumber: "АО 2438-7",
+    vehicleNumber: "",
     price: "",
   },
   {
@@ -200,7 +200,7 @@ export const hardcodedData = [
     price: "",
   },
   {
-    brand: "55/43+ 16  ZOOMLION",
+    brand: "55/43+ 16 ZOOMLION",
     driver: "Жерко А.М.",
     customer: "",
     routeNumber: "",
@@ -210,7 +210,7 @@ export const hardcodedData = [
     price: "",
   },
   {
-    brand: "55/43+ 16  ZOOMLION",
+    brand: "55/43+ 16 ZOOMLION",
     driver: "Зенько В.В.",
     customer: "",
     routeNumber: "",

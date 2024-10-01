@@ -18,6 +18,7 @@ const dataSchema = new mongoose.Schema({
   comment: { type: String, default: "" },
   calcPay: { type: String, default: "" },
   updatedBy: { type: String, default: "" }, // Новое поле для отслеживания редактирования
+  orderIndex: { type: Number, default: "" },
 });
 
 const Data = mongoose.model("Data", dataSchema);
