@@ -12,7 +12,9 @@ const Home = () => {
   const [newDriver, setNewDriver] = useState("");
   const [totalRecords, setTotalRecords] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
-  const [highlightId, setHighlightId] = useState(null); // ID строки для подсветки
+  const [isVisibleBlock, setIsVisibleBlock] = useState(false);
+
+  const [highlightId, setHighlightId] = useState(null);
 
   const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -40,6 +42,9 @@ const Home = () => {
 
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
+  };
+  const toggleVisibilityBlock = () => {
+    setIsVisibleBlock(!isVisibleBlock);
   };
   useEffect(() => {
     const fetchData = async () => {
@@ -415,6 +420,67 @@ const Home = () => {
       <button onClick={toggleVisibility}>
         {isVisible ? "Скрыть" : "Показать"}
       </button>
+      <button onClick={toggleVisibilityBlock}>
+        {isVisibleBlock ? "Скрыть" : "Характеристики"}
+      </button>
+      {isVisibleBlock && (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: "20px",
+            fontSize: "25px",
+            background: "radial-gradient(black, transparent",
+          }}
+        >
+          <div style={{ border: "2px solid black", padding: "2px 10px" }}>
+            <a
+              style={{ color: "#fff", fontWeight: "bold" }}
+              href="https://bam-servis.by/200t.pdf"
+              target="_blank"
+            >
+              Liebherr 200 Тонн
+            </a>
+          </div>
+          <div style={{ border: "2px solid black", padding: "2px 10px" }}>
+            <a
+              style={{ color: "#fff", fontWeight: "bold" }}
+              href="https://bam-servis.by/liebherrltm1160-5.1.pdf"
+              target="_blank"
+            >
+              Liebherr 160 Тонн
+            </a>
+          </div>
+          <div style={{ border: "2px solid black", padding: "2px 10px" }}>
+            <a
+              style={{ color: "#fff", fontWeight: "bold" }}
+              href="https://bam-servis.by/zomlion-30t.pdf"
+              target="_blank"
+            >
+              ZOOMLION-30 Тонн
+            </a>
+          </div>
+          <div style={{ border: "2px solid black", padding: "2px 10px" }}>
+            <a
+              style={{ color: "#fff", fontWeight: "bold" }}
+              href="https://bam-servis.by/zoomli-80t.pdf"
+              target="_blank"
+            >
+              ZOOMLION-80 Тонн
+            </a>
+          </div>
+          <div style={{ border: "2px solid black", padding: "2px 10px" }}>
+            <a
+              style={{ color: "#fff", fontWeight: "bold" }}
+              href="https://bam-servis.by/zoomlion_60t.pdf"
+              target="_blank"
+            >
+              ZOOMLION-60 Тонн
+            </a>
+          </div>
+        </div>
+      )}
       {isVisible && (
         <div className="hide">
           <div className="bam-servis">"ООО Бам-Сервис гарант"</div>
