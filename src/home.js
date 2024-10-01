@@ -87,23 +87,26 @@ const Home = () => {
 
   const addEntriesForSelectedDate = async () => {
     try {
-      const newEntries = hardcodedData.map((item, index) => ({
+      // Создание новых записей с хардкодными данными
+      const newEntries = hardcodedData.map((item) => ({
         ...item,
-        date: selectedDate,
-        orderIndex: index, // Добавляем поле для сохранения порядка
+        date: selectedDate, // Добавляем дату
       }));
 
+      // Отправляем данные на сервер
       await Promise.all(
         newEntries.map((entry) => axios.post(`${apiUrl}/api/data`, entry))
       );
 
+      // Получаем данные обратно с сервера
       const response = await axios.get(`${apiUrl}/api/data`);
 
-      // Сортируем данные по полю orderIndex
+      // Сортируем данные по orderIndex, чтобы они отображались так же, как в файле хардкода
       const orderedData = response.data.sort(
         (a, b) => a.orderIndex - b.orderIndex
       );
 
+      // Обновляем состояние данными с правильной сортировкой
       setData(orderedData);
     } catch (error) {
       console.error("Error adding entries:", error);

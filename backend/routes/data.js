@@ -23,6 +23,7 @@ router.post("/api/data", async (req, res) => {
       comment,
       colorClass,
       updatedBy, // Добавляем это поле
+      orderIndex,
     } = req.body;
 
     // Convert date string to Date object
@@ -46,6 +47,7 @@ router.post("/api/data", async (req, res) => {
       comment,
       colorClass,
       updatedBy, // Сохраняем информацию о том, кто редактирует
+      orderIndex,
     });
 
     const savedData = await newData.save();
