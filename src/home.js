@@ -11,6 +11,8 @@ const Home = () => {
   const [users, setUsers] = useState([]);
   const [newDriver, setNewDriver] = useState("");
   const [totalRecords, setTotalRecords] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+  const [highlightId, setHighlightId] = useState(null); // ID строки для подсветки
 
   const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -35,6 +37,9 @@ const Home = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const currentDayRef = useRef(null);
 
+  const toggleVisibility = () => {
+    setIsVisible(!isVisible);
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -205,15 +210,24 @@ const Home = () => {
   };
 
   const handleDeleteWithConfirmation = async (id) => {
+    // Устанавливаем ID строки для подсветки
+    setHighlightId(id);
+
     const isConfirmed = window.confirm("Точно удалить?");
     if (isConfirmed) {
       try {
         await axios.delete(`${apiUrl}/api/data/${id}`);
+        // Удаляем строку из данных
         setData(data.filter((item) => item._id !== id));
       } catch (error) {
         console.error("Error deleting data:", error);
       }
     }
+
+    // Сбрасываем подсветку через небольшую задержку
+    setTimeout(() => {
+      setHighlightId(null);
+    }, 1000); // Задержка в 1 секунду
   };
 
   const handleDateChange = (e, itemId) => {
@@ -399,100 +413,113 @@ const Home = () => {
 
   return (
     <div>
-      <div className="bam-servis">"ООО Бам-Сервис гарант"</div>
-      <div className="wrapper">
-        <div className="data">
-          <div className="month">
-            <button onClick={() => handleMonthChange("prev")}>
-              Пред. Месяц
-            </button>
-            <button onClick={() => handleMonthChange("next")}>
-              След. Месяц
-            </button>
-            <button onClick={() => setCurrentMonth(new Date())}>
-              Текущий Месяц
-            </button>
-          </div>
+      <button onClick={toggleVisibility}>
+        {isVisible ? "Скрыть" : "Показать"}
+      </button>
+      {isVisible && (
+        <div className="hide">
+          <div className="bam-servis">"ООО Бам-Сервис гарант"</div>
+          <div className="wrapper">
+            <div className="data">
+              <div className="month">
+                <button onClick={() => handleMonthChange("prev")}>
+                  Пред. Месяц
+                </button>
+                <button onClick={() => handleMonthChange("next")}>
+                  След. Месяц
+                </button>
+                <button onClick={() => setCurrentMonth(new Date())}>
+                  Текущий Месяц
+                </button>
+              </div>
 
-          <div className="sybarenda">
-            <span className="title">Добавить суб аренду</span>
-            <button onClick={() => addNewItemWithClass("highlight")}>
-              Добавить
-            </button>
-          </div>
-          <div className="baza">
-            <span className="title">Добавить базу</span>
-            <button onClick={addEntriesForSelectedDate} className="add-entries">
-              Добавить
-            </button>
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-            />
-          </div>
-          <div className="entrys">
-            <span className="title">Добавить Обьект</span>
-            <button onClick={addNewItem}>Добавить</button>
-          </div>
-          <div className="driv">
-            <span className="title">Добавить нового водителя</span>
-            <button onClick={handleAddNewDriver}>Добавить</button>
-            <input
-              type="text"
-              className="drivers-new"
-              placeholder="Новый Водитель"
-              value={newDriver}
-              onChange={(e) => setNewDriver(e.target.value)}
-            />
+              <div className="sybarenda">
+                <span className="title">Добавить суб аренду</span>
+                <button onClick={() => addNewItemWithClass("highlight")}>
+                  Добавить
+                </button>
+              </div>
+              <div className="baza">
+                <span className="title">Добавить базу</span>
+                <button
+                  onClick={addEntriesForSelectedDate}
+                  className="add-entries"
+                >
+                  Добавить
+                </button>
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                />
+              </div>
+              <div className="entrys">
+                <span className="title">Добавить Обьект</span>
+                <button onClick={addNewItem}>Добавить</button>
+              </div>
+              <div className="driv">
+                <span className="title">Добавить нового водителя</span>
+                <button onClick={handleAddNewDriver}>Добавить</button>
+                <input
+                  type="text"
+                  className="drivers-new"
+                  placeholder="Новый Водитель"
+                  value={newDriver}
+                  onChange={(e) => setNewDriver(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="statistic">
+              <div className="time">
+                За все время: <span className="total">{totalRecords}</span>
+              </div>
+              <div className="time">
+                За текущий месяц:
+                <span className="total">{currentMonthEntriesCount}</span>
+              </div>
+              <div className="time">
+                За предыдущий месяц:
+                <span className="total">{previousMonthEntriesCount}</span>
+              </div>
+            </div>
+            <div className="entry-block">
+              <div className="green">
+                <p>Оплачен</p>
+                <span className="green-span"></span>
+              </div>
+              <div className="gold">
+                <p>Частично</p>
+                <span className="gold-span"></span>
+              </div>
+              <div className="red">
+                <p>Нет оплаты</p>
+                <span className="red-span"></span>
+              </div>
+              <div className="yellow">
+                <p>Отсрочка</p>
+                <span className="yellow-span"></span>
+              </div>
+            </div>
           </div>
         </div>
-        <div className="statistic">
-          <div className="time">
-            За все время: <span className="total">{totalRecords}</span>
-          </div>
-          <div className="time">
-            За текущий месяц:
-            <span className="total">{currentMonthEntriesCount}</span>
-          </div>
-          <div className="time">
-            За предыдущий месяц:
-            <span className="total"> {previousMonthEntriesCount}</span>
-          </div>
-        </div>
-        <div className="entry-block">
-          <div className="green">
-            <p>Оплачен</p>
-            <span className="green-span"></span>
-          </div>
-          <div className="gold">
-            <p>Частично</p>
-            <span className="gold-span"></span>
-          </div>
-          <div className="red">
-            <p>Нет оплаты</p>
-            <span className="red-span"></span>
-          </div>
-          <div className="yellow">
-            <p>Отсрочка</p>
-            <span className="yellow-span"></span>
-          </div>
-        </div>
-      </div>
+      )}
       <h1>
         {getMonthName(currentMonth)} {currentMonth.getFullYear()}
       </h1>
       <div className="table">
         {Object.keys(groupedData).map((day) => (
-          <div key={day}>
-            <h2 className={formattedToday === day ? "is-today" : ""}>
+          <div className="table-flex" key={day}>
+            <h2
+              className={`${
+                formattedToday === day ? "is-today" : ""
+              } sticky-h1`}
+            >
               {day} {getMonthName(currentMonth)}
             </h2>
             <table>
               <thead className="sticky">
                 <tr>
                   <th>Статус</th>
-                  <th>Дата</th>
                   <th>Марка</th>
                   <th>Гос №</th>
                   <th>Водитель</th>
@@ -522,7 +549,7 @@ const Home = () => {
                         : item.doneCheck === "inProgress"
                         ? "row-in-progress"
                         : "row-pending"
-                    }`}
+                    } ${highlightId === item._id ? "highlight-delete" : ""}`}
                   >
                     <td>
                       <select
@@ -536,23 +563,10 @@ const Home = () => {
                         <option value="completed">Свободный</option>
                       </select>
                     </td>
-                    <td
-                      className={`${item.colorClass} ${
-                        item.doneCheck === "completed"
-                          ? "row-#ffeb3b"
-                          : item.doneCheck === "inProgress"
-                          ? "row-#ffeb3b"
-                          : "row-pending"
-                      }`}
-                    >
-                      <input
-                        type="date"
-                        value={formatDate(item.date) || ""}
-                        onChange={(e) => handleDateChange(e, item._id)}
-                      />
-                    </td>
+
                     <td>
                       <input
+                        disabled
                         type="text"
                         style={{
                           width: "150px",
@@ -565,6 +579,7 @@ const Home = () => {
                     </td>
                     <td>
                       <input
+                        disabled
                         style={{
                           width: "75px",
                         }}
@@ -723,6 +738,9 @@ const Home = () => {
                     </td>
                     <td>
                       <button
+                        className="btn-del"
+                        onMouseEnter={() => setHighlightId(item._id)} // Подсветка при наведении
+                        onMouseLeave={() => setHighlightId(null)} // Убираем подсветку при уходе курсора
                         onClick={() => handleDeleteWithConfirmation(item._id)}
                       >
                         Удалить

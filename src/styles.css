@@ -210,6 +210,9 @@ h1 {
   margin: 0 auto;
   border: 1px solid;
 }
+.highlight-delete {
+  background-color: #007bff;
+}
 button {
   background-color: #007bff;
   color: white;
@@ -220,7 +223,10 @@ button {
   cursor: pointer;
   font-size: 14px;
 }
-
+.btn-del {
+  margin: 2px !important;
+  padding: 0 4px !important;
+}
 button:hover {
   background-color: #0056b3;
 }
@@ -312,16 +318,23 @@ input[type="checkbox"] {
 
 /* Стили для таблицы */
 table {
-  width: 100%;
+  width: 85%;
   color: black;
   background-color: #fff;
   border-collapse: collapse;
   margin-bottom: 20px;
 }
-
+.table-flex {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.sticky-h1 {
+  position: sticky;
+  top: 60px;
+}
 th,
 td {
-  border: 1px solid #ddd;
   text-align: center;
   width: 50px !important;
   padding: 0;
