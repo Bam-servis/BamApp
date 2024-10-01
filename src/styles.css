@@ -233,13 +233,11 @@ tr.highlight {
   text-align: center;
 }
 textarea {
-  padding: 10px;
-  margin: 5px;
-  font-size: 15px;
   border-radius: 15px;
   border: 1px solid #ccc;
   width: 150px;
   text-align: center;
+  display: flex;
 }
 .canvas {
   display: flex;
@@ -298,8 +296,6 @@ input[type="number"],
 input[type="password"],
 select {
   text-align: center;
-  padding: 5px;
-  margin: 5px;
   width: 100px;
   border-radius: 15px;
   border: 1px solid #ccc;
@@ -323,6 +319,7 @@ td {
   border: 1px solid #ddd;
   text-align: center;
   width: 50px !important;
+  padding: 0;
 }
 
 th {

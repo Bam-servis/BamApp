@@ -10,10 +10,25 @@ const Profile = () => {
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [user, setUser] = useState(null);
   const [allItems, setAllItems] = useState([]);
+  const [name, setName] = useState(null);
 
   const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
+    const fetchNames = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/api/users`);
+        const userWithName = response.data.find((user) => user.name);
+
+        if (userWithName) {
+          setName(userWithName.name);
+        } else {
+          setName("Имя не найдено");
+        }
+      } catch (error) {
+        console.error("Error fetching setUsers:", error);
+      }
+    };
     const fetchData = async () => {
       try {
         const username = localStorage.getItem("username");
@@ -37,7 +52,7 @@ const Profile = () => {
         console.error("Ошибка при загрузке данных:", error);
       }
     };
-
+    fetchNames();
     fetchData();
   }, []);
 
@@ -79,7 +94,7 @@ const Profile = () => {
 
   return (
     <div>
-      <h1 className="login-profile"> {user}</h1>
+      <h1 className="login-profile"> {name}</h1>
       <Link className="link-home" to="/">
         <button>Вернутся на главную</button>
       </Link>

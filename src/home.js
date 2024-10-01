@@ -11,6 +11,7 @@ const Home = () => {
   const [users, setUsers] = useState([]);
   const [newDriver, setNewDriver] = useState("");
   const [totalRecords, setTotalRecords] = useState(0);
+
   const apiUrl = process.env.REACT_APP_API_URL;
 
   const [newItem, setNewItem] = useState({
@@ -123,10 +124,10 @@ const Home = () => {
     const { value, type, checked } = e.target;
     const updatedValue = type === "checkbox" ? checked : value;
     const username = localStorage.getItem("username");
-    const itemUser = "manager-tanya";
+    const itemUser = "Tanya";
     if (fieldName === "hours" || fieldName === "routeNumber") {
       if (username !== itemUser) {
-        alert(`У вас нет прав!. Узнать - ${"manager-tanya"}`);
+        alert(`У вас нет прав!. Узнать - ${"Tanya"}`);
         return;
       }
     }
@@ -183,10 +184,8 @@ const Home = () => {
         return;
       }
 
-      if (username !== "manager-tanya") {
-        alert(
-          `У вас нет прав на снятие флажка! Обратитесь к ${"manager-tanya"}`
-        );
+      if (username !== "Tanya") {
+        alert(`У вас нет прав на снятие флажка! Обратитесь к ${"Tanya"}`);
         return;
       }
     }
@@ -221,8 +220,8 @@ const Home = () => {
     const { value } = e.target;
     const username = localStorage.getItem("username");
 
-    if (username !== "manager-olya") {
-      alert(`У вас нет прав!. Узнать - ${"manager-olya"}`);
+    if (username !== "Olya") {
+      alert(`У вас нет прав!. Узнать - ${"Olya"}`);
       return;
     }
     const updatedData = data.map((item) =>
@@ -498,9 +497,9 @@ const Home = () => {
                   <th>Гос №</th>
                   <th>Водитель</th>
                   <th>Заказчик</th>
-                  <th>№ Путевого</th>
-                  <th>Часы</th>
-                  <th>Статус</th>
+                  {users.username === "Tanya" && <th>№ Путевого</th>}
+                  {users.username === "Tanya" && <th>Часы</th>}
+                  {users.username === "Tanya" && <th>Статус</th>}
                   <th>Стоимость Заказа</th>
                   <th>Оплата</th>
                   <th>Сумма Оплаты</th>
@@ -556,7 +555,7 @@ const Home = () => {
                       <input
                         type="text"
                         style={{
-                          width: "180px",
+                          width: "150px",
                         }}
                         value={item.brand || ""}
                         onChange={(e) =>
@@ -584,16 +583,19 @@ const Home = () => {
                         }
                       >
                         <option value="">Выбрать</option>
-                        {drivers.map((driver) => (
-                          <option key={driver._id} value={driver.name}>
-                            {driver.name}
-                          </option>
-                        ))}
+                        {drivers
+                          .slice()
+                          .sort((a, b) => a.name.localeCompare(b.name))
+                          .map((driver) => (
+                            <option key={driver._id} value={driver.name}>
+                              {driver.name}
+                            </option>
+                          ))}
                       </select>
                     </td>
                     <td>
-                      <textarea
-                        style={{ resize: "none" }}
+                      <input
+                        style={{ width: "200px" }}
                         type="text"
                         value={item.customer || ""}
                         onChange={(e) =>
@@ -601,43 +603,39 @@ const Home = () => {
                         }
                       />
                     </td>
-                    <td>
-                      <input
-                        type="text"
-                        style={{
-                          width: "50px",
-                        }}
-                        value={item.routeNumber || ""}
-                        onChange={(e) =>
-                          handleInputChange(e, item._id, "routeNumber")
-                        }
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        style={{
-                          width: "50px",
-                        }}
-                        value={item.hours || ""}
-                        onChange={(e) =>
-                          handleInputChange(e, item._id, "hours")
-                        }
-                      />
-                    </td>
-                    <td
-                      style={{
-                        height: "40px",
-                      }}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={item.isTrue || false}
-                        onChange={(e) =>
-                          handleCheckboxChange(e, item._id, "checkbox")
-                        }
-                      />
-                    </td>
+                    {users.username === "Tanya" && (
+                      <>
+                        <td>
+                          <input
+                            type="text"
+                            style={{ width: "50px" }}
+                            value={item.routeNumber || ""}
+                            onChange={(e) =>
+                              handleInputChange(e, item.id, "routeNumber")
+                            }
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="text"
+                            style={{ width: "50px" }}
+                            value={item.hours || ""}
+                            onChange={(e) =>
+                              handleInputChange(e, item.id, "hours")
+                            }
+                          />
+                        </td>
+                        <td style={{ height: "40px" }}>
+                          <input
+                            type="checkbox"
+                            checked={item.isTrue || false}
+                            onChange={(e) =>
+                              handleCheckboxChange(e, item.id, "checkbox")
+                            }
+                          />
+                        </td>
+                      </>
+                    )}
                     <td>
                       <input
                         type="number"
@@ -712,7 +710,7 @@ const Home = () => {
                         <option value="">Выбрать</option>
                         {users.map((user) => (
                           <option key={user._id} value={user.username}>
-                            {user.username}
+                            {user.name}
                           </option>
                         ))}
                       </select>

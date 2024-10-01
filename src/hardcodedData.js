@@ -61,7 +61,7 @@ export const hardcodedData = [
   },
   {
     brand: "25/28 Клинцы МАЗ",
-    driver: "Кругликов В.Н.",
+    driver: "Сенюкович С.В",
     customer: "",
     routeNumber: "",
     hours: "",
@@ -71,7 +71,7 @@ export const hardcodedData = [
   },
   {
     brand: "25/28 Клинцы МАЗ",
-    driver: "Сочек В.В.",
+    driver: "Кругликов В.Н.",
     customer: "",
     routeNumber: "",
     hours: "",
@@ -141,7 +141,7 @@ export const hardcodedData = [
   },
   {
     brand: "25/31 Клинцы  МАЗ",
-    driver: "Демидович  К.В.",
+    driver: "Демидович К.В.",
     customer: "",
     routeNumber: "",
     hours: "",
@@ -150,7 +150,17 @@ export const hardcodedData = [
     price: "",
   },
   {
-    brand: "30/39+8 ZOOMLION",
+    brand: "36/40 ZOOMLION",
+    driver: "Сочек В.В.",
+    customer: "",
+    routeNumber: "",
+    hours: "",
+    isTrue: false,
+    vehicleNumber: "АО 2438-7",
+    price: "",
+  },
+  {
+    brand: "40/40+8 ZOOMLION",
     driver: "Суббота Д.И.",
     customer: "",
     routeNumber: "",
