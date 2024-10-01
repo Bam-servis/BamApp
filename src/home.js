@@ -565,6 +565,9 @@ const Home = () => {
                     </td>
                     <td>
                       <input
+                        style={{
+                          width: "75px",
+                        }}
                         type="text"
                         value={item.vehicleNumber || ""}
                         onChange={(e) =>
@@ -593,9 +596,9 @@ const Home = () => {
                           ))}
                       </select>
                     </td>
-                    <td>
+                    <td style={{ maxWidth: "180px" }}>
                       <input
-                        style={{ width: "200px" }}
+                        style={{ width: "220px" }}
                         type="text"
                         value={item.customer || ""}
                         onChange={(e) =>

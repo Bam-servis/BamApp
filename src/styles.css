@@ -1,3 +1,8 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
 body {
   background: url(../54433.jpg);
   background-repeat: no-repeat;
@@ -366,7 +371,7 @@ th {
   padding: 5px;
 }
 .select-rem {
-  width: 110px;
+  width: 81px;
 }
 .row-inCompleted {
   background-color: gray !important;
