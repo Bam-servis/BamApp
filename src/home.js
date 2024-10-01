@@ -87,26 +87,22 @@ const Home = () => {
 
   const addEntriesForSelectedDate = async () => {
     try {
-      // Создание новых записей с хардкодными данными
-      const newEntries = hardcodedData.map((item) => ({
+      const newEntries = hardcodedData.map((item, index) => ({
         ...item,
-        date: selectedDate, // Добавляем дату
+        date: selectedDate,
+        orderIndex: index,
       }));
 
-      // Отправляем данные на сервер
       await Promise.all(
         newEntries.map((entry) => axios.post(`${apiUrl}/api/data`, entry))
       );
 
-      // Получаем данные обратно с сервера
       const response = await axios.get(`${apiUrl}/api/data`);
 
-      // Сортируем данные по orderIndex, чтобы они отображались так же, как в файле хардкода
       const orderedData = response.data.sort(
         (a, b) => a.orderIndex - b.orderIndex
       );
 
-      // Обновляем состояние данными с правильной сортировкой
       setData(orderedData);
     } catch (error) {
       console.error("Error adding entries:", error);
@@ -326,15 +322,17 @@ const Home = () => {
       return acc;
     }, [])
     .sort((a, b) => {
-      if (a.colorClass === "highlight" && b.colorClass === "highlight")
+      if (a.colorClass === "highlight" && b.colorClass === "highlight") {
         return 0;
-
-      if (a.colorClass === "highlight" && b.colorClass !== "highlight")
+      }
+      if (a.colorClass === "highlight" && b.colorClass !== "highlight") {
         return 1;
-      if (a.colorClass !== "highlight" && b.colorClass === "highlight")
+      }
+      if (a.colorClass !== "highlight" && b.colorClass === "highlight") {
         return -1;
+      }
 
-      return 0;
+      return a.orderIndex - b.orderIndex;
     });
 
   const filteredData = sortedData.filter((item) => {
