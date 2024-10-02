@@ -420,9 +420,9 @@ const Home = () => {
       <button onClick={toggleVisibility}>
         {isVisible ? "Скрыть" : "Показать"}
       </button>
-      <button onClick={toggleVisibilityBlock}>
+      {/* <button onClick={toggleVisibilityBlock}>
         {isVisibleBlock ? "Скрыть" : "Характеристики"}
-      </button>
+      </button> */}
       {isVisibleBlock && (
         <div
           style={{
@@ -631,7 +631,6 @@ const Home = () => {
 
                     <td>
                       <input
-                        disabled
                         type="text"
                         style={{
                           width: "150px",
