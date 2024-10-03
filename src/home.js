@@ -420,9 +420,9 @@ const Home = () => {
       <button onClick={toggleVisibility}>
         {isVisible ? "Скрыть" : "Показать"}
       </button>
-      {/* <button onClick={toggleVisibilityBlock}>
+      <button onClick={toggleVisibilityBlock}>
         {isVisibleBlock ? "Скрыть" : "Характеристики"}
-      </button> */}
+      </button>
       {isVisibleBlock && (
         <div
           style={{
@@ -431,6 +431,10 @@ const Home = () => {
             justifyContent: "center",
             marginBottom: "20px",
             fontSize: "25px",
+            lineHeight: "45px",
+            width: "90%",
+            margin: "0 auto 20px auto",
+            flexWrap: "wrap",
             background: "radial-gradient(black, transparent",
           }}
         >
@@ -473,10 +477,73 @@ const Home = () => {
           <div style={{ border: "2px solid black", padding: "2px 10px" }}>
             <a
               style={{ color: "#fff", fontWeight: "bold" }}
-              href="https://bam-servis.by/zoomlion_60t.pdf"
+              href="https://bam-servis.by/d122dbec6fe3c9fa32ee283d44045e973bc8ebaf.pdf"
               target="_blank"
             >
-              ZOOMLION-60 Тонн
+              ZOOMLION-55 Тонн
+            </a>
+          </div>
+          <div style={{ border: "2px solid black", padding: "2px 10px" }}>
+            <a
+              style={{ color: "#fff", fontWeight: "bold" }}
+              href="https://bam-servis.by/GMK3050-1-1.oc.ru.pdf"
+              target="_blank"
+            >
+              GROVE-50 Тонн
+            </a>
+          </div>
+          <div style={{ border: "2px solid black", padding: "2px 10px" }}>
+            <a
+              style={{ color: "#fff", fontWeight: "bold" }}
+              href="https://bam-servis.by/zoomlion-90.pdf"
+              target="_blank"
+            >
+              ZOOMLION-90 Тонн
+            </a>
+          </div>
+          <div style={{ border: "2px solid black", padding: "2px 10px" }}>
+            <a
+              style={{ color: "#fff", fontWeight: "bold" }}
+              href="https://bam-servis.by/klinz-25t.pdf"
+              target="_blank"
+            >
+              Клинцы 25 Тонн
+            </a>
+          </div>
+          <div style={{ border: "2px solid black", padding: "2px 10px" }}>
+            <a
+              style={{ color: "#fff", fontWeight: "bold" }}
+              href="https://bam-servis.by/Klinz-32t.pdf"
+              target="_blank"
+            >
+              Клинцы 32 Тонн
+            </a>
+          </div>
+          <div style={{ border: "2px solid black", padding: "2px 10px" }}>
+            <a
+              style={{ color: "#fff", fontWeight: "bold" }}
+              href="https://bam-servis.by/masheka-25.pdf"
+              target="_blank"
+            >
+              Машека 25 Тонн
+            </a>
+          </div>
+          <div style={{ border: "2px solid black", padding: "2px 10px" }}>
+            <a
+              style={{ color: "#fff", fontWeight: "bold" }}
+              href="https://bam-servis.by/maz-16t.pdf"
+              target="_blank"
+            >
+              МАЗ 16 Тонн
+            </a>
+          </div>
+          <div style={{ border: "2px solid black", padding: "2px 10px" }}>
+            <a
+              style={{ color: "#fff", fontWeight: "bold" }}
+              href="https://bam-servis.by/25-31 klinz.pdf"
+              target="_blank"
+            >
+              Клинцы 25/31 Тонн
             </a>
           </div>
         </div>

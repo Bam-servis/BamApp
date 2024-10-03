@@ -498,6 +498,9 @@ th {
 }
 
 @media (max-width: 800px) {
+  .sticky-h1 {
+    color: #fff;
+  }
   .login h1 {
     color: #fff;
   }
@@ -567,5 +570,6 @@ th {
     padding: 0;
     background-size: cover;
     height: 100vh;
+    background-repeat: repeat;
   }
 }
