@@ -70,6 +70,9 @@ h2 {
   align-items: center;
   padding: 0 50px;
 }
+.tow-table-td {
+  max-width: 180px !important;
+}
 .order {
   display: flex;
   border-top: 1px solid red;
@@ -383,9 +386,13 @@ th {
   border: 1px solid red;
   padding: 5px;
 }
-.select-rem {
-  width: 81px;
+.row-comand {
+  background-color: #5ca084 !important;
 }
+.select-rem {
+  width: 120px;
+}
+
 .row-inCompleted {
   background-color: gray !important;
 }
@@ -530,6 +537,13 @@ th {
   .wrapper {
     flex-direction: column;
   }
+  input[type="date"],
+  input[type="text"],
+  input[type="number"],
+  input[type="password"],
+  select {
+    margin-right: 15px;
+  }
   .month {
     display: none;
     flex-direction: row;
@@ -550,8 +564,10 @@ th {
     flex-direction: column;
     align-items: center;
   }
+  .tow-table-td {
+    max-width: 220px !important;
+  }
   .driv {
-    display: none;
     flex-direction: column;
     align-items: center;
   }

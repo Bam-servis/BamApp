@@ -40,6 +40,7 @@ const Home = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const currentDayRef = useRef(null);
   const initialRender = useRef(true);
+  const [rowCount, setRowCount] = useState(1); // По умолчанию 1 строка
 
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
@@ -157,16 +158,18 @@ const Home = () => {
       .catch((error) => console.error("Error saving data:", error));
   };
 
-  const addNewItemWithClass = async (className) => {
+  const addMultipleItemsWithClass = async (className, count) => {
     try {
-      const response = await axios.post(`${apiUrl}/api/data`, {
-        ...newItem,
-        colorClass: className,
-        updatedBy: localStorage.getItem("username"),
-      });
-      setData([...data, response.data]);
+      for (let i = 0; i < count; i++) {
+        const response = await axios.post(`${apiUrl}/api/data`, {
+          ...newItem,
+          colorClass: className,
+          updatedBy: localStorage.getItem("username"),
+        });
+        setData((prevData) => [...prevData, response.data]);
+      }
     } catch (error) {
-      console.error("Error adding data with class:", error);
+      console.error("Error adding multiple data with class:", error);
     }
   };
   const handleSelectChange = async (e, itemId) => {
@@ -216,24 +219,21 @@ const Home = () => {
   };
 
   const handleDeleteWithConfirmation = async (id) => {
-    // Устанавливаем ID строки для подсветки
     setHighlightId(id);
 
     const isConfirmed = window.confirm("Точно удалить?");
     if (isConfirmed) {
       try {
         await axios.delete(`${apiUrl}/api/data/${id}`);
-        // Удаляем строку из данных
+
         setData(data.filter((item) => item._id !== id));
       } catch (error) {
         console.error("Error deleting data:", error);
       }
     }
-
-    // Сбрасываем подсветку через небольшую задержку
     setTimeout(() => {
       setHighlightId(null);
-    }, 1000); // Задержка в 1 секунду
+    }, 1000);
   };
 
   const handleDateChange = (e, itemId) => {
@@ -571,8 +571,19 @@ const Home = () => {
 
               <div className="sybarenda">
                 <span className="title">Добавить суб аренду</span>
-                <button onClick={() => addNewItemWithClass("highlight")}>
-                  Добавить
+                <input
+                  type="number"
+                  value={rowCount}
+                  onChange={(e) => setRowCount(Number(e.target.value))}
+                  min="1"
+                  placeholder="Введите количество строк"
+                />
+                <button
+                  onClick={() =>
+                    addMultipleItemsWithClass("highlight", rowCount)
+                  }
+                >
+                  Добавить {rowCount} строк
                 </button>
               </div>
               <div className="baza">
@@ -682,6 +693,8 @@ const Home = () => {
                         ? "row-inCompleted"
                         : item.doneCheck === "completed"
                         ? "row-completed"
+                        : item.doneCheck === "comand"
+                        ? "row-comand"
                         : item.doneCheck === "inProgress"
                         ? "row-in-progress"
                         : "row-pending"
@@ -695,6 +708,7 @@ const Home = () => {
                       >
                         <option value="pending">Выбрать</option>
                         <option value="inProgress">ТО/Ремонт</option>
+                        <option value="comand">Командировка</option>
                         <option value="inCompleted">В Ожидании</option>
                         <option value="completed">Свободный</option>
                       </select>
@@ -746,7 +760,7 @@ const Home = () => {
                           ))}
                       </select>
                     </td>
-                    <td style={{ maxWidth: "180px" }}>
+                    <td className="tow-table-td">
                       <input
                         style={{ width: "220px" }}
                         type="text"
@@ -869,7 +883,7 @@ const Home = () => {
                       </select>
                     </td>
                     <td>
-                      <span>{item.updatedBy || "Не указано"}</span>
+                      <span>{item.updatedBy || "-"}</span>
                     </td>
                     <td>
                       <button
