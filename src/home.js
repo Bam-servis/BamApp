@@ -39,6 +39,7 @@ const Home = () => {
   );
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const currentDayRef = useRef(null);
+  const initialRender = useRef(true);
 
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
@@ -82,11 +83,14 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    if (currentDayRef.current) {
-      currentDayRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
+    if (initialRender.current && currentDayRef.current) {
+      setTimeout(() => {
+        currentDayRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 0);
+      initialRender.current = false;
     }
   }, [data]);
 
