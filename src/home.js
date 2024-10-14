@@ -121,10 +121,13 @@ const Home = () => {
 
   const addNewItem = async () => {
     try {
+      const newIndex = data.length;
       const response = await axios.post(`${apiUrl}/api/data`, {
         ...newItem,
         updatedBy: localStorage.getItem("username"),
         createdBy: localStorage.getItem("username"),
+        orderIndex: newIndex,
+        date: selectedDate,
       });
       setData([...data, response.data]);
     } catch (error) {
@@ -165,6 +168,7 @@ const Home = () => {
           ...newItem,
           colorClass: className,
           updatedBy: localStorage.getItem("username"),
+          date: selectedDate,
         });
         setData((prevData) => [...prevData, response.data]);
       }
@@ -260,10 +264,18 @@ const Home = () => {
 
   const handleAddNewDriver = async () => {
     if (newDriver.trim() === "") return;
+    const driverExists = drivers.some(
+      (driver) => driver.name === newDriver.trim()
+    );
+
+    if (driverExists) {
+      alert("Этот водитель уже существует!");
+      return;
+    }
 
     try {
       const response = await axios.post(`${apiUrl}/api/drivers`, {
-        name: newDriver,
+        name: newDriver.trim(),
       });
       setDrivers([...drivers, response.data]);
       setNewDriver("");
@@ -318,33 +330,34 @@ const Home = () => {
     setCurrentMonth(newMonth);
   };
 
-  const sortedData = data
-    .reduce((acc, item) => {
-      const index = acc.findIndex((accItem) => accItem.driver === item.driver);
+  const highlightedItems = data.filter(
+    (item) => item.colorClass === "highlight"
+  );
+  const regularItems = data.filter((item) => item.colorClass !== "highlight");
 
-      if (index === -1) {
-        acc.push(item);
-      } else {
-        acc.splice(index + 1, 0, item);
-      }
+  const groupedData = regularItems.reduce((acc, item) => {
+    const driverGroup = acc.find((group) => group[0].driver === item.driver);
 
-      return acc;
-    }, [])
-    .sort((a, b) => {
-      if (a.colorClass === "highlight" && b.colorClass === "highlight") {
-        return 0;
-      }
-      if (a.colorClass === "highlight" && b.colorClass !== "highlight") {
-        return 1;
-      }
-      if (a.colorClass !== "highlight" && b.colorClass === "highlight") {
-        return -1;
-      }
+    if (driverGroup) {
+      driverGroup.push(item);
+    } else {
+      acc.push([item]);
+    }
 
-      return a.orderIndex - b.orderIndex;
-    });
+    return acc;
+  }, []);
 
-  const filteredData = sortedData.filter((item) => {
+  const sortedGroups = groupedData.map((group) =>
+    group.sort((a, b) => a.orderIndex - b.orderIndex)
+  );
+
+  const finalSortedData = sortedGroups.flat();
+
+  finalSortedData.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  const completeSortedData = [...finalSortedData, ...highlightedItems];
+
+  const filteredData = completeSortedData.filter((item) => {
     const itemDate = new Date(item.date);
     return (
       itemDate.getMonth() === currentMonth.getMonth() &&
@@ -352,7 +365,7 @@ const Home = () => {
     );
   });
 
-  const groupedData = groupByDay(filteredData);
+  const groupedByDayData = groupByDay(filteredData);
 
   const getColor = (value) => {
     switch (value) {
@@ -570,6 +583,11 @@ const Home = () => {
               </div>
 
               <div className="sybarenda">
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                />
                 <span className="title">Добавить суб аренду</span>
                 <input
                   type="number"
@@ -587,6 +605,11 @@ const Home = () => {
                 </button>
               </div>
               <div className="baza">
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                />
                 <span className="title">Добавить базу</span>
                 <button
                   onClick={addEntriesForSelectedDate}
@@ -594,13 +617,13 @@ const Home = () => {
                 >
                   Добавить
                 </button>
+              </div>
+              <div className="entrys">
                 <input
                   type="date"
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
                 />
-              </div>
-              <div className="entrys">
                 <span className="title">Добавить Обьект</span>
                 <button onClick={addNewItem}>Добавить</button>
               </div>
@@ -654,7 +677,7 @@ const Home = () => {
         {getMonthName(currentMonth)} {currentMonth.getFullYear()}
       </h1>
       <div className="table">
-        {Object.keys(groupedData).map((day) => (
+        {Object.keys(groupedByDayData).map((day) => (
           <div className="table-flex" key={day}>
             <h2
               className={`${
@@ -684,7 +707,7 @@ const Home = () => {
                 </tr>
               </thead>
               <tbody>
-                {groupedData[day].map((item) => (
+                {groupedByDayData[day].map((item) => (
                   <tr
                     key={item._id}
                     ref={isPreviousDay(item.date) ? currentDayRef : null}
@@ -743,6 +766,8 @@ const Home = () => {
                       <select
                         style={{
                           width: "130px",
+                          fontWeight: "600",
+                          fontSize: "12.5px",
                         }}
                         value={item.driver || ""}
                         onChange={(e) =>
@@ -762,7 +787,11 @@ const Home = () => {
                     </td>
                     <td className="tow-table-td">
                       <input
-                        style={{ width: "220px" }}
+                        style={{
+                          width: "220px",
+                          fontWeight: "bold",
+                          fontSize: "14.5px",
+                        }}
                         type="text"
                         value={item.customer || ""}
                         onChange={(e) =>
