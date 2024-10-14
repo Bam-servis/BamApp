@@ -71,7 +71,7 @@ h2 {
   padding: 0 50px;
 }
 .tow-table-td {
-  max-width: 220px !important;
+  max-width: 500px !important;
 }
 .order {
   display: flex;
@@ -583,7 +583,7 @@ th {
     align-items: center;
   }
   .tow-table-td {
-    max-width: 240px !important;
+    max-width: 320px !important;
   }
   .driv {
     flex-direction: column;

@@ -788,7 +788,8 @@ const Home = () => {
                     <td className="tow-table-td">
                       <input
                         style={{
-                          width: "220px",
+                          width: "100%",
+                          minWidth: "300px",
                           fontWeight: "bold",
                           fontSize: "14.5px",
                         }}
