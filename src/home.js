@@ -42,6 +42,7 @@ const Home = () => {
   const currentDayRef = useRef(null);
   const initialRender = useRef(true);
   const [rowCount, setRowCount] = useState(1); // По умолчанию 1 строка
+  const [socket, setSocket] = useState(null); // Состояние для WebSocket
 
   const toggleVisibilityBlock = () => {
     setIsVisibleBlock(!isVisibleBlock);
@@ -78,25 +79,33 @@ const Home = () => {
     fetchUsers();
     fetchDrivers();
 
-    const socket = new WebSocket(
-      `${process.env.REACT_APP_API_URL.replace(/^http/, "ws")}/ws`
-    );
-
-    socket.onopen = () => {
-      console.log("Connected to WebSocket server");
-    };
+    const socket = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
 
     socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log("Message from server:", data);
-      setMessages((prevMessages) => [...prevMessages, data]);
+      const messageData = JSON.parse(event.data);
+      console.log("Message from server:", messageData);
+
+      switch (messageData.action) {
+        case "add":
+          setData((prevData) => [...prevData, messageData.item]);
+          break;
+        case "update":
+          setData((prevData) =>
+            prevData.map((item) =>
+              item._id === messageData.item._id ? messageData.item : item
+            )
+          );
+          break;
+        case "delete":
+          setData((prevData) =>
+            prevData.filter((item) => item._id !== messageData.id)
+          );
+          break;
+        default:
+          break;
+      }
     };
 
-    socket.onclose = () => {
-      console.log("WebSocket connection closed");
-    };
-
-    // Очистка подключения при размонтировании компонента
     return () => {
       socket.close();
     };
