@@ -8,12 +8,14 @@ const User = require("./models/User");
 const authRoutes = require("./routes/auth"); // Маршруты для авторизации
 const { MongoClient } = require("mongodb");
 const path = require("path");
-// Подставь свои данные
+const WebSocket = require("ws"); // Импортируем библиотеку WebSocket
 
+// Подставь свои данные
 const uri =
   process.env.NODE_ENV === "production"
     ? "mongodb+srv://Web-gpy:AQ626Daven@bam-servis.fjflq.mongodb.net/sample_mflix?retryWrites=true&w=majority"
     : "mongodb://localhost:27017/mydatabase"; // Локальная база данных
+
 const client = new MongoClient(uri);
 const app = express();
 // Подключение к базе данных
@@ -24,9 +26,33 @@ mongoose
 
 // Middleware для статической папки
 app.use(express.static(path.join(__dirname, "../build")));
-
 app.use(cors());
 app.use(express.json()); // Используйте встроенный JSON парсер
+
+// Создаем WebSocket-сервер
+const wss = new WebSocket.Server({ noServer: true });
+
+// Обрабатываем подключения WebSocket
+wss.on("connection", (ws) => {
+  console.log("New client connected");
+
+  // Отправляем сообщение клиенту при подключении
+  ws.send(JSON.stringify({ message: "Welcome to the WebSocket server!" }));
+
+  ws.on("close", () => {
+    console.log("Client disconnected");
+  });
+});
+
+// Функция для уведомления клиентов
+const notifyClients = (data) => {
+  wss.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(data));
+    }
+  });
+};
+
 app.delete("/api/data/:id", async (req, res) => {
   try {
     console.log(`Received request to delete item with ID: ${req.params.id}`);
@@ -36,6 +62,7 @@ app.delete("/api/data/:id", async (req, res) => {
       return res.status(404).send("Data not found");
     }
     console.log("Successfully deleted data for ID:", req.params.id);
+    notifyClients({ action: "delete", id: req.params.id }); // Уведомляем клиентов
     res.status(200).send("Data deleted successfully");
   } catch (error) {
     console.error("Error deleting data:", error);
@@ -66,6 +93,7 @@ app.post("/api/data", async (req, res) => {
     console.log("Request body:", req.body); // Логируем тело запроса
     const newItem = new Data(req.body);
     await newItem.save();
+    notifyClients({ action: "add", item: newItem }); // Уведомляем клиентов
     res.status(201).json(newItem);
   } catch (error) {
     console.error("Error adding data:", error);
@@ -78,6 +106,7 @@ app.put("/api/data/:id", async (req, res) => {
     const updatedItem = await Data.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
+    notifyClients({ action: "update", item: updatedItem }); // Уведомляем клиентов
     res.json(updatedItem);
   } catch (error) {
     console.error("Error updating data:", error);
@@ -94,6 +123,7 @@ app.get("/api/drivers", async (req, res) => {
     res.status(500).json({ error: "Error fetching drivers" });
   }
 });
+
 app.get("/api/users", async (req, res) => {
   try {
     const users = await User.find();
@@ -102,6 +132,7 @@ app.get("/api/users", async (req, res) => {
     res.status(500).json({ error: "Error fetching drivers" });
   }
 });
+
 app.post("/api/drivers", async (req, res) => {
   try {
     const newDriver = new Driver(req.body);
@@ -117,9 +148,19 @@ app.post("/api/drivers", async (req, res) => {
 app.use("/api", authRoutes);
 
 const port = process.env.PORT || 5000;
-app.listen(port, () => {
+
+// Обработка WebSocket-подключений в express
+const server = app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
+server.on("upgrade", (request, socket, head) => {
+  wss.handleUpgrade(request, socket, head, (ws) => {
+    wss.emit("connection", ws, request);
+  });
+});
+
+// Serve React app
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../build", "index.html"));
 });

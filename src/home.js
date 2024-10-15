@@ -76,43 +76,30 @@ const Home = () => {
     fetchData();
     fetchUsers();
     fetchDrivers();
-    const interval = setInterval(fetchData, 5000);
-    return () => clearInterval(interval);
   }, []);
 
+  // Функция для обновления порядка элементов
   const handleUpdateOrder = async (itemId, newOrderIndex) => {
     try {
       await axios.put(`${apiUrl}/api/data/${itemId}`, {
         orderIndex: newOrderIndex,
       });
-      fetchData();
+      fetchData(); // Перезагрузка данных после обновления
     } catch (error) {
       console.error("Error updating data:", error);
     }
   };
 
-  const moveItemUp = (item) => {
-    const currentOrderIndex = item.orderIndex;
-
+  // Функция для перемещения элемента вверх
+  const moveItemUp = (itemId, currentOrderIndex) => {
     if (currentOrderIndex > 0) {
-      const neighborItem = data.find(
-        (dataItem) => dataItem.orderIndex === currentOrderIndex - 1
-      );
-
-      handleUpdateOrder(item._id, currentOrderIndex - 1);
-      handleUpdateOrder(neighborItem._id, currentOrderIndex);
+      handleUpdateOrder(itemId, currentOrderIndex - 1); // Перемещение вверх
     }
   };
-  const moveItemDown = (item) => {
-    const currentOrderIndex = item.orderIndex;
 
-    const nextItem = data.find(
-      (dataItem) => dataItem.orderIndex === currentOrderIndex + 1
-    );
-    if (nextItem) {
-      handleUpdateOrder(item._id, currentOrderIndex + 1);
-      handleUpdateOrder(nextItem._id, currentOrderIndex);
-    }
+  // Функция для перемещения элемента вниз
+  const moveItemDown = (itemId, currentOrderIndex) => {
+    handleUpdateOrder(itemId, currentOrderIndex + 1); // Перемещение вниз
   };
 
   useEffect(() => {
@@ -208,6 +195,7 @@ const Home = () => {
           orderIndex: newIndex + i,
         });
         setData((prevData) => [...prevData, response.data]);
+        console.log(setData((prevData) => [...prevData, response.data]));
       }
     } catch (error) {
       console.error("Error adding multiple data with class:", error);
@@ -703,12 +691,7 @@ const Home = () => {
           </div>
         </div>
       </div>
-      {/* {item.colorClass === "highlight" && (
-        <td>
-          <button onClick={() => moveItemUp(item, item.orderIndex)}>↑</button>
-          <button onClick={() => moveItemDown(item, item.orderIndex)}>↓</button>
-        </td>
-      )} */}
+
       <h1>
         {getMonthName(currentMonth)} {currentMonth.getFullYear()}
       </h1>
@@ -960,6 +943,18 @@ const Home = () => {
                       >
                         Удалить
                       </button>
+
+                      {/* <button
+                        onClick={() => moveItemUp(item._id, item.orderIndex)}
+                        disabled={item.orderIndex === 0}
+                      >
+                        ↑
+                      </button>
+                      <button
+                        onClick={() => moveItemDown(item._id, item.orderIndex)}
+                      >
+                        ↓
+                      </button> */}
                     </td>
                   </tr>
                 ))}
