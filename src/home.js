@@ -42,7 +42,6 @@ const Home = () => {
   const currentDayRef = useRef(null);
   const initialRender = useRef(true);
   const [rowCount, setRowCount] = useState(1); // По умолчанию 1 строка
-  const [socket, setSocket] = useState(null); // Состояние для WebSocket
 
   const toggleVisibilityBlock = () => {
     setIsVisibleBlock(!isVisibleBlock);
@@ -79,36 +78,36 @@ const Home = () => {
     fetchUsers();
     fetchDrivers();
 
-    const socket = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
+    // const socket = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
 
-    socket.onmessage = (event) => {
-      const messageData = JSON.parse(event.data);
-      console.log("Message from server:", messageData);
+    // socket.onmessage = (event) => {
+    //   const messageData = JSON.parse(event.data);
+    //   console.log("Message from server:", messageData);
 
-      switch (messageData.action) {
-        case "add":
-          setData((prevData) => [...prevData, messageData.item]);
-          break;
-        case "update":
-          setData((prevData) =>
-            prevData.map((item) =>
-              item._id === messageData.item._id ? messageData.item : item
-            )
-          );
-          break;
-        case "delete":
-          setData((prevData) =>
-            prevData.filter((item) => item._id !== messageData.id)
-          );
-          break;
-        default:
-          break;
-      }
-    };
+    //   switch (messageData.action) {
+    //     case "add":
+    //       setData((prevData) => [...prevData, messageData.item]);
+    //       break;
+    //     case "update":
+    //       setData((prevData) =>
+    //         prevData.map((item) =>
+    //           item._id === messageData.item._id ? messageData.item : item
+    //         )
+    //       );
+    //       break;
+    //     case "delete":
+    //       setData((prevData) =>
+    //         prevData.filter((item) => item._id !== messageData.id)
+    //       );
+    //       break;
+    //     default:
+    //       break;
+    //   }
+    // };
 
-    return () => {
-      socket.close();
-    };
+    // return () => {
+    //   socket.close();
+    // };
   }, []);
 
   // Функция для обновления порядка элементов
@@ -219,6 +218,8 @@ const Home = () => {
         (item) => item.colorClass === className
       );
       const newIndex = itemsWithClass.length > 0 ? itemsWithClass.length : 0;
+      const newItems = [];
+
       for (let i = 0; i < count; i++) {
         const response = await axios.post(`${apiUrl}/api/data`, {
           ...newItem,
@@ -227,9 +228,11 @@ const Home = () => {
           date: selectedDate,
           orderIndex: newIndex + i,
         });
-        setData((prevData) => [...prevData, response.data]);
-        console.log(setData((prevData) => [...prevData, response.data]));
+        newItems.push(response.data); // Добавляем в локальный массив
       }
+
+      // Обновляем состояние один раз после завершения цикла
+      setData((prevData) => [...prevData, ...newItems]);
     } catch (error) {
       console.error("Error adding multiple data with class:", error);
     }
