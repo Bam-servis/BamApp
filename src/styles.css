@@ -214,7 +214,19 @@ h1 {
   border: 1px solid;
 }
 .highlight-delete {
-  background-color: #007bff;
+  background-color: #007bff !important;
+}
+tr.highlight + .row-inCompleted .row-row {
+  background-color: #ffeb3b !important;
+}
+tr.highlight + .row-completed .row-row {
+  background-color: #ffeb3b !important;
+}
+tr.highlight + .row-comand .row-row {
+  background-color: #ffeb3b !important;
+}
+tr.highlight + .row-in-progress .row-row {
+  background-color: #ffeb3b !important;
 }
 button {
   background-color: #007bff;
@@ -519,9 +531,20 @@ th {
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: fixed;
+  transform: translate(-320px, 50%);
+  transition: all 1s;
+  background-color: #fff;
+  z-index: 999999;
 }
-
+.data:hover {
+  transform: translate(-60px, 50%);
+}
 @media (max-width: 800px) {
+  .data {
+    position: static;
+    transform: translate(0);
+  }
   .sticky-h1 {
     color: #fff;
   }

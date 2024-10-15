@@ -17,7 +17,7 @@ const Home = () => {
   const [highlightId, setHighlightId] = useState(null);
 
   const apiUrl = process.env.REACT_APP_API_URL;
-
+  const userNameRoot = localStorage.getItem("username");
   const [newItem, setNewItem] = useState({
     doneCheck: "",
     date: new Date().toISOString().split("T")[0],
@@ -42,25 +42,20 @@ const Home = () => {
   const initialRender = useRef(true);
   const [rowCount, setRowCount] = useState(1); // По умолчанию 1 строка
 
-  const toggleVisibility = () => {
-    setIsVisible(!isVisible);
-  };
   const toggleVisibilityBlock = () => {
     setIsVisibleBlock(!isVisibleBlock);
   };
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`${apiUrl}/api/data`);
+      setData(response.data);
+      const totalCount = response.data.length;
+      setTotalRecords(totalCount);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${apiUrl}/api/data`);
-        setData(response.data);
-        const totalCount = response.data.length;
-        console.log("Total records count fetched:", totalCount);
-        setTotalRecords(totalCount);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
     const fetchDrivers = async () => {
       try {
         const response = await axios.get(`${apiUrl}/api/drivers`);
@@ -78,10 +73,47 @@ const Home = () => {
         console.error("Error fetching setUsers:", error);
       }
     };
-    fetchUsers();
     fetchData();
+    fetchUsers();
     fetchDrivers();
+    const interval = setInterval(fetchData, 5000);
+    return () => clearInterval(interval);
   }, []);
+
+  const handleUpdateOrder = async (itemId, newOrderIndex) => {
+    try {
+      await axios.put(`${apiUrl}/api/data/${itemId}`, {
+        orderIndex: newOrderIndex,
+      });
+      fetchData();
+    } catch (error) {
+      console.error("Error updating data:", error);
+    }
+  };
+
+  const moveItemUp = (item) => {
+    const currentOrderIndex = item.orderIndex;
+
+    if (currentOrderIndex > 0) {
+      const neighborItem = data.find(
+        (dataItem) => dataItem.orderIndex === currentOrderIndex - 1
+      );
+
+      handleUpdateOrder(item._id, currentOrderIndex - 1);
+      handleUpdateOrder(neighborItem._id, currentOrderIndex);
+    }
+  };
+  const moveItemDown = (item) => {
+    const currentOrderIndex = item.orderIndex;
+
+    const nextItem = data.find(
+      (dataItem) => dataItem.orderIndex === currentOrderIndex + 1
+    );
+    if (nextItem) {
+      handleUpdateOrder(item._id, currentOrderIndex + 1);
+      handleUpdateOrder(nextItem._id, currentOrderIndex);
+    }
+  };
 
   useEffect(() => {
     if (initialRender.current && currentDayRef.current) {
@@ -163,12 +195,17 @@ const Home = () => {
 
   const addMultipleItemsWithClass = async (className, count) => {
     try {
+      const itemsWithClass = data.filter(
+        (item) => item.colorClass === className
+      );
+      const newIndex = itemsWithClass.length > 0 ? itemsWithClass.length : 0;
       for (let i = 0; i < count; i++) {
         const response = await axios.post(`${apiUrl}/api/data`, {
           ...newItem,
           colorClass: className,
           updatedBy: localStorage.getItem("username"),
           date: selectedDate,
+          orderIndex: newIndex + i,
         });
         setData((prevData) => [...prevData, response.data]);
       }
@@ -176,6 +213,7 @@ const Home = () => {
       console.error("Error adding multiple data with class:", error);
     }
   };
+
   const handleSelectChange = async (e, itemId) => {
     const { value } = e.target;
 
@@ -431,12 +469,8 @@ const Home = () => {
     data,
     getPreviousMonth(currentMonth)
   );
-
   return (
     <div>
-      <button onClick={toggleVisibility}>
-        {isVisible ? "Скрыть" : "Показать"}
-      </button>
       <button onClick={toggleVisibilityBlock}>
         {isVisibleBlock ? "Скрыть" : "Характеристики"}
       </button>
@@ -565,114 +599,116 @@ const Home = () => {
           </div>
         </div>
       )}
-      {isVisible && (
-        <div className="hide">
-          <div className="bam-servis">"ООО Бам-Сервис гарант"</div>
-          <div className="wrapper">
-            <div className="data">
-              <div className="month">
-                <button onClick={() => handleMonthChange("prev")}>
-                  Пред. Месяц
-                </button>
-                <button onClick={() => handleMonthChange("next")}>
-                  След. Месяц
-                </button>
-                <button onClick={() => setCurrentMonth(new Date())}>
-                  Текущий Месяц
-                </button>
-              </div>
 
-              <div className="sybarenda">
-                <input
-                  type="date"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                />
-                <span className="title">Добавить суб аренду</span>
-                <input
-                  type="number"
-                  value={rowCount}
-                  onChange={(e) => setRowCount(Number(e.target.value))}
-                  min="1"
-                  placeholder="Введите количество строк"
-                />
-                <button
-                  onClick={() =>
-                    addMultipleItemsWithClass("highlight", rowCount)
-                  }
-                >
-                  Добавить {rowCount} строк
-                </button>
-              </div>
-              <div className="baza">
-                <input
-                  type="date"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                />
-                <span className="title">Добавить базу</span>
-                <button
-                  onClick={addEntriesForSelectedDate}
-                  className="add-entries"
-                >
-                  Добавить
-                </button>
-              </div>
-              <div className="entrys">
-                <input
-                  type="date"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                />
-                <span className="title">Добавить Обьект</span>
-                <button onClick={addNewItem}>Добавить</button>
-              </div>
-              <div className="driv">
-                <span className="title">Добавить нового водителя</span>
-                <button onClick={handleAddNewDriver}>Добавить</button>
-                <input
-                  type="text"
-                  className="drivers-new"
-                  placeholder="Новый Водитель"
-                  value={newDriver}
-                  onChange={(e) => setNewDriver(e.target.value)}
-                />
-              </div>
+      <div className="hide">
+        <div className="bam-servis">"ООО Бам-Сервис гарант"</div>
+        <div className="wrapper">
+          <div className="data">
+            <div className="sybarenda">
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+              />
+              <span className="title">Добавить суб аренду</span>
+              <input
+                type="number"
+                value={rowCount}
+                onChange={(e) => setRowCount(Number(e.target.value))}
+                min="1"
+                placeholder="Введите количество строк"
+              />
+              <button
+                onClick={() => addMultipleItemsWithClass("highlight", rowCount)}
+              >
+                Добавить {rowCount} строк
+              </button>
             </div>
-            <div className="statistic">
-              <div className="time">
-                За все время: <span className="total">{totalRecords}</span>
-              </div>
-              <div className="time">
-                За текущий месяц:
-                <span className="total">{currentMonthEntriesCount}</span>
-              </div>
-              <div className="time">
-                За предыдущий месяц:
-                <span className="total">{previousMonthEntriesCount}</span>
-              </div>
+            <div className="baza">
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+              />
+              <span className="title">Добавить базу</span>
+              <button
+                onClick={addEntriesForSelectedDate}
+                className="add-entries"
+              >
+                Добавить
+              </button>
             </div>
-            <div className="entry-block">
-              <div className="green">
-                <p>Оплачен</p>
-                <span className="green-span"></span>
-              </div>
-              <div className="gold">
-                <p>Частично</p>
-                <span className="gold-span"></span>
-              </div>
-              <div className="red">
-                <p>Нет оплаты</p>
-                <span className="red-span"></span>
-              </div>
-              <div className="yellow">
-                <p>Отсрочка</p>
-                <span className="yellow-span"></span>
-              </div>
+            <div className="entrys">
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+              />
+              <span className="title">Добавить Обьект</span>
+              <button onClick={addNewItem}>Добавить</button>
+            </div>
+            <div className="driv">
+              <span className="title">Добавить нового водителя</span>
+              <button onClick={handleAddNewDriver}>Добавить</button>
+              <input
+                type="text"
+                className="drivers-new"
+                placeholder="Новый Водитель"
+                value={newDriver}
+                onChange={(e) => setNewDriver(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="statistic">
+            <div className="time">
+              За все время: <span className="total">{totalRecords}</span>
+            </div>
+            <div className="time">
+              За текущий месяц:
+              <span className="total">{currentMonthEntriesCount}</span>
+            </div>
+            <div className="time">
+              За предыдущий месяц:
+              <span className="total">{previousMonthEntriesCount}</span>
+            </div>
+          </div>
+          <div className="month">
+            <button onClick={() => handleMonthChange("prev")}>
+              Пред. Месяц
+            </button>
+            <button onClick={() => handleMonthChange("next")}>
+              След. Месяц
+            </button>
+            <button onClick={() => setCurrentMonth(new Date())}>
+              Текущий Месяц
+            </button>
+          </div>
+          <div className="entry-block">
+            <div className="green">
+              <p>Оплачен</p>
+              <span className="green-span"></span>
+            </div>
+            <div className="gold">
+              <p>Частично</p>
+              <span className="gold-span"></span>
+            </div>
+            <div className="red">
+              <p>Нет оплаты</p>
+              <span className="red-span"></span>
+            </div>
+            <div className="yellow">
+              <p>Отсрочка</p>
+              <span className="yellow-span"></span>
             </div>
           </div>
         </div>
-      )}
+      </div>
+      {/* {item.colorClass === "highlight" && (
+        <td>
+          <button onClick={() => moveItemUp(item, item.orderIndex)}>↑</button>
+          <button onClick={() => moveItemDown(item, item.orderIndex)}>↓</button>
+        </td>
+      )} */}
       <h1>
         {getMonthName(currentMonth)} {currentMonth.getFullYear()}
       </h1>
@@ -694,9 +730,9 @@ const Home = () => {
                   <th>Гос №</th>
                   <th>Водитель</th>
                   <th>Заказчик</th>
-                  {users.username === "Tanya" && <th>№ Путевого</th>}
-                  {users.username === "Tanya" && <th>Часы</th>}
-                  {users.username === "Tanya" && <th>Статус</th>}
+                  {userNameRoot === "Tanya" && <th>№ Путевого</th>}
+                  {userNameRoot === "Tanya" && <th>Часы</th>}
+                  {userNameRoot === "Tanya" && <th>Статус</th>}
                   <th>Стоимость Заказа</th>
                   <th>Оплата</th>
                   <th>Сумма Оплаты</th>
@@ -737,7 +773,7 @@ const Home = () => {
                       </select>
                     </td>
 
-                    <td>
+                    <td className="row-row">
                       <input
                         type="text"
                         style={{
@@ -800,7 +836,7 @@ const Home = () => {
                         }
                       />
                     </td>
-                    {users.username === "Tanya" && (
+                    {userNameRoot === "Tanya" && (
                       <>
                         <td>
                           <input
@@ -808,7 +844,7 @@ const Home = () => {
                             style={{ width: "50px" }}
                             value={item.routeNumber || ""}
                             onChange={(e) =>
-                              handleInputChange(e, item.id, "routeNumber")
+                              handleInputChange(e, item._id, "routeNumber")
                             }
                           />
                         </td>
@@ -818,7 +854,7 @@ const Home = () => {
                             style={{ width: "50px" }}
                             value={item.hours || ""}
                             onChange={(e) =>
-                              handleInputChange(e, item.id, "hours")
+                              handleInputChange(e, item._id, "hours")
                             }
                           />
                         </td>
@@ -827,7 +863,7 @@ const Home = () => {
                             type="checkbox"
                             checked={item.isTrue || false}
                             onChange={(e) =>
-                              handleCheckboxChange(e, item.id, "checkbox")
+                              handleCheckboxChange(e, item._id, "checkbox")
                             }
                           />
                         </td>
@@ -918,8 +954,8 @@ const Home = () => {
                     <td>
                       <button
                         className="btn-del"
-                        onMouseEnter={() => setHighlightId(item._id)} // Подсветка при наведении
-                        onMouseLeave={() => setHighlightId(null)} // Убираем подсветку при уходе курсора
+                        onMouseEnter={() => setHighlightId(item._id)}
+                        onMouseLeave={() => setHighlightId(null)}
                         onClick={() => handleDeleteWithConfirmation(item._id)}
                       >
                         Удалить
