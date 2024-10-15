@@ -13,6 +13,7 @@ const Home = () => {
   const [totalRecords, setTotalRecords] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const [isVisibleBlock, setIsVisibleBlock] = useState(false);
+  const [messages, setMessages] = useState([]);
 
   const [highlightId, setHighlightId] = useState(null);
 
@@ -76,6 +77,29 @@ const Home = () => {
     fetchData();
     fetchUsers();
     fetchDrivers();
+
+    const socket = new WebSocket(
+      `${process.env.REACT_APP_API_URL.replace(/^http/, "ws")}/ws`
+    );
+
+    socket.onopen = () => {
+      console.log("Connected to WebSocket server");
+    };
+
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      console.log("Message from server:", data);
+      setMessages((prevMessages) => [...prevMessages, data]);
+    };
+
+    socket.onclose = () => {
+      console.log("WebSocket connection closed");
+    };
+
+    // Очистка подключения при размонтировании компонента
+    return () => {
+      socket.close();
+    };
   }, []);
 
   // Функция для обновления порядка элементов
