@@ -85,23 +85,14 @@ const Home = () => {
       console.log("Message from server:", messageData);
 
       switch (messageData.action) {
-        case "add":
-          setData((prevData) => {
-            const exists = prevData.some(
-              (item) => item._id === messageData.item._id
-            );
-            if (!exists) {
-              return [...prevData, messageData.item];
-            }
-            return prevData;
-          });
-          break;
         case "update":
-          setData((prevData) =>
-            prevData.map((item) =>
-              item._id === messageData.item._id ? messageData.item : item
-            )
-          );
+          setData((prevData) => {
+            return prevData.map((item) => {
+              return item._id === messageData.item._id
+                ? { ...item, ...messageData.item }
+                : item;
+            });
+          });
           break;
         case "delete":
           setData((prevData) =>
