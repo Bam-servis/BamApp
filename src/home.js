@@ -78,36 +78,44 @@ const Home = () => {
     fetchUsers();
     fetchDrivers();
 
-    // const socket = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
+    const socket = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
 
-    // socket.onmessage = (event) => {
-    //   const messageData = JSON.parse(event.data);
-    //   console.log("Message from server:", messageData);
+    socket.onmessage = (event) => {
+      const messageData = JSON.parse(event.data);
+      console.log("Message from server:", messageData);
 
-    //   switch (messageData.action) {
-    //     case "add":
-    //       setData((prevData) => [...prevData, messageData.item]);
-    //       break;
-    //     case "update":
-    //       setData((prevData) =>
-    //         prevData.map((item) =>
-    //           item._id === messageData.item._id ? messageData.item : item
-    //         )
-    //       );
-    //       break;
-    //     case "delete":
-    //       setData((prevData) =>
-    //         prevData.filter((item) => item._id !== messageData.id)
-    //       );
-    //       break;
-    //     default:
-    //       break;
-    //   }
-    // };
+      switch (messageData.action) {
+        case "add":
+          setData((prevData) => {
+            const exists = prevData.some(
+              (item) => item._id === messageData.item._id
+            );
+            if (!exists) {
+              return [...prevData, messageData.item];
+            }
+            return prevData;
+          });
+          break;
+        case "update":
+          setData((prevData) =>
+            prevData.map((item) =>
+              item._id === messageData.item._id ? messageData.item : item
+            )
+          );
+          break;
+        case "delete":
+          setData((prevData) =>
+            prevData.filter((item) => item._id !== messageData.id)
+          );
+          break;
+        default:
+          break;
+      }
+    };
 
-    // return () => {
-    //   socket.close();
-    // };
+    return () => {
+      socket.close();
+    };
   }, []);
 
   // Функция для обновления порядка элементов
