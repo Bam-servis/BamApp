@@ -532,7 +532,7 @@ th {
   flex-direction: column;
   align-items: center;
   position: fixed;
-  transform: translate(-320px, 50%);
+  transform: translate(-295px, 50%);
   transition: all 1s;
   background-color: #fff;
   z-index: 999999;
