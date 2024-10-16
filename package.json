@@ -14,6 +14,7 @@
     "crypto-browserify": "^3.12.0",
     "date-fns": "^4.0.0-beta.1",
     "dayjs": "^1.11.13",
+    "lodash": "^4.17.21",
     "mongodb": "^6.9.0",
     "mongoose": "^8.6.2",
     "path-browserify": "^1.0.1",

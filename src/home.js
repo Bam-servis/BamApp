@@ -77,27 +77,48 @@ const Home = () => {
     fetchData();
     fetchUsers();
     fetchDrivers();
-
     const socket = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
+    let updateTimeout;
+    const addedItems = new Set();
 
     socket.onmessage = (event) => {
       const messageData = JSON.parse(event.data);
-      console.log("Message from server:", messageData);
-
       switch (messageData.action) {
-        case "update":
+        case "add":
           setData((prevData) => {
-            return prevData.map((item) => {
-              return item._id === messageData.item._id
-                ? { ...item, ...messageData.item }
-                : item;
-            });
+            const exists = prevData.some(
+              (item) => item._id === messageData.item._id
+            );
+
+            if (!exists && !addedItems.has(messageData.item._id)) {
+              addedItems.add(messageData.item._id);
+              return [...prevData, messageData.item];
+            }
+            return prevData;
           });
           break;
+
+        case "update":
+          clearTimeout(updateTimeout);
+          updateTimeout = setTimeout(() => {
+            setData((prevData) => {
+              return prevData.map((item) => {
+                return item._id === messageData.item._id
+                  ? { ...item, ...messageData.item }
+                  : item;
+              });
+            });
+          }, 300);
+          break;
         case "delete":
-          setData((prevData) =>
-            prevData.filter((item) => item._id !== messageData.id)
-          );
+          setData((prevData) => {
+            const filteredData = prevData.filter(
+              (item) => item._id !== messageData.id
+            );
+
+            return filteredData;
+          });
+
           break;
         default:
           break;
@@ -106,6 +127,7 @@ const Home = () => {
 
     return () => {
       socket.close();
+      clearTimeout(updateTimeout); // Очищаем таймер при размонтировании компонента
     };
   }, []);
 
