@@ -527,6 +527,7 @@ th {
   background-repeat: no-repeat;
   border-radius: 80px;
 }
+
 .data {
   display: flex;
   flex-direction: column;
