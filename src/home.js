@@ -65,24 +65,36 @@ const Home = () => {
         console.error("Error fetching drivers:", error);
       }
     };
+
     const fetchUsers = async () => {
       try {
         const response = await axios.get(`${apiUrl}/api/users`);
-
         setUsers(response.data);
       } catch (error) {
         console.error("Error fetching setUsers:", error);
       }
     };
+
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/api/data`); // Измените на ваш правильный API
+        setData(response.data); // Предполагая, что у вас есть setData
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
     fetchData();
     fetchUsers();
     fetchDrivers();
+
     const socket = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
-    let updateTimeout;
     const addedItems = new Set();
 
     socket.onmessage = (event) => {
       const messageData = JSON.parse(event.data);
+      console.log("Received message:", messageData); // Л
+
       switch (messageData.action) {
         case "add":
           setData((prevData) => {
@@ -99,27 +111,29 @@ const Home = () => {
           break;
 
         case "update":
-          clearTimeout(updateTimeout);
-          updateTimeout = setTimeout(() => {
-            setData((prevData) => {
-              return prevData.map((item) => {
-                return item._id === messageData.item._id
-                  ? { ...item, ...messageData.item }
-                  : item;
-              });
+          console.log("Processing update for item:", messageData.item);
+          setData((prevData) => {
+            console.log("Previous data length:", prevData.length);
+
+            return prevData.map((item) => {
+              if (item._id === messageData.item._id) {
+                console.log("Updating item:", messageData.item);
+                return { ...item, ...messageData.item };
+              }
+              return item;
             });
-          }, 5000);
+          });
           break;
+
         case "delete":
           setData((prevData) => {
             const filteredData = prevData.filter(
               (item) => item._id !== messageData.id
             );
-
             return filteredData;
           });
-
           break;
+
         default:
           break;
       }
@@ -127,7 +141,6 @@ const Home = () => {
 
     return () => {
       socket.close();
-      clearTimeout(updateTimeout); // Очищаем таймер при размонтировании компонента
     };
   }, []);
 
