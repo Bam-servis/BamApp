@@ -108,7 +108,7 @@ const Home = () => {
                   : item;
               });
             });
-          }, 300);
+          }, 5000);
           break;
         case "delete":
           setData((prevData) => {
