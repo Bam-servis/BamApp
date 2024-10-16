@@ -6,26 +6,28 @@ const User = require("../models/User"); // Импорт модели польз�
 const { generateToken } = require("../utils/authService");
 const router = express.Router();
 
-// Регистрация пользователя
 router.post("/register", async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, name, password } = req.body;
+    console.log("Incoming data:", { username, name, password }); // Логируем полученные данные
 
-    // Проверка наличия пользователя
     const existingUser = await User.findOne({ username });
     if (existingUser) {
       return res.status(400).json({ error: "User already exists" });
     }
 
-    // Хеширование пароля
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Создание нового пользователя
-    const user = new User({ username, password: hashedPassword });
+    const user = new User({
+      username,
+      name,
+      password: hashedPassword,
+    });
     await user.save();
 
     res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
+    console.error("Error registering user:", error); // Логируем ошибку
     res.status(500).json({ error: "Error registering user" });
   }
 });

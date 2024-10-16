@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 
 const Register = () => {
   const [username, setUsername] = useState("");
+  const [name, setName] = useState(""); // Новое состояние для name
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ const Register = () => {
     try {
       await axios.post(`${apiUrl}/api/register`, {
         username,
+        name, // Передаем имя в запросе
         password,
       });
       navigate("/login");
@@ -39,11 +41,20 @@ const Register = () => {
     <div>
       <h2>Register</h2>
       <form onSubmit={handleSubmit}>
+        {/* Поле для ввода имени */}
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Full Name"
+          required
+        />
         <input
           type="text"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           placeholder="Username"
+          required
         />
         <input
           type="password"
@@ -53,6 +64,7 @@ const Register = () => {
             setPasswordError("");
           }}
           placeholder="Password"
+          required
         />
         {/* Вывод ошибки */}
         {passwordError && <p style={{ color: "red" }}>{passwordError}</p>}
