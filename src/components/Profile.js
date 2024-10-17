@@ -134,7 +134,7 @@ const Profile = () => {
                 Заказчик: <span>{order.customer}</span>
               </p>
               <p>
-                № Путевого: <span>{order.vehicleNumber}</span>
+                № Путевого: <span>{order.routeNumber}</span>
               </p>
               <p>
                 Часы: <span>{order.hours}</span>

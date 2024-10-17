@@ -4,6 +4,7 @@ import { hardcodedData } from "./hardcodedData";
 import "./styles.css";
 import { format, addMonths, subMonths } from "date-fns";
 import { ru } from "date-fns/locale";
+import { debounce } from "lodash";
 
 const Home = () => {
   const [data, setData] = useState([]);
@@ -88,59 +89,100 @@ const Home = () => {
     fetchUsers();
     fetchDrivers();
 
-    const socket = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
     const addedItems = new Set();
+    let socket;
+    let reconnectAttempt = 0;
+    const maxReconnectAttempts = 10;
 
-    socket.onmessage = (event) => {
-      const messageData = JSON.parse(event.data);
-      console.log("Received message:", messageData); // Л
+    const createWebSocketConnection = () => {
+      socket = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
 
-      switch (messageData.action) {
-        case "add":
-          setData((prevData) => {
-            const exists = prevData.some(
-              (item) => item._id === messageData.item._id
-            );
+      socket.onopen = () => {
+        console.log("WebSocket connected!");
+        reconnectAttempt = 0; // Сбрасываем количество попыток при успешном подключении
+      };
 
-            if (!exists && !addedItems.has(messageData.item._id)) {
-              addedItems.add(messageData.item._id);
-              return [...prevData, messageData.item];
-            }
-            return prevData;
-          });
-          break;
+      socket.onmessage = (event) => {
+        const messageData = JSON.parse(event.data);
+        console.log("Received message:", messageData);
 
-        case "update":
-          console.log("Processing update for item:", messageData.item);
-          setData((prevData) => {
-            console.log("Previous data length:", prevData.length);
+        switch (messageData.action) {
+          case "add":
+            setData((prevData) => {
+              const exists = prevData.some(
+                (item) => item._id === messageData.item._id
+              );
 
-            return prevData.map((item) => {
-              if (item._id === messageData.item._id) {
-                console.log("Updating item:", messageData.item);
-                return { ...item, ...messageData.item };
+              if (!exists && !addedItems.has(messageData.item._id)) {
+                addedItems.add(messageData.item._id);
+                return [...prevData, messageData.item];
               }
-              return item;
+              return prevData;
             });
-          });
-          break;
+            break;
 
-        case "delete":
-          setData((prevData) => {
-            const filteredData = prevData.filter(
-              (item) => item._id !== messageData.id
-            );
-            return filteredData;
-          });
-          break;
+          case "update":
+            console.log("Processing update for item:", messageData.item);
+            setData((prevData) => {
+              console.log("Previous data length:", prevData.length);
 
-        default:
-          break;
+              return prevData.map((item) => {
+                if (item._id === messageData.item._id) {
+                  console.log("Updating item:", messageData.item);
+                  return { ...item, ...messageData.item };
+                }
+                return item;
+              });
+            });
+            break;
+
+          case "delete":
+            setData((prevData) => {
+              const filteredData = prevData.filter(
+                (item) => item._id !== messageData.id
+              );
+              return filteredData;
+            });
+            break;
+
+          default:
+            break;
+        }
+      };
+
+      socket.onclose = () => {
+        console.log("WebSocket disconnected. Attempting to reconnect...");
+        reconnectWebSocket();
+      };
+
+      socket.onerror = (error) => {
+        console.error("WebSocket error:", error);
+        socket.close();
+      };
+    };
+
+    const reconnectWebSocket = () => {
+      if (reconnectAttempt < maxReconnectAttempts) {
+        const reconnectDelay = Math.min(5000, 1000 * (reconnectAttempt + 1));
+        reconnectAttempt++;
+        setTimeout(() => {
+          console.log(`Reconnecting WebSocket... attempt ${reconnectAttempt}`);
+          createWebSocketConnection();
+        }, reconnectDelay);
+      } else {
+        console.error(
+          "Max reconnect attempts reached. WebSocket won't reconnect."
+        );
       }
     };
 
+    const timeout = 300;
+    setTimeout(() => {
+      createWebSocketConnection();
+    }, timeout);
+
     return () => {
-      socket.close();
+      if (socket) socket.close();
     };
   }, []);
 
@@ -225,9 +267,10 @@ const Home = () => {
     const updatedValue = type === "checkbox" ? checked : value;
     const username = localStorage.getItem("username");
     const itemUser = "Tanya";
+
     if (fieldName === "hours" || fieldName === "routeNumber") {
       if (username !== itemUser) {
-        alert(`У вас нет прав!. Узнать - ${"Tanya"}`);
+        alert(`У вас нет прав!. Узнать - ${itemUser}`);
         return;
       }
     }
@@ -237,15 +280,19 @@ const Home = () => {
     );
     setData(updatedData);
 
-    axios
-      .put(`${apiUrl}/api/data/${itemId}`, {
-        ...updatedData.find((item) => item._id === itemId),
-        [fieldName]: updatedValue,
-        updatedBy: username,
-      })
-      .catch((error) => console.error("Error saving data:", error));
+    sendUpdateDebounced(itemId, fieldName, updatedValue, username);
   };
-
+  const sendUpdateDebounced = debounce(
+    (itemId, fieldName, updatedValue, username) => {
+      axios
+        .put(`${apiUrl}/api/data/${itemId}`, {
+          [fieldName]: updatedValue,
+          updatedBy: username,
+        })
+        .catch((error) => console.error("Error saving data:", error));
+    },
+    1000
+  );
   const addMultipleItemsWithClass = async (className, count) => {
     try {
       const itemsWithClass = data.filter(
