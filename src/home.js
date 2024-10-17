@@ -88,60 +88,60 @@ const Home = () => {
     fetchUsers();
     fetchDrivers();
 
-    const socket = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
-    const addedItems = new Set();
+    // const socket = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
+    // const addedItems = new Set();
 
-    socket.onmessage = (event) => {
-      const messageData = JSON.parse(event.data);
-      console.log("Received message:", messageData); // Л
+    // socket.onmessage = (event) => {
+    //   const messageData = JSON.parse(event.data);
+    //   console.log("Received message:", messageData); // Л
 
-      switch (messageData.action) {
-        case "add":
-          setData((prevData) => {
-            const exists = prevData.some(
-              (item) => item._id === messageData.item._id
-            );
+    //   switch (messageData.action) {
+    //     case "add":
+    //       setData((prevData) => {
+    //         const exists = prevData.some(
+    //           (item) => item._id === messageData.item._id
+    //         );
 
-            if (!exists && !addedItems.has(messageData.item._id)) {
-              addedItems.add(messageData.item._id);
-              return [...prevData, messageData.item];
-            }
-            return prevData;
-          });
-          break;
+    //         if (!exists && !addedItems.has(messageData.item._id)) {
+    //           addedItems.add(messageData.item._id);
+    //           return [...prevData, messageData.item];
+    //         }
+    //         return prevData;
+    //       });
+    //       break;
 
-        case "update":
-          console.log("Processing update for item:", messageData.item);
-          setData((prevData) => {
-            console.log("Previous data length:", prevData.length);
+    //     case "update":
+    //       console.log("Processing update for item:", messageData.item);
+    //       setData((prevData) => {
+    //         console.log("Previous data length:", prevData.length);
 
-            return prevData.map((item) => {
-              if (item._id === messageData.item._id) {
-                console.log("Updating item:", messageData.item);
-                return { ...item, ...messageData.item };
-              }
-              return item;
-            });
-          });
-          break;
+    //         return prevData.map((item) => {
+    //           if (item._id === messageData.item._id) {
+    //             console.log("Updating item:", messageData.item);
+    //             return { ...item, ...messageData.item };
+    //           }
+    //           return item;
+    //         });
+    //       });
+    //       break;
 
-        case "delete":
-          setData((prevData) => {
-            const filteredData = prevData.filter(
-              (item) => item._id !== messageData.id
-            );
-            return filteredData;
-          });
-          break;
+    //     case "delete":
+    //       setData((prevData) => {
+    //         const filteredData = prevData.filter(
+    //           (item) => item._id !== messageData.id
+    //         );
+    //         return filteredData;
+    //       });
+    //       break;
 
-        default:
-          break;
-      }
-    };
+    //     default:
+    //       break;
+    //   }
+    // };
 
-    return () => {
-      socket.close();
-    };
+    // return () => {
+    //   socket.close();
+    // };
   }, []);
 
   // Функция для обновления порядка элементов
