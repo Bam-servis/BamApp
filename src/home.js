@@ -85,9 +85,22 @@ const Home = () => {
 
       socket.onmessage = (event) => {
         const messageData = JSON.parse(event.data);
-        console.log("Received message:", messageData);
-
         switch (messageData.action) {
+          case "update":
+            console.log("Processing update for item:", messageData.item);
+            setData((prevData) => {
+              console.log("Previous data length:", prevData.length);
+
+              return prevData.map((item) => {
+                if (item._id === messageData.item._id) {
+                  console.log("Updating item:", messageData.item);
+                  return { ...item, ...messageData.item };
+                }
+                return item;
+              });
+            });
+            break;
+
           case "delete":
             setData((prevData) => {
               const filteredData = prevData.filter(
