@@ -81,7 +81,7 @@ const Home = () => {
 
     const connectWebSocket = () => {
       const socket = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
-      const addedItems = new Set();
+      // const addedItems = new Set();
 
       socket.onmessage = (event) => {
         const messageData = JSON.parse(event.data);
@@ -226,11 +226,12 @@ const Home = () => {
       }
     }
 
-    // Обновление локального состояния
-    const updatedData = data.map((item) =>
-      item._id === itemId ? { ...item, [fieldName]: updatedValue } : item
+    // Локальное обновление состояния немедленно
+    setData((prevData) =>
+      prevData.map((item) =>
+        item._id === itemId ? { ...item, [fieldName]: updatedValue } : item
+      )
     );
-    setData(updatedData); // Обновляем локальное состояние
 
     // Очистка предыдущего таймаута
     if (timeoutRef.current) {
@@ -241,19 +242,18 @@ const Home = () => {
     timeoutRef.current = setTimeout(() => {
       axios
         .put(`${apiUrl}/api/data/${itemId}`, {
-          ...updatedData.find((item) => item._id === itemId),
           [fieldName]: updatedValue,
           updatedBy: username,
         })
         .then((response) => {
           console.log("Data updated successfully:", response.data);
-          // Обновите состояние с данными, полученными с сервера
+          // Обновляем состояние с данными, полученными с сервера
           setData((prevData) =>
             prevData.map((item) => (item._id === itemId ? response.data : item))
           );
         })
         .catch((error) => console.error("Error saving data:", error));
-    }, 300); // Задержка 300 мс
+    }, 3000); // Задержка 3000 мс
   };
 
   useEffect(() => {
