@@ -42,8 +42,7 @@ const Home = () => {
   const currentDayRef = useRef(null);
   const initialRender = useRef(true);
   const [rowCount, setRowCount] = useState(1); // По умолчанию 1 строка
-  const addedItems = new Set();
-  let socket;
+
   const toggleVisibilityBlock = () => {
     setIsVisibleBlock(!isVisibleBlock);
   };
@@ -57,16 +56,45 @@ const Home = () => {
       console.error("Error fetching data:", error);
     }
   };
-  const connectWebSocket = () => {
-    socket = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
-
-    socket.onopen = () => {
-      console.log("WebSocket connection established");
+  useEffect(() => {
+    const fetchDrivers = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/api/drivers`);
+        setDrivers(response.data);
+      } catch (error) {
+        console.error("Error fetching drivers:", error);
+      }
     };
+
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/api/users`);
+        setUsers(response.data);
+      } catch (error) {
+        console.error("Error fetching setUsers:", error);
+      }
+    };
+
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/api/data`); // Измените на ваш правильный API
+        setData(response.data); // Предполагая, что у вас есть setData
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+    fetchUsers();
+    fetchDrivers();
+
+    const socket = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
+    const addedItems = new Set();
 
     socket.onmessage = (event) => {
       const messageData = JSON.parse(event.data);
-      console.log("Received message:", messageData);
+      console.log("Received message:", messageData); // Л
+
       switch (messageData.action) {
         case "add":
           setData((prevData) => {
@@ -78,7 +106,6 @@ const Home = () => {
               addedItems.add(messageData.item._id);
               return [...prevData, messageData.item];
             }
-
             return prevData;
           });
           break;
@@ -112,54 +139,8 @@ const Home = () => {
       }
     };
 
-    socket.onclose = () => {
-      console.log("WebSocket connection closed, attempting to reconnect...");
-      setTimeout(connectWebSocket, 3000);
-    };
-
-    socket.onerror = (error) => {
-      console.error("WebSocket error:", error);
-      socket.close();
-    };
-  };
-
-  useEffect(() => {
-    const fetchDrivers = async () => {
-      try {
-        const response = await axios.get(`${apiUrl}/api/drivers`);
-        setDrivers(response.data);
-      } catch (error) {
-        console.error("Error fetching drivers:", error);
-      }
-    };
-
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get(`${apiUrl}/api/users`);
-        setUsers(response.data);
-      } catch (error) {
-        console.error("Error fetching setUsers:", error);
-      }
-    };
-
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${apiUrl}/api/data`);
-        setData(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-    fetchUsers();
-    fetchDrivers();
-    connectWebSocket(); // Устанавливаем соединение при монтировании компонента
-
     return () => {
-      if (socket) {
-        socket.close(); // Закрываем сокет при размонтировании
-      }
+      socket.close();
     };
   }, []);
 
