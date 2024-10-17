@@ -7,7 +7,7 @@ import {
   Link,
 } from "react-router-dom";
 import Login from "./components/Login";
-import Register from "./components/Register";
+// import Register from "./components/Register";
 import Home from "./home";
 import Profile from "./components/Profile";
 

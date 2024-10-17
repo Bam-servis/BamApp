@@ -38,7 +38,7 @@ const Profile = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [apiUrl]);
 
   const currentMonth = dayjs().month();
   const previousMonth = dayjs().subtract(1, "month").month();

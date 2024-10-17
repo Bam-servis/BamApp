@@ -11,9 +11,7 @@ const Home = () => {
   const [users, setUsers] = useState([]);
   const [newDriver, setNewDriver] = useState("");
   const [totalRecords, setTotalRecords] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
   const [isVisibleBlock, setIsVisibleBlock] = useState(false);
-  const [messages, setMessages] = useState([]);
 
   const [highlightId, setHighlightId] = useState(null);
 
@@ -46,17 +44,19 @@ const Home = () => {
   const toggleVisibilityBlock = () => {
     setIsVisibleBlock(!isVisibleBlock);
   };
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(`${apiUrl}/api/data`);
-      setData(response.data);
-      const totalCount = response.data.length;
-      setTotalRecords(totalCount);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/api/data`);
+        setData(response.data);
+        const totalCount = response.data.length;
+        setTotalRecords(totalCount);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
     const fetchDrivers = async () => {
       try {
         const response = await axios.get(`${apiUrl}/api/drivers`);
@@ -75,98 +75,75 @@ const Home = () => {
       }
     };
 
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${apiUrl}/api/data`); // Измените на ваш правильный API
-        setData(response.data); // Предполагая, что у вас есть setData
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
     fetchData();
     fetchUsers();
     fetchDrivers();
 
-    // const socket = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
-    // const addedItems = new Set();
+    const connectWebSocket = () => {
+      const socket = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
+      const addedItems = new Set();
 
-    // socket.onmessage = (event) => {
-    //   const messageData = JSON.parse(event.data);
-    //   console.log("Received message:", messageData); // Л
+      socket.onmessage = (event) => {
+        const messageData = JSON.parse(event.data);
+        console.log("Received message:", messageData);
 
-    //   switch (messageData.action) {
-    //     case "add":
-    //       setData((prevData) => {
-    //         const exists = prevData.some(
-    //           (item) => item._id === messageData.item._id
-    //         );
+        switch (messageData.action) {
+          case "delete":
+            setData((prevData) => {
+              const filteredData = prevData.filter(
+                (item) => item._id !== messageData.id
+              );
+              return filteredData;
+            });
+            break;
 
-    //         if (!exists && !addedItems.has(messageData.item._id)) {
-    //           addedItems.add(messageData.item._id);
-    //           return [...prevData, messageData.item];
-    //         }
-    //         return prevData;
-    //       });
-    //       break;
+          default:
+            break;
+        }
+      };
 
-    //     case "update":
-    //       console.log("Processing update for item:", messageData.item);
-    //       setData((prevData) => {
-    //         console.log("Previous data length:", prevData.length);
+      socket.onclose = () => {
+        console.log("WebSocket closed. Attempting to reconnect...");
+        setTimeout(connectWebSocket, 1000); // Попробовать переподключиться через 1 секунду
+      };
 
-    //         return prevData.map((item) => {
-    //           if (item._id === messageData.item._id) {
-    //             console.log("Updating item:", messageData.item);
-    //             return { ...item, ...messageData.item };
-    //           }
-    //           return item;
-    //         });
-    //       });
-    //       break;
+      socket.onerror = (error) => {
+        console.error("WebSocket error:", error);
+      };
 
-    //     case "delete":
-    //       setData((prevData) => {
-    //         const filteredData = prevData.filter(
-    //           (item) => item._id !== messageData.id
-    //         );
-    //         return filteredData;
-    //       });
-    //       break;
+      return socket;
+    };
 
-    //     default:
-    //       break;
-    //   }
-    // };
+    const socket = connectWebSocket();
 
-    // return () => {
-    //   socket.close();
-    // };
-  }, []);
+    return () => {
+      socket.close();
+    };
+  }, [apiUrl]);
 
-  // Функция для обновления порядка элементов
-  const handleUpdateOrder = async (itemId, newOrderIndex) => {
-    try {
-      await axios.put(`${apiUrl}/api/data/${itemId}`, {
-        orderIndex: newOrderIndex,
-      });
-      fetchData(); // Перезагрузка данных после обновления
-    } catch (error) {
-      console.error("Error updating data:", error);
-    }
-  };
+  // // Функция для обновления порядка элементов
+  // const handleUpdateOrder = async (itemId, newOrderIndex) => {
+  //   try {
+  //     await axios.put(`${apiUrl}/api/data/${itemId}`, {
+  //       orderIndex: newOrderIndex,
+  //     });
+  //     fetchData(); // Перезагрузка данных после обновления
+  //   } catch (error) {
+  //     console.error("Error updating data:", error);
+  //   }
+  // };
 
-  // Функция для перемещения элемента вверх
-  const moveItemUp = (itemId, currentOrderIndex) => {
-    if (currentOrderIndex > 0) {
-      handleUpdateOrder(itemId, currentOrderIndex - 1); // Перемещение вверх
-    }
-  };
+  // // Функция для перемещения элемента вверх
+  // const moveItemUp = (itemId, currentOrderIndex) => {
+  //   if (currentOrderIndex > 0) {
+  //     handleUpdateOrder(itemId, currentOrderIndex - 1); // Перемещение вверх
+  //   }
+  // };
 
-  // Функция для перемещения элемента вниз
-  const moveItemDown = (itemId, currentOrderIndex) => {
-    handleUpdateOrder(itemId, currentOrderIndex + 1); // Перемещение вниз
-  };
+  // // Функция для перемещения элемента вниз
+  // const moveItemDown = (itemId, currentOrderIndex) => {
+  //   handleUpdateOrder(itemId, currentOrderIndex + 1); // Перемещение вниз
+  // };
 
   useEffect(() => {
     if (initialRender.current && currentDayRef.current) {
@@ -220,11 +197,15 @@ const Home = () => {
     }
   };
 
+  const timeoutRef = useRef(null); // Создайте ссылку для хранения таймаута
+
   const handleInputChange = (e, itemId, fieldName) => {
     const { value, type, checked } = e.target;
     const updatedValue = type === "checkbox" ? checked : value;
     const username = localStorage.getItem("username");
     const itemUser = "Tanya";
+
+    // Проверка прав доступа
     if (fieldName === "hours" || fieldName === "routeNumber") {
       if (username !== itemUser) {
         alert(`У вас нет прав!. Узнать - ${"Tanya"}`);
@@ -232,20 +213,43 @@ const Home = () => {
       }
     }
 
+    // Обновление локального состояния
     const updatedData = data.map((item) =>
       item._id === itemId ? { ...item, [fieldName]: updatedValue } : item
     );
-    setData(updatedData);
+    setData(updatedData); // Обновляем локальное состояние
 
-    axios
-      .put(`${apiUrl}/api/data/${itemId}`, {
-        ...updatedData.find((item) => item._id === itemId),
-        [fieldName]: updatedValue,
-        updatedBy: username,
-      })
-      .catch((error) => console.error("Error saving data:", error));
+    // Очистка предыдущего таймаута
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    // Установка нового таймаута для запроса на сервер
+    timeoutRef.current = setTimeout(() => {
+      axios
+        .put(`${apiUrl}/api/data/${itemId}`, {
+          ...updatedData.find((item) => item._id === itemId),
+          [fieldName]: updatedValue,
+          updatedBy: username,
+        })
+        .then((response) => {
+          console.log("Data updated successfully:", response.data);
+          // Обновите состояние с данными, полученными с сервера
+          setData((prevData) =>
+            prevData.map((item) => (item._id === itemId ? response.data : item))
+          );
+        })
+        .catch((error) => console.error("Error saving data:", error));
+    }, 300); // Задержка 300 мс
   };
 
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
   const addMultipleItemsWithClass = async (className, count) => {
     try {
       const itemsWithClass = data.filter(
@@ -336,27 +340,27 @@ const Home = () => {
     }, 1000);
   };
 
-  const handleDateChange = (e, itemId) => {
-    const { value } = e.target;
-    const username = localStorage.getItem("username");
+  // const handleDateChange = (e, itemId) => {
+  //   const { value } = e.target;
+  //   const username = localStorage.getItem("username");
 
-    if (username !== "Olya") {
-      alert(`У вас нет прав!. Узнать - ${"Olya"}`);
-      return;
-    }
-    const updatedData = data.map((item) =>
-      item._id === itemId ? { ...item, date: value } : item
-    );
-    setData(updatedData);
+  //   if (username !== "Olya") {
+  //     alert(`У вас нет прав!. Узнать - ${"Olya"}`);
+  //     return;
+  //   }
+  //   const updatedData = data.map((item) =>
+  //     item._id === itemId ? { ...item, date: value } : item
+  //   );
+  //   setData(updatedData);
 
-    axios
-      .put(`${apiUrl}/api/data/${itemId}`, {
-        ...updatedData.find((item) => item._id === itemId),
-        date: value,
-        updatedBy: username,
-      })
-      .catch((error) => console.error("Error updating date:", error));
-  };
+  //   axios
+  //     .put(`${apiUrl}/api/data/${itemId}`, {
+  //       ...updatedData.find((item) => item._id === itemId),
+  //       date: value,
+  //       updatedBy: username,
+  //     })
+  //     .catch((error) => console.error("Error updating date:", error));
+  // };
 
   const handleAddNewDriver = async () => {
     if (newDriver.trim() === "") return;
@@ -410,13 +414,13 @@ const Home = () => {
     return monthNamesInGenitive[monthName] || monthName;
   };
 
-  const formatDate = (date) => {
-    const d = new Date(date);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
+  // const formatDate = (date) => {
+  //   const d = new Date(date);
+  //   const year = d.getFullYear();
+  //   const month = String(d.getMonth() + 1).padStart(2, "0");
+  //   const day = String(d.getDate()).padStart(2, "0");
+  //   return `${year}-${month}-${day}`;
+  // };
 
   const handleMonthChange = (direction) => {
     const newMonth =
@@ -549,6 +553,7 @@ const Home = () => {
         >
           <div style={{ border: "2px solid black", padding: "2px 10px" }}>
             <a
+              rel="noopener noreferrer"
               style={{ color: "#fff", fontWeight: "bold" }}
               href="https://bam-servis.by/200t.pdf"
               target="_blank"
@@ -558,6 +563,7 @@ const Home = () => {
           </div>
           <div style={{ border: "2px solid black", padding: "2px 10px" }}>
             <a
+              rel="noopener noreferrer"
               style={{ color: "#fff", fontWeight: "bold" }}
               href="https://bam-servis.by/liebherrltm1160-5.1.pdf"
               target="_blank"
@@ -567,6 +573,7 @@ const Home = () => {
           </div>
           <div style={{ border: "2px solid black", padding: "2px 10px" }}>
             <a
+              rel="noopener noreferrer"
               style={{ color: "#fff", fontWeight: "bold" }}
               href="https://bam-servis.by/zomlion-30t.pdf"
               target="_blank"
@@ -576,6 +583,7 @@ const Home = () => {
           </div>
           <div style={{ border: "2px solid black", padding: "2px 10px" }}>
             <a
+              rel="noopener noreferrer"
               style={{ color: "#fff", fontWeight: "bold" }}
               href="https://bam-servis.by/zoomli-80t.pdf"
               target="_blank"
@@ -585,6 +593,7 @@ const Home = () => {
           </div>
           <div style={{ border: "2px solid black", padding: "2px 10px" }}>
             <a
+              rel="noopener noreferrer"
               style={{ color: "#fff", fontWeight: "bold" }}
               href="https://bam-servis.by/d122dbec6fe3c9fa32ee283d44045e973bc8ebaf.pdf"
               target="_blank"
@@ -594,6 +603,7 @@ const Home = () => {
           </div>
           <div style={{ border: "2px solid black", padding: "2px 10px" }}>
             <a
+              rel="noopener noreferrer"
               style={{ color: "#fff", fontWeight: "bold" }}
               href="https://bam-servis.by/GMK3050-1-1.oc.ru.pdf"
               target="_blank"
@@ -603,6 +613,7 @@ const Home = () => {
           </div>
           <div style={{ border: "2px solid black", padding: "2px 10px" }}>
             <a
+              rel="noopener noreferrer"
               style={{ color: "#fff", fontWeight: "bold" }}
               href="https://bam-servis.by/zoomlion-90.pdf"
               target="_blank"
@@ -612,6 +623,7 @@ const Home = () => {
           </div>
           <div style={{ border: "2px solid black", padding: "2px 10px" }}>
             <a
+              rel="noopener noreferrer"
               style={{ color: "#fff", fontWeight: "bold" }}
               href="https://bam-servis.by/klinz-25t.pdf"
               target="_blank"
@@ -621,6 +633,7 @@ const Home = () => {
           </div>
           <div style={{ border: "2px solid black", padding: "2px 10px" }}>
             <a
+              rel="noopener noreferrer"
               style={{ color: "#fff", fontWeight: "bold" }}
               href="https://bam-servis.by/Klinz-32t.pdf"
               target="_blank"
@@ -630,6 +643,7 @@ const Home = () => {
           </div>
           <div style={{ border: "2px solid black", padding: "2px 10px" }}>
             <a
+              rel="noopener noreferrer"
               style={{ color: "#fff", fontWeight: "bold" }}
               href="https://bam-servis.by/masheka-25.pdf"
               target="_blank"
@@ -639,6 +653,7 @@ const Home = () => {
           </div>
           <div style={{ border: "2px solid black", padding: "2px 10px" }}>
             <a
+              rel="noopener noreferrer"
               style={{ color: "#fff", fontWeight: "bold" }}
               href="https://bam-servis.by/maz-16t.pdf"
               target="_blank"
@@ -648,6 +663,7 @@ const Home = () => {
           </div>
           <div style={{ border: "2px solid black", padding: "2px 10px" }}>
             <a
+              rel="noopener noreferrer"
               style={{ color: "#fff", fontWeight: "bold" }}
               href="https://bam-servis.by/25-31 klinz.pdf"
               target="_blank"
@@ -840,7 +856,6 @@ const Home = () => {
                     </td>
                     <td>
                       <input
-                        disabled
                         style={{
                           width: "75px",
                         }}
