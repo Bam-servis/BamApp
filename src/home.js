@@ -142,14 +142,23 @@ const Home = () => {
       }
     };
 
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/api/data`);
+        setData(response.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
     fetchData();
     fetchUsers();
     fetchDrivers();
-    connectWebSocket();
+    connectWebSocket(); // Устанавливаем соединение при монтировании компонента
 
     return () => {
       if (socket) {
-        socket.close();
+        socket.close(); // Закрываем сокет при размонтировании
       }
     };
   }, []);
