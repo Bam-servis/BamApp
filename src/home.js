@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import axios from "axios";
 import { hardcodedData } from "./hardcodedData";
 import "./styles.css";
@@ -44,19 +44,17 @@ const Home = () => {
   const toggleVisibilityBlock = () => {
     setIsVisibleBlock(!isVisibleBlock);
   };
-
+  const fetchData = useCallback(async () => {
+    try {
+      const response = await axios.get(`${apiUrl}/api/data`);
+      setData(response.data);
+      const totalCount = response.data.length;
+      setTotalRecords(totalCount);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }, [apiUrl]); // Зависимость от apiUrl
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${apiUrl}/api/data`);
-        setData(response.data);
-        const totalCount = response.data.length;
-        setTotalRecords(totalCount);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
     const fetchDrivers = async () => {
       try {
         const response = await axios.get(`${apiUrl}/api/drivers`);
@@ -137,7 +135,7 @@ const Home = () => {
 
       socket.onclose = () => {
         console.log("WebSocket closed. Attempting to reconnect...");
-        setTimeout(connectWebSocket, 3000); // Попробовать переподключиться через 1 секунду
+        setTimeout(connectWebSocket, 1000); // Попробовать переподключиться через 1 секунду
       };
 
       socket.onerror = (error) => {
@@ -152,9 +150,10 @@ const Home = () => {
     return () => {
       socket.close();
     };
-  }, [apiUrl]);
+  }, [fetchData, apiUrl]);
 
-  // // Функция для обновления порядка элементов
+  // Функция для обновления порядка элементов
+
   // const handleUpdateOrder = async (itemId, newOrderIndex) => {
   //   try {
   //     await axios.put(`${apiUrl}/api/data/${itemId}`, {
@@ -167,15 +166,47 @@ const Home = () => {
   // };
 
   // // Функция для перемещения элемента вверх
-  // const moveItemUp = (itemId, currentOrderIndex) => {
-  //   if (currentOrderIndex > 0) {
-  //     handleUpdateOrder(itemId, currentOrderIndex - 1); // Перемещение вверх
+  // const moveItemUp = (itemId, currentOrderIndex, day) => {
+  //   // Получаем элементы текущего дня с классом highlight
+  //   const itemsInCurrentDay = groupedByDayData[day].filter(
+  //     (item) => item.colorClass === "highlight"
+  //   );
+
+  //   // Находим индекс элемента в массиве элементов с классом highlight
+  //   const currentIndexInHighlightedItems = itemsInCurrentDay.findIndex(
+  //     (item) => item._id === itemId
+  //   );
+
+  //   // Проверяем, что элемент можно переместить вверх
+  //   if (currentIndexInHighlightedItems > 0) {
+  //     const itemAbove = itemsInCurrentDay[currentIndexInHighlightedItems - 1];
+
+  //     // Меняем порядок для текущего элемента и элемента выше
+  //     handleUpdateOrder(itemId, currentOrderIndex - 1);
+  //     handleUpdateOrder(itemAbove._id, currentOrderIndex); // Меняем порядок элемента, который находится выше
   //   }
   // };
 
   // // Функция для перемещения элемента вниз
-  // const moveItemDown = (itemId, currentOrderIndex) => {
-  //   handleUpdateOrder(itemId, currentOrderIndex + 1); // Перемещение вниз
+  // const moveItemDown = (itemId, currentOrderIndex, day) => {
+  //   // Получаем элементы текущего дня с классом highlight
+  //   const itemsInCurrentDay = groupedByDayData[day].filter(
+  //     (item) => item.colorClass === "highlight"
+  //   );
+
+  //   // Находим индекс элемента в массиве элементов с классом highlight
+  //   const currentIndexInHighlightedItems = itemsInCurrentDay.findIndex(
+  //     (item) => item._id === itemId
+  //   );
+
+  //   // Проверяем, что элемент можно переместить вниз
+  //   if (currentIndexInHighlightedItems < itemsInCurrentDay.length - 1) {
+  //     const itemBelow = itemsInCurrentDay[currentIndexInHighlightedItems + 1];
+
+  //     // Меняем порядок для текущего элемента и элемента ниже
+  //     handleUpdateOrder(itemId, currentOrderIndex + 1);
+  //     handleUpdateOrder(itemBelow._id, currentOrderIndex); // Меняем порядок элемента, который находится ниже
+  //   }
   // };
 
   useEffect(() => {
@@ -297,7 +328,7 @@ const Home = () => {
           );
         })
         .catch((error) => console.error("Error saving data:", error));
-    }, 3000); // Задержка 3000 мс
+    }, 1000); // Задержка 3000 мс
   };
 
   useEffect(() => {
@@ -861,7 +892,7 @@ const Home = () => {
                 </tr>
               </thead>
               <tbody>
-                {groupedByDayData[day].map((item) => (
+                {groupedByDayData[day].map((item, index) => (
                   <tr
                     key={item._id}
                     ref={isPreviousDay(item.date) ? currentDayRef : null}
@@ -1079,15 +1110,20 @@ const Home = () => {
                       </button>
 
                       {/* <button
-                        onClick={() => moveItemUp(item._id, item.orderIndex)}
-                        disabled={item.orderIndex === 0}
+                        onClick={() =>
+                          moveItemUp(item._id, item.orderIndex, day)
+                        }
+                        disabled={index === 0} // Отключить кнопку, если это первый элемент
                       >
-                        ↑
+                        ↑ Вверх
                       </button>
                       <button
-                        onClick={() => moveItemDown(item._id, item.orderIndex)}
+                        onClick={() =>
+                          moveItemDown(item._id, item.orderIndex, day)
+                        }
+                        disabled={index === groupedByDayData[day].length - 1} // Отключить кнопку, если это последний элемент
                       >
-                        ↓
+                        ↓ Вниз
                       </button> */}
                     </td>
                   </tr>
