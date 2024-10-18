@@ -12,9 +12,7 @@ const Home = () => {
   const [newDriver, setNewDriver] = useState("");
   const [totalRecords, setTotalRecords] = useState(0);
   const [isVisibleBlock, setIsVisibleBlock] = useState(false);
-
   const [highlightId, setHighlightId] = useState(null);
-
   const apiUrl = process.env.REACT_APP_API_URL;
   const userNameRoot = localStorage.getItem("username");
   const [newItem, setNewItem] = useState({
@@ -39,7 +37,9 @@ const Home = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const currentDayRef = useRef(null);
   const initialRender = useRef(true);
-  const [rowCount, setRowCount] = useState(1); // По умолчанию 1 строка
+  const today = new Date();
+  const formattedToday = format(today, "dd");
+  const addedItems = useRef(new Set());
 
   const toggleVisibilityBlock = () => {
     setIsVisibleBlock(!isVisibleBlock);
@@ -81,11 +81,31 @@ const Home = () => {
 
     const connectWebSocket = () => {
       const socket = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
-      // const addedItems = new Set();
 
       socket.onmessage = (event) => {
         const messageData = JSON.parse(event.data);
         switch (messageData.action) {
+          case "add":
+            console.log("Attempting to add item:", messageData.item);
+            setData((prevData) => {
+              // Проверяем существование элемента в состоянии
+              const existsInData = prevData.some(
+                (item) => item._id === messageData.item._id
+              );
+              // Проверяем существование элемента в Set
+              const existsInSet = addedItems.current.has(messageData.item._id);
+
+              // Если элемент не существует ни в состоянии, ни в Set, добавляем его
+              if (!existsInData && !existsInSet) {
+                console.log("Adding new item:", messageData.item);
+                // Добавляем _id в Set для последующего отслеживания
+                addedItems.current.add(messageData.item._id);
+                return [...prevData, messageData.item]; // Добавляем элемент в состояние
+              }
+              return prevData; // Если элемент существует, возвращаем предыдущее состояние
+            });
+            break;
+
           case "update":
             console.log("Processing update for item:", messageData.item);
             setData((prevData) => {
@@ -117,7 +137,7 @@ const Home = () => {
 
       socket.onclose = () => {
         console.log("WebSocket closed. Attempting to reconnect...");
-        setTimeout(connectWebSocket, 1000); // Попробовать переподключиться через 1 секунду
+        setTimeout(connectWebSocket, 3000); // Попробовать переподключиться через 1 секунду
       };
 
       socket.onerror = (error) => {
@@ -193,7 +213,31 @@ const Home = () => {
       console.error("Error adding entries:", error);
     }
   };
+  const addSingleItemWithClass = async (className) => {
+    try {
+      // Устанавливаем таймаут перед выполнением основной логики
+      setTimeout(async () => {
+        const itemsWithClass = data.filter(
+          (item) => item.colorClass === className
+        );
+        const newIndex = itemsWithClass.length > 0 ? itemsWithClass.length : 0;
 
+        // Отправляем запрос на добавление одного элемента
+        const response = await axios.post(`${apiUrl}/api/data`, {
+          ...newItem,
+          colorClass: className,
+          updatedBy: localStorage.getItem("username"),
+          date: selectedDate,
+          orderIndex: newIndex, // Используем новый индекс
+        });
+
+        // Обновляем состояние, добавляя только что созданный элемент
+        setData((prevData) => [...prevData, response.data]);
+      }, 1500); // Задержка в 1500 мс
+    } catch (error) {
+      console.error("Error adding single data with class:", error);
+    }
+  };
   const addNewItem = async () => {
     try {
       const newIndex = data.length;
@@ -263,31 +307,6 @@ const Home = () => {
       }
     };
   }, []);
-  const addMultipleItemsWithClass = async (className, count) => {
-    try {
-      const itemsWithClass = data.filter(
-        (item) => item.colorClass === className
-      );
-      const newIndex = itemsWithClass.length > 0 ? itemsWithClass.length : 0;
-      const newItems = [];
-
-      for (let i = 0; i < count; i++) {
-        const response = await axios.post(`${apiUrl}/api/data`, {
-          ...newItem,
-          colorClass: className,
-          updatedBy: localStorage.getItem("username"),
-          date: selectedDate,
-          orderIndex: newIndex + i,
-        });
-        newItems.push(response.data); // Добавляем в локальный массив
-      }
-
-      // Обновляем состояние один раз после завершения цикла
-      setData((prevData) => [...prevData, ...newItems]);
-    } catch (error) {
-      console.error("Error adding multiple data with class:", error);
-    }
-  };
 
   const handleSelectChange = async (e, itemId) => {
     const { value } = e.target;
@@ -443,43 +462,70 @@ const Home = () => {
     setCurrentMonth(newMonth);
   };
 
+  // Фильтрация по цвету
   const highlightedItems = data.filter(
     (item) => item.colorClass === "highlight"
   );
   const regularItems = data.filter((item) => item.colorClass !== "highlight");
 
-  const groupedData = regularItems.reduce((acc, item) => {
-    const driverGroup = acc.find((group) => group[0].driver === item.driver);
+  // Группировка данных по дням
+  const groupedByDate = regularItems.reduce((acc, item) => {
+    const itemDate = new Date(item.date);
+    const itemDay = format(itemDate, "dd"); // Получаем день месяца элемента
+    const itemMonth = itemDate.getMonth(); // Получаем месяц элемента
+    const itemYear = itemDate.getFullYear(); // Получаем год элемента
 
-    if (driverGroup) {
-      driverGroup.push(item);
-    } else {
-      acc.push([item]);
+    const formattedItemDate = `${itemYear}-${itemMonth + 1}-${itemDay}`; // Форматируем дату для группировки
+
+    if (!acc[formattedItemDate]) {
+      acc[formattedItemDate] = []; // Инициализируем новый массив для этой даты, если еще нет
     }
+    acc[formattedItemDate].push(item); // Добавляем элемент в соответствующую дату
 
     return acc;
-  }, []);
+  }, {});
 
-  const sortedGroups = groupedData.map((group) =>
-    group.sort((a, b) => a.orderIndex - b.orderIndex)
-  );
+  // Сортировка групп по индексу внутри каждой даты
+  const sortedGroupedByDate = Object.keys(groupedByDate).map((dateKey) => {
+    const items = groupedByDate[dateKey];
 
-  const finalSortedData = sortedGroups.flat();
+    // Группировка по водителям для текущей даты
+    const driverGroupedData = items.reduce((acc, item) => {
+      const driverGroup = acc.find((group) => group[0].driver === item.driver);
+      if (driverGroup) {
+        driverGroup.push(item);
+      } else {
+        acc.push([item]);
+      }
+      return acc;
+    }, []);
 
-  finalSortedData.sort((a, b) => new Date(a.date) - new Date(b.date));
+    // Сортировка групп по индексу
+    const sortedGroups = driverGroupedData.map((group) =>
+      group.sort((a, b) => a.orderIndex - b.orderIndex)
+    );
 
-  const completeSortedData = [...finalSortedData, ...highlightedItems];
+    // Объединяем данные текущей даты
+    return sortedGroups.flat(); // Возвращаем объединенные данные для данной даты
+  });
 
-  const filteredData = completeSortedData.filter((item) => {
+  // Объединение всех данных
+  const finalData = [
+    ...sortedGroupedByDate.flat(), // Все сгруппированные и отсортированные элементы
+    ...highlightedItems, // Подсвеченные элементы
+  ];
+
+  // Фильтрация для текущего месяца
+  const filteredData = finalData.filter((item) => {
     const itemDate = new Date(item.date);
     return (
-      itemDate.getMonth() === currentMonth.getMonth() &&
-      itemDate.getFullYear() === currentMonth.getFullYear()
+      itemDate.getMonth() === today.getMonth() &&
+      itemDate.getFullYear() === today.getFullYear()
     );
   });
 
+  // Группировка по дням
   const groupedByDayData = groupByDay(filteredData);
-
   const getColor = (value) => {
     switch (value) {
       case "Оплачен":
@@ -525,8 +571,7 @@ const Home = () => {
       previousDay.getFullYear() === date.getFullYear()
     );
   };
-  const today = new Date();
-  const formattedToday = format(today, "dd");
+
   const countEntriesForMonth = (data, date) => {
     return data.filter((item) => {
       const itemDate = new Date(item.date);
@@ -698,17 +743,8 @@ const Home = () => {
                 onChange={(e) => setSelectedDate(e.target.value)}
               />
               <span className="title">Добавить суб аренду</span>
-              <input
-                type="number"
-                value={rowCount}
-                onChange={(e) => setRowCount(Number(e.target.value))}
-                min="1"
-                placeholder="Введите количество строк"
-              />
-              <button
-                onClick={() => addMultipleItemsWithClass("highlight", rowCount)}
-              >
-                Добавить {rowCount} строк
+              <button onClick={() => addSingleItemWithClass("highlight")}>
+                Добавить Суб Аренду
               </button>
             </div>
             <div className="baza">

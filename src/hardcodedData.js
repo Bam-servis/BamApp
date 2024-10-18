@@ -243,6 +243,17 @@ export const hardcodedData = [
   },
   {
     orderIndex: 22,
+    brand: "70 тонн XCMG",
+    driver: "Гарайс М.А.",
+    customer: "",
+    routeNumber: "",
+    hours: "",
+    isTrue: false,
+    vehicleNumber: "ВА 2819-7",
+    price: "",
+  },
+  {
+    orderIndex: 23,
     brand: "80/49+17,5 ZOOMLION",
     driver: "Алексейчик Д.Н.",
     customer: "",
@@ -253,7 +264,18 @@ export const hardcodedData = [
     price: "",
   },
   {
-    orderIndex: 23,
+    orderIndex: 24,
+    brand: "80/49+17,5 ZOOMLION",
+    driver: "",
+    customer: "",
+    routeNumber: "",
+    hours: "",
+    isTrue: false,
+    vehicleNumber: "",
+    price: "",
+  },
+  {
+    orderIndex: 25,
     brand: "90/48+16 ZOOMLION",
     driver: "Скуратович А.А.",
     customer: "",
@@ -264,7 +286,7 @@ export const hardcodedData = [
     price: "",
   },
   {
-    orderIndex: 24,
+    orderIndex: 26,
     brand: "Гусеница ",
     driver: "Рожков  Е.А.",
     customer: "",
@@ -275,7 +297,7 @@ export const hardcodedData = [
     price: "",
   },
   {
-    orderIndex: 25,
+    orderIndex: 27,
     brand: "XCMG 215 ГУС",
     driver: "Ермак В.Н.",
     customer: "",
@@ -286,7 +308,7 @@ export const hardcodedData = [
     price: "",
   },
   {
-    orderIndex: 26,
+    orderIndex: 28,
     brand: "XCMG 215 ГУС",
     driver: "Дудко Д.П.",
     customer: "",
@@ -297,7 +319,7 @@ export const hardcodedData = [
     price: "",
   },
   {
-    orderIndex: 27,
+    orderIndex: 29,
     brand: "XCMG 215 ГУС",
     driver: "Каток ",
     customer: "",
@@ -308,7 +330,7 @@ export const hardcodedData = [
     price: "",
   },
   {
-    orderIndex: 28,
+    orderIndex: 30,
     brand: "Хидромек ЭКС- погрузчик ",
     driver: "Абметка Н.С.",
     customer: "",
@@ -319,7 +341,7 @@ export const hardcodedData = [
     price: "",
   },
   {
-    orderIndex: 29,
+    orderIndex: 31,
     brand: "MST экс погрузчик",
     driver: "Знак Д.М.",
     customer: "",
@@ -330,7 +352,7 @@ export const hardcodedData = [
     price: "",
   },
   {
-    orderIndex: 30,
+    orderIndex: 32,
     brand: "MST экс погрузчик",
     driver: "Цвирко А.С.",
     customer: "",
@@ -341,7 +363,7 @@ export const hardcodedData = [
     price: "",
   },
   {
-    orderIndex: 31,
+    orderIndex: 33,
     brand: "MST экс погрузчик",
     driver: "Буримский А.В.",
     customer: "",
@@ -352,7 +374,7 @@ export const hardcodedData = [
     price: "",
   },
   {
-    orderIndex: 32,
+    orderIndex: 34,
     brand: "MST экс погрузчик",
     driver: "Гайдукевич А.С.",
     customer: "",
@@ -363,7 +385,7 @@ export const hardcodedData = [
     price: "",
   },
   {
-    orderIndex: 33,
+    orderIndex: 35,
     brand: "XCMG фронтальный погрузчик",
     driver: "Бужан А.В.",
     customer: "",
@@ -374,7 +396,7 @@ export const hardcodedData = [
     price: "",
   },
   {
-    orderIndex: 34,
+    orderIndex: 36,
     brand: "XCMG фронтальный погрузчик",
     driver: "Малчанов А.Н",
     customer: "",
@@ -385,7 +407,7 @@ export const hardcodedData = [
     price: "",
   },
   {
-    orderIndex: 35,
+    orderIndex: 37,
     brand: "XCMG фронтальный погрузчик",
     driver: "Щербанев М.Л.",
     customer: "",
@@ -396,7 +418,7 @@ export const hardcodedData = [
     price: "",
   },
   {
-    orderIndex: 36,
+    orderIndex: 38,
     brand: "Щетка МТЗ 82 МК",
     driver: "Чернов Н.А.",
     customer: "",
@@ -404,6 +426,17 @@ export const hardcodedData = [
     hours: "",
     isTrue: false,
     vehicleNumber: "",
+    price: "",
+  },
+  {
+    orderIndex: 39,
+    brand: "Трал",
+    driver: "Невдах",
+    customer: "",
+    routeNumber: "",
+    hours: "",
+    isTrue: false,
+    vehicleNumber: "BA-7 2910",
     price: "",
   },
 ];
