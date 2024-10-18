@@ -292,28 +292,20 @@ const Home = () => {
     const updatedValue = type === "checkbox" ? checked : value;
     const username = localStorage.getItem("username");
     const itemUser = "Tanya";
-
-    // Проверка прав доступа
     if (fieldName === "hours" || fieldName === "routeNumber") {
       if (username !== itemUser) {
         alert(`У вас нет прав!. Узнать - ${"Tanya"}`);
         return;
       }
     }
-
-    // Локальное обновление состояния немедленно
     setData((prevData) =>
       prevData.map((item) =>
         item._id === itemId ? { ...item, [fieldName]: updatedValue } : item
       )
     );
-
-    // Очистка предыдущего таймаута
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-
-    // Установка нового таймаута для запроса на сервер
     timeoutRef.current = setTimeout(() => {
       axios
         .put(`${apiUrl}/api/data/${itemId}`, {
@@ -322,13 +314,12 @@ const Home = () => {
         })
         .then((response) => {
           console.log("Data updated successfully:", response.data);
-          // Обновляем состояние с данными, полученными с сервера
           setData((prevData) =>
             prevData.map((item) => (item._id === itemId ? response.data : item))
           );
         })
         .catch((error) => console.error("Error saving data:", error));
-    }, 1000); // Задержка 3000 мс
+    }, 1000);
   };
 
   useEffect(() => {
@@ -494,9 +485,10 @@ const Home = () => {
   };
 
   // Фильтрация по цвету
-  const highlightedItems = data.filter(
-    (item) => item.colorClass === "highlight"
-  );
+  const highlightedItems = data
+    .filter((item) => item.colorClass === "highlight")
+    .sort((a, b) => a.orderIndex - b.orderIndex);
+
   const regularItems = data.filter((item) => item.colorClass !== "highlight");
 
   // Группировка данных по дням
@@ -543,7 +535,7 @@ const Home = () => {
   // Объединение всех данных
   const finalData = [
     ...sortedGroupedByDate.flat(), // Все сгруппированные и отсортированные элементы
-    ...highlightedItems, // Подсвеченные элементы
+    ...highlightedItems,
   ];
 
   // Фильтрация для текущего месяца
@@ -557,6 +549,7 @@ const Home = () => {
 
   // Группировка по дням
   const groupedByDayData = groupByDay(filteredData);
+
   const getColor = (value) => {
     switch (value) {
       case "Оплачен":
