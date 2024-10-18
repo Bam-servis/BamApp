@@ -83,26 +83,26 @@ const Home = () => {
       socket.onmessage = (event) => {
         const messageData = JSON.parse(event.data);
         switch (messageData.action) {
-          case "add":
-            console.log("Attempting to add item:", messageData.item);
-            setData((prevData) => {
-              // Проверяем существование элемента в состоянии
-              const existsInData = prevData.some(
-                (item) => item._id === messageData.item._id
-              );
-              // Проверяем существование элемента в Set
-              const existsInSet = addedItems.current.has(messageData.item._id);
+          // case "add":
+          //   console.log("Attempting to add item:", messageData.item);
+          //   setData((prevData) => {
+          //     // Проверяем существование элемента в состоянии
+          //     const existsInData = prevData.some(
+          //       (item) => item._id === messageData.item._id
+          //     );
+          //     // Проверяем существование элемента в Set
+          //     const existsInSet = addedItems.current.has(messageData.item._id);
 
-              // Если элемент не существует ни в состоянии, ни в Set, добавляем его
-              if (!existsInData && !existsInSet) {
-                console.log("Adding new item:", messageData.item);
-                // Добавляем _id в Set для последующего отслеживания
-                addedItems.current.add(messageData.item._id);
-                return [...prevData, messageData.item]; // Добавляем элемент в состояние
-              }
-              return prevData; // Если элемент существует, возвращаем предыдущее состояние
-            });
-            break;
+          //     // Если элемент не существует ни в состоянии, ни в Set, добавляем его
+          //     if (!existsInData && !existsInSet) {
+          //       console.log("Adding new item:", messageData.item);
+          //       // Добавляем _id в Set для последующего отслеживания
+          //       addedItems.current.add(messageData.item._id);
+          //       return [...prevData, messageData.item]; // Добавляем элемент в состояние
+          //     }
+          //     return prevData; // Если элемент существует, возвращаем предыдущее состояние
+          //   });
+          //   break;
 
           case "update":
             console.log("Processing update for item:", messageData.item);
@@ -264,7 +264,7 @@ const Home = () => {
 
         // Обновляем состояние, добавляя только что созданный элемент
         setData((prevData) => [...prevData, response.data]);
-      }, 1500); // Задержка в 1500 мс
+      }, 300); // Задержка в 1500 мс
     } catch (error) {
       console.error("Error adding single data with class:", error);
     }
