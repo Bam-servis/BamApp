@@ -304,9 +304,12 @@ const Home = () => {
     const updatedValue = type === "checkbox" ? checked : value;
 
     // Сохраняем текущее значение в локальном состоянии
-    setInputValues((prev) => ({
-      ...prev,
-      [itemId]: updatedValue, // Обновляем значение инпута
+    setInputValues((prevValues) => ({
+      ...prevValues,
+      [itemId]: {
+        ...prevValues[itemId],
+        [fieldName]: value,
+      },
     }));
 
     // Вызываем дебаунс-функцию обновления
@@ -881,8 +884,6 @@ const Home = () => {
                         ? "row-in-progress"
                         : "row-pending"
                     } ${highlightId === item._id ? "highlight-delete" : ""}`}
-                    onMouseEnter={() => setHighlightId(item._id)}
-                    onMouseLeave={() => setHighlightId(null)}
                   >
                     <td>
                       <select
@@ -905,7 +906,7 @@ const Home = () => {
                         style={{
                           width: "150px",
                         }}
-                        value={item.brand || ""}
+                        value={inputValues[item._id]?.brand || item.brand || ""}
                         onChange={(e) =>
                           handleInputChange(e, item._id, "brand")
                         }
@@ -917,7 +918,11 @@ const Home = () => {
                           width: "75px",
                         }}
                         type="text"
-                        value={item.vehicleNumber || ""}
+                        value={
+                          inputValues[item._id]?.vehicleNumber ||
+                          item.vehicleNumber ||
+                          ""
+                        }
                         onChange={(e) =>
                           handleInputChange(e, item._id, "vehicleNumber")
                         }
@@ -930,7 +935,9 @@ const Home = () => {
                           fontWeight: "600",
                           fontSize: "12.5px",
                         }}
-                        value={item.driver || ""}
+                        value={
+                          inputValues[item._id]?.driver || item.driver || ""
+                        }
                         onChange={(e) =>
                           handleInputChange(e, item._id, "driver")
                         }
@@ -956,9 +963,7 @@ const Home = () => {
                         }}
                         type="text"
                         value={
-                          inputValues[item._id] !== undefined
-                            ? inputValues[item._id]
-                            : item.customer || ""
+                          inputValues[item._id]?.customer || item.customer || ""
                         }
                         onChange={(e) =>
                           handleInputChange(e, item._id, "customer")
@@ -971,7 +976,11 @@ const Home = () => {
                           <input
                             type="text"
                             style={{ width: "50px" }}
-                            value={item.routeNumber || ""}
+                            value={
+                              inputValues[item._id]?.routeNumber ||
+                              item.routeNumber ||
+                              ""
+                            }
                             onChange={(e) =>
                               handleInputChange(e, item._id, "routeNumber")
                             }
@@ -981,7 +990,9 @@ const Home = () => {
                           <input
                             type="text"
                             style={{ width: "50px" }}
-                            value={item.hours || ""}
+                            value={
+                              inputValues[item._id]?.hours || item.hours || ""
+                            }
                             onChange={(e) =>
                               handleInputChange(e, item._id, "hours")
                             }
@@ -1001,7 +1012,7 @@ const Home = () => {
                     <td className="disabled">
                       <input
                         type="number"
-                        value={item.price || ""}
+                        value={inputValues[item._id]?.price || item.price || ""}
                         onChange={(e) =>
                           handleInputChange(e, item._id, "price")
                         }
@@ -1009,7 +1020,11 @@ const Home = () => {
                     </td>
                     <td className="disabled">
                       <select
-                        value={item.colorData || ""}
+                        value={
+                          inputValues[item._id]?.colorData ||
+                          item.colorData ||
+                          ""
+                        }
                         onChange={(e) =>
                           handleInputChange(e, item._id, "colorData")
                         }
@@ -1049,7 +1064,9 @@ const Home = () => {
                     <td className="disabled">
                       <input
                         type="text"
-                        value={item.calcPay || ""}
+                        value={
+                          inputValues[item._id]?.calcPay || item.calcPay || ""
+                        }
                         onChange={(e) =>
                           handleInputChange(e, item._id, "calcPay")
                         }
@@ -1058,7 +1075,9 @@ const Home = () => {
                     <td className="disabled">
                       <input
                         type="text"
-                        value={item.comment || ""}
+                        value={
+                          inputValues[item._id]?.comment || item.comment || ""
+                        }
                         onChange={(e) =>
                           handleInputChange(e, item._id, "comment")
                         }
@@ -1066,7 +1085,7 @@ const Home = () => {
                     </td>
                     <td>
                       <select
-                        value={item.user || ""}
+                        value={inputValues[item._id]?.user || item.user || ""}
                         onChange={(e) => handleInputChange(e, item._id, "user")}
                       >
                         <option value="">Выбрать</option>
@@ -1084,6 +1103,8 @@ const Home = () => {
                       <button
                         className="btn-del"
                         onClick={() => handleDeleteWithConfirmation(item._id)}
+                        onMouseEnter={() => setHighlightId(item._id)}
+                        onMouseLeave={() => setHighlightId(null)}
                         onTouchStart={() => setHighlightId(item._id)}
                       >
                         Удалить
