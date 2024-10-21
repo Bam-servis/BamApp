@@ -365,15 +365,12 @@ const Home = () => {
     if (isConfirmed) {
       try {
         await axios.delete(`${apiUrl}/api/data/${id}`);
-
-        setData(data.filter((item) => item._id !== id));
+        setData((prevData) => prevData.filter((item) => item._id !== id));
       } catch (error) {
         console.error("Error deleting data:", error);
       }
     }
-    setTimeout(() => {
-      setHighlightId(null);
-    }, 1000);
+    setHighlightId(null);
   };
 
   // const handleDateChange = (e, itemId) => {
@@ -884,6 +881,8 @@ const Home = () => {
                         ? "row-in-progress"
                         : "row-pending"
                     } ${highlightId === item._id ? "highlight-delete" : ""}`}
+                    onMouseEnter={() => setHighlightId(item._id)}
+                    onMouseLeave={() => setHighlightId(null)}
                   >
                     <td>
                       <select
@@ -1084,11 +1083,8 @@ const Home = () => {
                     <td>
                       <button
                         className="btn-del"
-                        onMouseEnter={() => setHighlightId(item._id)}
-                        onMouseLeave={() => setHighlightId(null)}
                         onClick={() => handleDeleteWithConfirmation(item._id)}
                         onTouchStart={() => setHighlightId(item._id)}
-                        onTouchEnd={() => setHighlightId(null)}
                       >
                         Удалить
                       </button>
