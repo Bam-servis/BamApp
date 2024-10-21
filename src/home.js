@@ -739,53 +739,55 @@ const Home = () => {
       <div className="hide">
         <div className="bam-servis">"ООО Бам-Сервис гарант"</div>
         <div className="wrapper">
-          <div className="data">
-            <div className="sybarenda">
-              <input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-              />
-              <span className="title">Добавить суб аренду</span>
-              <button onClick={() => addSingleItemWithClass("highlight")}>
-                Добавить Суб Аренду
-              </button>
+          {userNameRoot !== "Andrey" && (
+            <div className="data">
+              <div className="sybarenda">
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                />
+                <span className="title">Добавить суб аренду</span>
+                <button onClick={() => addSingleItemWithClass("highlight")}>
+                  Добавить Суб Аренду
+                </button>
+              </div>
+              <div className="baza">
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                />
+                <span className="title">Добавить базу</span>
+                <button
+                  onClick={addEntriesForSelectedDate}
+                  className="add-entries"
+                >
+                  Добавить
+                </button>
+              </div>
+              <div className="entrys">
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                />
+                <span className="title">Добавить Обьект</span>
+                <button onClick={addNewItem}>Добавить</button>
+              </div>
+              <div className="driv">
+                <span className="title">Добавить нового водителя</span>
+                <button onClick={handleAddNewDriver}>Добавить</button>
+                <input
+                  type="text"
+                  className="drivers-new"
+                  placeholder="Новый Водитель"
+                  value={newDriver}
+                  onChange={(e) => setNewDriver(e.target.value)}
+                />
+              </div>
             </div>
-            <div className="baza">
-              <input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-              />
-              <span className="title">Добавить базу</span>
-              <button
-                onClick={addEntriesForSelectedDate}
-                className="add-entries"
-              >
-                Добавить
-              </button>
-            </div>
-            <div className="entrys">
-              <input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-              />
-              <span className="title">Добавить Обьект</span>
-              <button onClick={addNewItem}>Добавить</button>
-            </div>
-            <div className="driv">
-              <span className="title">Добавить нового водителя</span>
-              <button onClick={handleAddNewDriver}>Добавить</button>
-              <input
-                type="text"
-                className="drivers-new"
-                placeholder="Новый Водитель"
-                value={newDriver}
-                onChange={(e) => setNewDriver(e.target.value)}
-              />
-            </div>
-          </div>
+          )}
           <div className="statistic">
             <div className="time">
               За все время: <span className="total">{totalRecords}</span>
