@@ -889,6 +889,9 @@ const Home = () => {
                       {item.colorClass === "highlight" && (
                         <>
                           <button
+                            className="arrow"
+                            onMouseEnter={() => setHighlightId(item._id)}
+                            onMouseLeave={() => setHighlightId(null)}
                             onClick={() =>
                               moveItemUp(item._id, item.orderIndex, day)
                             }
@@ -1130,6 +1133,9 @@ const Home = () => {
                       {item.colorClass === "highlight" && (
                         <>
                           <button
+                            className="arrow"
+                            onMouseEnter={() => setHighlightId(item._id)}
+                            onMouseLeave={() => setHighlightId(null)}
                             onClick={() =>
                               moveItemDown(item._id, item.orderIndex, day)
                             }

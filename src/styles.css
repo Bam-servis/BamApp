@@ -471,6 +471,9 @@ th {
   align-items: center;
   justify-content: center;
 }
+.arrow {
+  padding: 0 15px;
+}
 .hover:hover {
   border: 3px solid black;
 }
