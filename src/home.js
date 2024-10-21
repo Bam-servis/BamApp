@@ -4,7 +4,7 @@ import { hardcodedData } from "./hardcodedData";
 import "./styles.css";
 import { format, addMonths, subMonths } from "date-fns";
 import { ru } from "date-fns/locale";
-
+import { debounce } from "lodash";
 const Home = () => {
   const [data, setData] = useState([]);
   const [drivers, setDrivers] = useState([]);
@@ -40,6 +40,10 @@ const Home = () => {
   const today = new Date();
   const formattedToday = format(today, "dd");
   const addedItems = useRef(new Set());
+  const debouncedUpdateRef = useRef(null); // Для хранения debounced функции
+  const [inputValues, setInputValues] = useState({}); // Локальное состояние для значений инпутов
+
+  const socket = useRef(null); // Создайте ссылку для WebSocket
 
   const toggleVisibilityBlock = () => {
     setIsVisibleBlock(!isVisibleBlock);
@@ -47,110 +51,79 @@ const Home = () => {
   const fetchData = useCallback(async () => {
     try {
       const response = await axios.get(`${apiUrl}/api/data`);
-      setData(response.data);
-      const totalCount = response.data.length;
-      setTotalRecords(totalCount);
+      setData(response.data); // Загружаем данные через Axios
+      setTotalRecords(response.data.length);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
-  }, [apiUrl]); // Зависимость от apiUrl
+  }, [apiUrl]);
+  const fetchDrivers = useCallback(async () => {
+    try {
+      const response = await axios.get(`${apiUrl}/api/drivers`);
+      setDrivers(response.data);
+    } catch (error) {
+      console.error("Error fetching drivers:", error);
+    }
+  }, [apiUrl]);
+
+  const fetchUsers = useCallback(async () => {
+    try {
+      const response = await axios.get(`${apiUrl}/api/users`);
+      setUsers(response.data);
+    } catch (error) {
+      console.error("Error fetching setUsers:", error);
+    }
+  }, [apiUrl]);
   useEffect(() => {
-    const fetchDrivers = async () => {
-      try {
-        const response = await axios.get(`${apiUrl}/api/drivers`);
-        setDrivers(response.data);
-      } catch (error) {
-        console.error("Error fetching drivers:", error);
-      }
+    const connectWebSocket = () => {
+      socket.current = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
+
+      socket.current.onmessage = (event) => {
+        const messageData = JSON.parse(event.data);
+        setData((prevData) => {
+          switch (messageData.action) {
+            // case "add":
+            //   console.log("Attempting to add item:", messageData.item);
+            //   // Проверяем, если элемент уже существует
+            //   if (!prevData.some((item) => item._id === messageData.item._id)) {
+            //     return [...prevData, messageData.item]; // Добавляем новый элемент
+            //   }
+            //   return prevData;
+            case "update":
+              console.log("Processing update for item:", messageData.item);
+              return prevData.map((item) =>
+                item._id === messageData.item._id
+                  ? { ...item, ...messageData.item }
+                  : item
+              );
+            case "delete":
+              return prevData.filter((item) => item._id !== messageData.id); // Удаляем элемент
+            default:
+              return prevData;
+          }
+        });
+      };
+
+      socket.current.onclose = () => {
+        setTimeout(connectWebSocket, 1000); // Переподключаемся
+      };
+
+      socket.current.onerror = () => {
+        setTimeout(connectWebSocket, 5000);
+      };
     };
 
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get(`${apiUrl}/api/users`);
-        setUsers(response.data);
-      } catch (error) {
-        console.error("Error fetching setUsers:", error);
-      }
-    };
-
+    connectWebSocket();
     fetchData();
     fetchUsers();
     fetchDrivers();
 
-    const connectWebSocket = () => {
-      const socket = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
-
-      socket.onmessage = (event) => {
-        const messageData = JSON.parse(event.data);
-        switch (messageData.action) {
-          // case "add":
-          //   console.log("Attempting to add item:", messageData.item);
-          //   setData((prevData) => {
-          //     // Проверяем существование элемента в состоянии
-          //     const existsInData = prevData.some(
-          //       (item) => item._id === messageData.item._id
-          //     );
-          //     // Проверяем существование элемента в Set
-          //     const existsInSet = addedItems.current.has(messageData.item._id);
-
-          //     // Если элемент не существует ни в состоянии, ни в Set, добавляем его
-          //     if (!existsInData && !existsInSet) {
-          //       console.log("Adding new item:", messageData.item);
-          //       // Добавляем _id в Set для последующего отслеживания
-          //       addedItems.current.add(messageData.item._id);
-          //       return [...prevData, messageData.item]; // Добавляем элемент в состояние
-          //     }
-          //     return prevData; // Если элемент существует, возвращаем предыдущее состояние
-          //   });
-          //   break;
-
-          case "update":
-            console.log("Processing update for item:", messageData.item);
-            setData((prevData) => {
-              console.log("Previous data length:", prevData.length);
-
-              return prevData.map((item) => {
-                if (item._id === messageData.item._id) {
-                  console.log("Updating item:", messageData.item);
-                  return { ...item, ...messageData.item };
-                }
-                return item;
-              });
-            });
-            break;
-
-          case "delete":
-            setData((prevData) => {
-              const filteredData = prevData.filter(
-                (item) => item._id !== messageData.id
-              );
-              return filteredData;
-            });
-            break;
-
-          default:
-            break;
-        }
-      };
-
-      socket.onclose = () => {
-        console.log("WebSocket closed. Attempting to reconnect...");
-        setTimeout(connectWebSocket, 1000); // Попробовать переподключиться через 1 секунду
-      };
-
-      socket.onerror = (error) => {
-        console.error("WebSocket error:", error);
-      };
-
-      return socket;
-    };
-
-    const socket = connectWebSocket();
-
     return () => {
-      socket.close();
+      if (socket.current) {
+        socket.current.close();
+      }
     };
-  }, [fetchData, apiUrl]);
+  }, [fetchData, apiUrl, fetchDrivers, fetchUsers]);
 
   // Функция для обновления порядка элементов
 
@@ -284,52 +257,61 @@ const Home = () => {
       console.error("Error adding data:", error);
     }
   };
+  const updateData = useCallback(
+    async (itemId, fieldName, updatedValue) => {
+      const username = localStorage.getItem("username");
 
-  const timeoutRef = useRef(null); // Создайте ссылку для хранения таймаута
+      try {
+        const response = await axios.put(`${apiUrl}/api/data/${itemId}`, {
+          [fieldName]: updatedValue,
+          updatedBy: username,
+        });
+        return response.data; // Возвращаем обновленные данные
+      } catch (error) {
+        console.error("Error saving data:", error);
+        throw error; // Пробрасываем ошибку
+      }
+    },
+    [apiUrl]
+  );
+
+  useEffect(() => {
+    debouncedUpdateRef.current = debounce(
+      async (itemId, fieldName, updatedValue) => {
+        try {
+          const responseData = await updateData(
+            itemId,
+            fieldName,
+            updatedValue
+          );
+          setData((prevData) =>
+            prevData.map((item) => (item._id === itemId ? responseData : item))
+          );
+        } catch (error) {
+          console.error("Error updating data:", error);
+        }
+      },
+      500
+    ); // Устанавливаем задержку 500 мс
+
+    return () => {
+      debouncedUpdateRef.current.cancel(); // Отмена предыдущего дебаунса при размонтировании
+    };
+  }, [updateData]);
 
   const handleInputChange = (e, itemId, fieldName) => {
     const { value, type, checked } = e.target;
     const updatedValue = type === "checkbox" ? checked : value;
-    const username = localStorage.getItem("username");
-    const itemUser = "Tanya";
-    if (fieldName === "hours" || fieldName === "routeNumber") {
-      if (username !== itemUser) {
-        alert(`У вас нет прав!. Узнать - ${"Tanya"}`);
-        return;
-      }
-    }
-    setData((prevData) =>
-      prevData.map((item) =>
-        item._id === itemId ? { ...item, [fieldName]: updatedValue } : item
-      )
-    );
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    timeoutRef.current = setTimeout(() => {
-      axios
-        .put(`${apiUrl}/api/data/${itemId}`, {
-          [fieldName]: updatedValue,
-          updatedBy: username,
-        })
-        .then((response) => {
-          console.log("Data updated successfully:", response.data);
-          setData((prevData) =>
-            prevData.map((item) => (item._id === itemId ? response.data : item))
-          );
-        })
-        .catch((error) => console.error("Error saving data:", error));
-    }, 1000);
+
+    // Сохраняем текущее значение в локальном состоянии
+    setInputValues((prev) => ({
+      ...prev,
+      [itemId]: updatedValue, // Обновляем значение инпута
+    }));
+
+    // Вызываем дебаунс-функцию обновления
+    debouncedUpdateRef.current(itemId, fieldName, updatedValue);
   };
-
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
-
   const handleSelectChange = async (e, itemId) => {
     const { value } = e.target;
 
@@ -875,10 +857,10 @@ const Home = () => {
                   {userNameRoot === "Tanya" && <th>№ Путевого</th>}
                   {userNameRoot === "Tanya" && <th>Часы</th>}
                   {userNameRoot === "Tanya" && <th>Статус</th>}
-                  <th>Стоимость Заказа</th>
-                  <th>Оплата</th>
-                  <th>Сумма Оплаты</th>
-                  <th>Комментарий</th>
+                  <th className="disabled">Стоимость Заказа</th>
+                  <th className="disabled">Оплата</th>
+                  <th className="disabled">Сумма Оплаты</th>
+                  <th className="disabled">Комментарий</th>
                   <th>Менeджер</th>
                   <th>Последнее ред.</th>
                   <th>Удалить запись</th>
@@ -894,6 +876,8 @@ const Home = () => {
                         ? "row-inCompleted"
                         : item.doneCheck === "completed"
                         ? "row-completed"
+                        : item.doneCheck === "inStay"
+                        ? "row-in-stay"
                         : item.doneCheck === "comand"
                         ? "row-comand"
                         : item.doneCheck === "inProgress"
@@ -912,6 +896,7 @@ const Home = () => {
                         <option value="comand">Командировка</option>
                         <option value="inCompleted">В Ожидании</option>
                         <option value="completed">Свободный</option>
+                        <option value="inStay">Не закрыта</option>
                       </select>
                     </td>
 
@@ -971,7 +956,11 @@ const Home = () => {
                           fontSize: "14.5px",
                         }}
                         type="text"
-                        value={item.customer || ""}
+                        value={
+                          inputValues[item._id] !== undefined
+                            ? inputValues[item._id]
+                            : item.customer || ""
+                        }
                         onChange={(e) =>
                           handleInputChange(e, item._id, "customer")
                         }
@@ -1010,7 +999,7 @@ const Home = () => {
                         </td>
                       </>
                     )}
-                    <td>
+                    <td className="disabled">
                       <input
                         type="number"
                         value={item.price || ""}
@@ -1019,7 +1008,7 @@ const Home = () => {
                         }
                       />
                     </td>
-                    <td>
+                    <td className="disabled">
                       <select
                         value={item.colorData || ""}
                         onChange={(e) =>
@@ -1058,7 +1047,7 @@ const Home = () => {
                         </option>
                       </select>
                     </td>
-                    <td>
+                    <td className="disabled">
                       <input
                         type="text"
                         value={item.calcPay || ""}
@@ -1067,7 +1056,7 @@ const Home = () => {
                         }
                       />
                     </td>
-                    <td>
+                    <td className="disabled">
                       <input
                         type="text"
                         value={item.comment || ""}
@@ -1098,6 +1087,8 @@ const Home = () => {
                         onMouseEnter={() => setHighlightId(item._id)}
                         onMouseLeave={() => setHighlightId(null)}
                         onClick={() => handleDeleteWithConfirmation(item._id)}
+                        onTouchStart={() => setHighlightId(item._id)}
+                        onTouchEnd={() => setHighlightId(null)}
                       >
                         Удалить
                       </button>

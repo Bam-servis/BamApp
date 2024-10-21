@@ -228,6 +228,9 @@ tr.highlight + .row-comand .row-row {
 tr.highlight + .row-in-progress .row-row {
   background-color: #ffeb3b !important;
 }
+tr.highlight + .row-in-stay .row-row {
+  background-color: #ffeb3b !important;
+}
 button {
   background-color: #007bff;
   color: white;
@@ -399,14 +402,14 @@ th {
   padding: 5px;
 }
 .row-comand {
-  background-color: #5ca084 !important;
+  background-color: #31996e !important;
 }
 .select-rem {
   width: 120px;
 }
 
 .row-inCompleted {
-  background-color: gray !important;
+  background-color: rgb(3, 184, 175) !important;
 }
 .row-completed {
   background-color: red !important;
@@ -414,6 +417,9 @@ th {
 
 .row-in-progress {
   background-color: #a36c6c !important;
+}
+.row-in-stay {
+  background-color: red !important;
 }
 .input-ovner {
   font-size: 16px;
@@ -542,6 +548,9 @@ th {
   transform: translate(-60px, 50%);
 }
 @media (max-width: 800px) {
+  .disabled {
+    display: none;
+  }
   .data {
     position: static;
     transform: translate(0);
