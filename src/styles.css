@@ -471,6 +471,9 @@ th {
   align-items: center;
   justify-content: center;
 }
+.hover:hover {
+  border: 3px solid black;
+}
 .panel {
   font-size: 20px;
   font-weight: bold;

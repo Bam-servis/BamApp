@@ -125,62 +125,60 @@ const Home = () => {
     };
   }, [fetchData, apiUrl, fetchDrivers, fetchUsers]);
 
-  // Функция для обновления порядка элементов
+  const handleUpdateOrder = async (itemId, newOrderIndex) => {
+    try {
+      await axios.put(`${apiUrl}/api/data/${itemId}`, {
+        orderIndex: newOrderIndex,
+      });
+      fetchData(); // Перезагрузка данных после обновления
+    } catch (error) {
+      console.error("Error updating data:", error);
+    }
+  };
 
-  // const handleUpdateOrder = async (itemId, newOrderIndex) => {
-  //   try {
-  //     await axios.put(`${apiUrl}/api/data/${itemId}`, {
-  //       orderIndex: newOrderIndex,
-  //     });
-  //     fetchData(); // Перезагрузка данных после обновления
-  //   } catch (error) {
-  //     console.error("Error updating data:", error);
-  //   }
-  // };
+  // Функция для перемещения элемента вверх
+  const moveItemUp = (itemId, currentOrderIndex, day) => {
+    // Получаем элементы текущего дня с классом highlight
+    const itemsInCurrentDay = groupedByDayData[day].filter(
+      (item) => item.colorClass === "highlight"
+    );
 
-  // // Функция для перемещения элемента вверх
-  // const moveItemUp = (itemId, currentOrderIndex, day) => {
-  //   // Получаем элементы текущего дня с классом highlight
-  //   const itemsInCurrentDay = groupedByDayData[day].filter(
-  //     (item) => item.colorClass === "highlight"
-  //   );
+    // Находим индекс элемента в массиве элементов с классом highlight
+    const currentIndexInHighlightedItems = itemsInCurrentDay.findIndex(
+      (item) => item._id === itemId
+    );
 
-  //   // Находим индекс элемента в массиве элементов с классом highlight
-  //   const currentIndexInHighlightedItems = itemsInCurrentDay.findIndex(
-  //     (item) => item._id === itemId
-  //   );
+    // Проверяем, что элемент можно переместить вверх
+    if (currentIndexInHighlightedItems > 0) {
+      const itemAbove = itemsInCurrentDay[currentIndexInHighlightedItems - 1];
 
-  //   // Проверяем, что элемент можно переместить вверх
-  //   if (currentIndexInHighlightedItems > 0) {
-  //     const itemAbove = itemsInCurrentDay[currentIndexInHighlightedItems - 1];
+      // Меняем порядок для текущего элемента и элемента выше
+      handleUpdateOrder(itemId, currentOrderIndex - 1);
+      handleUpdateOrder(itemAbove._id, currentOrderIndex); // Меняем порядок элемента, который находится выше
+    }
+  };
 
-  //     // Меняем порядок для текущего элемента и элемента выше
-  //     handleUpdateOrder(itemId, currentOrderIndex - 1);
-  //     handleUpdateOrder(itemAbove._id, currentOrderIndex); // Меняем порядок элемента, который находится выше
-  //   }
-  // };
+  // Функция для перемещения элемента вниз
+  const moveItemDown = (itemId, currentOrderIndex, day) => {
+    // Получаем элементы текущего дня с классом highlight
+    const itemsInCurrentDay = groupedByDayData[day].filter(
+      (item) => item.colorClass === "highlight"
+    );
 
-  // // Функция для перемещения элемента вниз
-  // const moveItemDown = (itemId, currentOrderIndex, day) => {
-  //   // Получаем элементы текущего дня с классом highlight
-  //   const itemsInCurrentDay = groupedByDayData[day].filter(
-  //     (item) => item.colorClass === "highlight"
-  //   );
+    // Находим индекс элемента в массиве элементов с классом highlight
+    const currentIndexInHighlightedItems = itemsInCurrentDay.findIndex(
+      (item) => item._id === itemId
+    );
 
-  //   // Находим индекс элемента в массиве элементов с классом highlight
-  //   const currentIndexInHighlightedItems = itemsInCurrentDay.findIndex(
-  //     (item) => item._id === itemId
-  //   );
+    // Проверяем, что элемент можно переместить вниз
+    if (currentIndexInHighlightedItems < itemsInCurrentDay.length - 1) {
+      const itemBelow = itemsInCurrentDay[currentIndexInHighlightedItems + 1];
 
-  //   // Проверяем, что элемент можно переместить вниз
-  //   if (currentIndexInHighlightedItems < itemsInCurrentDay.length - 1) {
-  //     const itemBelow = itemsInCurrentDay[currentIndexInHighlightedItems + 1];
-
-  //     // Меняем порядок для текущего элемента и элемента ниже
-  //     handleUpdateOrder(itemId, currentOrderIndex + 1);
-  //     handleUpdateOrder(itemBelow._id, currentOrderIndex); // Меняем порядок элемента, который находится ниже
-  //   }
-  // };
+      // Меняем порядок для текущего элемента и элемента ниже
+      handleUpdateOrder(itemId, currentOrderIndex + 1);
+      handleUpdateOrder(itemBelow._id, currentOrderIndex); // Меняем порядок элемента, который находится ниже
+    }
+  };
 
   useEffect(() => {
     if (initialRender.current && currentDayRef.current) {
@@ -849,6 +847,7 @@ const Home = () => {
             <table>
               <thead className="sticky">
                 <tr>
+                  <th></th>
                   <th>Статус</th>
                   <th>Марка</th>
                   <th>Гос №</th>
@@ -864,6 +863,7 @@ const Home = () => {
                   <th>Менeджер</th>
                   <th>Последнее ред.</th>
                   <th>Удалить запись</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -885,6 +885,20 @@ const Home = () => {
                         : "row-pending"
                     } ${highlightId === item._id ? "highlight-delete" : ""}`}
                   >
+                    <td>
+                      {item.colorClass === "highlight" && (
+                        <>
+                          <button
+                            onClick={() =>
+                              moveItemUp(item._id, item.orderIndex, day)
+                            }
+                            disabled={index === 0} // Отключить кнопку, если это первый элемент
+                          >
+                            ↑
+                          </button>
+                        </>
+                      )}
+                    </td>
                     <td>
                       <select
                         className="select-rem"
@@ -955,6 +969,7 @@ const Home = () => {
                     </td>
                     <td className="tow-table-td">
                       <input
+                        className="hover"
                         style={{
                           width: "100%",
                           minWidth: "300px",
@@ -1109,23 +1124,23 @@ const Home = () => {
                       >
                         Удалить
                       </button>
+                    </td>
 
-                      {/* <button
-                        onClick={() =>
-                          moveItemUp(item._id, item.orderIndex, day)
-                        }
-                        disabled={index === 0} // Отключить кнопку, если это первый элемент
-                      >
-                        ↑ Вверх
-                      </button>
-                      <button
-                        onClick={() =>
-                          moveItemDown(item._id, item.orderIndex, day)
-                        }
-                        disabled={index === groupedByDayData[day].length - 1} // Отключить кнопку, если это последний элемент
-                      >
-                        ↓ Вниз
-                      </button> */}
+                    <td>
+                      {item.colorClass === "highlight" && (
+                        <>
+                          <button
+                            onClick={() =>
+                              moveItemDown(item._id, item.orderIndex, day)
+                            }
+                            disabled={
+                              index === groupedByDayData[day].length - 1
+                            } // Отключить кнопку, если это последний элемент
+                          >
+                            ↓
+                          </button>
+                        </>
+                      )}
                     </td>
                   </tr>
                 ))}
