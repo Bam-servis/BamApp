@@ -401,6 +401,9 @@ th {
   border: 1px solid red;
   padding: 5px;
 }
+.comand-inComlp {
+  background: linear-gradient(90deg, #31996e 50%, rgb(3, 184, 175) 50%);
+}
 .row-comand {
   background-color: #31996e !important;
 }
@@ -461,6 +464,7 @@ th {
   text-align: center;
   flex-direction: column;
 }
+
 .driv {
   display: flex;
   text-align: center;

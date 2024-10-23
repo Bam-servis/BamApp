@@ -882,6 +882,8 @@ const Home = () => {
                         ? "row-in-stay"
                         : item.doneCheck === "comand"
                         ? "row-comand"
+                        : item.doneCheck === "comand-inComlp"
+                        ? "comand-inComlp"
                         : item.doneCheck === "inProgress"
                         ? "row-in-progress"
                         : "row-pending"
@@ -911,6 +913,7 @@ const Home = () => {
                         onChange={(e) => handleSelectChange(e, item._id)}
                       >
                         <option value="pending">Выбрать</option>
+                        <option value="comand-inComlp">Команд./Ожидании</option>
                         <option value="inProgress">ТО/Ремонт</option>
                         <option value="comand">Командировка</option>
                         <option value="inCompleted">В Ожидании</option>
