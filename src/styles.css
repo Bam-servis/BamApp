@@ -562,11 +562,9 @@ th {
     display: none;
   }
   .data {
-    position: static;
-    transform: translate(0);
-  }
-  .sticky-h1 {
-    color: #fff;
+    /* position: static;
+     */
+    transform: translate(-295px, 0);
   }
   .login h1 {
     color: #fff;
