@@ -402,7 +402,7 @@ th {
   padding: 5px;
 }
 .comand-inComlp {
-  background: linear-gradient(90deg, #31996e 50%, rgb(3, 184, 175) 50%);
+  background: linear-gradient(to bottom, #31996e 50%, rgb(3, 184, 175) 50%);
 }
 .row-comand {
   background-color: #31996e !important;
