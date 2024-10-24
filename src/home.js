@@ -11,6 +11,8 @@ import "./styles.css";
 import { format, addMonths, subMonths } from "date-fns";
 import { ru } from "date-fns/locale";
 import { debounce } from "lodash";
+import Select from "react-select";
+
 const Home = () => {
   const [data, setData] = useState([]);
   const [drivers, setDrivers] = useState([]);
@@ -577,6 +579,10 @@ const Home = () => {
   const memoizedUsers = useMemo(() => {
     return users;
   }, [users]);
+  const options = sortedDrivers.map((driver) => ({
+    value: driver.name,
+    label: driver.name,
+  }));
   return (
     <div>
       <button onClick={toggleVisibilityBlock}>
@@ -935,26 +941,77 @@ const Home = () => {
                       />
                     </td>
                     <td>
-                      <select
-                        style={{
-                          width: "130px",
-                          fontWeight: "600",
-                          fontSize: "12.5px",
+                      <Select
+                        styles={{
+                          control: (base) => ({
+                            ...base,
+                            width: "110px", // Устанавливаем ширину на 130px
+                            height: "22px",
+                            minHeight: "22px",
+                            padding: "0",
+                            margin: "0",
+                            display: "flex",
+                            alignItems: "center",
+                            backgroundColor: "#f0f8ff", // Яркий цвет фона
+                            border: "1px solid #007bff", // Яркая граница
+                            boxShadow: "none", // Убираем тени
+                            "&:hover": {
+                              border: "1px solid #0056b3", // Цвет границы при наведении
+                            },
+                          }),
+                          dropdownIndicator: (base) => ({
+                            ...base,
+                            display: "none", // Убираем стрелочку
+                          }),
+                          indicatorSeparator: (base) => ({
+                            ...base,
+                            display: "none", // Убираем разделитель
+                          }),
+                          singleValue: (base) => ({
+                            ...base,
+                            margin: "0", // Убираем отступы у выбранного значения
+                            lineHeight: "22px", // Устанавливаем высоту строки
+                            fontSize: "12px", // Устанавливаем размер шрифта
+                          }),
+                          placeholder: (base) => ({
+                            ...base,
+                            lineHeight: "22px", // Устанавливаем высоту строки
+                            fontSize: "12px", // Устанавливаем размер шрифта
+                          }),
+                          input: (base) => ({
+                            ...base,
+                            margin: "0", // Убираем отступы у инпута
+                            lineHeight: "22px", // Устанавливаем высоту строки
+                            fontSize: "12px", // Устанавливаем размер шрифта
+                          }),
+                          option: (base) => ({
+                            ...base,
+                            lineHeight: "22px", // Устанавливаем высоту строки для опций
+                            fontSize: "12px", // Устанавливаем размер шрифта для опций
+                          }),
+                          menu: (base) => ({
+                            ...base,
+                            zIndex: 9999, // Убедитесь, что выпадающее меню отображается над другими элементами
+                          }),
                         }}
+                        options={options}
                         value={
-                          inputValues[item._id]?.driver || item.driver || ""
+                          options.find(
+                            (option) =>
+                              option.value ===
+                              (inputValues[item._id]?.driver || item.driver)
+                          ) || null
                         }
-                        onChange={(e) =>
-                          handleInputChange(e, item._id, "driver")
-                        }
-                      >
-                        <option value="">Выбрать</option>
-                        {sortedDrivers.map((driver) => (
-                          <option key={driver._id} value={driver.name}>
-                            {driver.name}
-                          </option>
-                        ))}
-                      </select>
+                        onChange={(selectedOption) => {
+                          handleInputChange(
+                            { target: { value: selectedOption.value } },
+                            item._id,
+                            "driver"
+                          );
+                        }}
+                        placeholder="Выбрать"
+                        isClearable={false} // Отключаем крестик отмены
+                      />
                     </td>
                     <td className="tow-table-td">
                       <input

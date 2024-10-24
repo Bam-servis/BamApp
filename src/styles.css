@@ -493,6 +493,34 @@ th {
   align-items: center;
   height: 100vh;
 }
+/* Устанавливаем высоту селекта и убираем отступы */
+.css-u65186-control,
+.css-cmlrlu-control,
+.css-paxkez-control,
+.css-hlgwow,
+.css-o36i32 {
+  height: 22px !important; /* Высота селекта */
+  min-height: 22px !important; /* Минимальная высота */
+  padding: 0 !important; /* Убираем внутренние отступы */
+  margin: 0 !important; /* Убираем внешние отступы */
+}
+
+/* Устанавливаем высоту строки и размер шрифта для выбранного значения */
+.css-u65186-singleValue,
+.css-cmlrlu-singleValue,
+.css-cmlrlu-placeholder,
+.css-hlgwow,
+.css-o36i32 {
+  line-height: 22px !important; /* Высота строки */
+  font-size: 12px !important; /* Размер шрифта */
+}
+
+/* Устанавливаем высоту строки для опций */
+.css-u65186-option,
+.css-cmlrlu-option {
+  line-height: 22px !important; /* Высота строки для опций */
+  font-size: 12px !important; /* Размер шрифта для опций */
+}
 
 /* Стиль для спиннера */
 .spinner {
