@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 import axios from "axios";
 import { hardcodedData } from "./hardcodedData";
 import "./styles.css";
@@ -31,6 +37,7 @@ const Home = () => {
     colorClass: "",
     orderIndex: Number,
   });
+
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split("T")[0]
   );
@@ -39,9 +46,8 @@ const Home = () => {
   const initialRender = useRef(true);
   const today = new Date();
   const formattedToday = format(today, "dd");
-  const addedItems = useRef(new Set());
-  const debouncedUpdateRef = useRef(null); // Для хранения debounced функции
-  const [inputValues, setInputValues] = useState({}); // Локальное состояние для значений инпутов
+  const debouncedUpdateRef = useRef(null);
+  const [inputValues, setInputValues] = useState({});
 
   const socket = useRef(null); // Создайте ссылку для WebSocket
 
@@ -50,28 +56,39 @@ const Home = () => {
   };
   const fetchData = useCallback(async () => {
     try {
+      // Загружаем данные через Axios
       const response = await axios.get(`${apiUrl}/api/data`);
-      setData(response.data); // Загружаем данные через Axios
+      setData(response.data);
       setTotalRecords(response.data.length);
+
+      // Параллельные запросы для пользователей и водителей
+      const [cachedUsers, cachedDrivers] = await Promise.all([
+        sessionStorage.getItem("users"),
+        sessionStorage.getItem("drivers"),
+      ]);
+
+      const usersPromise = cachedUsers
+        ? Promise.resolve(JSON.parse(cachedUsers))
+        : axios.get(`${apiUrl}/api/users`).then((res) => {
+            sessionStorage.setItem("users", JSON.stringify(res.data));
+            return res.data;
+          });
+
+      const driversPromise = cachedDrivers
+        ? Promise.resolve(JSON.parse(cachedDrivers))
+        : axios.get(`${apiUrl}/api/drivers`).then((res) => {
+            sessionStorage.setItem("drivers", JSON.stringify(res.data));
+            return res.data;
+          });
+
+      const [users, drivers] = await Promise.all([
+        usersPromise,
+        driversPromise,
+      ]);
+      setUsers(users);
+      setDrivers(drivers);
     } catch (error) {
       console.error("Error fetching data:", error);
-    }
-  }, [apiUrl]);
-  const fetchDrivers = useCallback(async () => {
-    try {
-      const response = await axios.get(`${apiUrl}/api/drivers`);
-      setDrivers(response.data);
-    } catch (error) {
-      console.error("Error fetching drivers:", error);
-    }
-  }, [apiUrl]);
-
-  const fetchUsers = useCallback(async () => {
-    try {
-      const response = await axios.get(`${apiUrl}/api/users`);
-      setUsers(response.data);
-    } catch (error) {
-      console.error("Error fetching setUsers:", error);
     }
   }, [apiUrl]);
   useEffect(() => {
@@ -82,13 +99,6 @@ const Home = () => {
         const messageData = JSON.parse(event.data);
         setData((prevData) => {
           switch (messageData.action) {
-            // case "add":
-            //   console.log("Attempting to add item:", messageData.item);
-            //   // Проверяем, если элемент уже существует
-            //   if (!prevData.some((item) => item._id === messageData.item._id)) {
-            //     return [...prevData, messageData.item]; // Добавляем новый элемент
-            //   }
-            //   return prevData;
             case "update":
               console.log("Processing update for item:", messageData.item);
               return prevData.map((item) =>
@@ -114,17 +124,16 @@ const Home = () => {
     };
 
     connectWebSocket();
-    fetchData();
-    fetchUsers();
-    fetchDrivers();
 
     return () => {
       if (socket.current) {
         socket.current.close();
       }
     };
-  }, [fetchData, apiUrl, fetchDrivers, fetchUsers]);
-
+  }, [apiUrl]);
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
   const handleUpdateOrder = async (itemId, newOrderIndex) => {
     try {
       await axios.put(`${apiUrl}/api/data/${itemId}`, {
@@ -218,24 +227,23 @@ const Home = () => {
   const addSingleItemWithClass = async (className) => {
     try {
       // Устанавливаем таймаут перед выполнением основной логики
-      setTimeout(async () => {
-        const itemsWithClass = data.filter(
-          (item) => item.colorClass === className
-        );
-        const newIndex = itemsWithClass.length > 0 ? itemsWithClass.length : 0;
 
-        // Отправляем запрос на добавление одного элемента
-        const response = await axios.post(`${apiUrl}/api/data`, {
-          ...newItem,
-          colorClass: className,
-          updatedBy: localStorage.getItem("username"),
-          date: selectedDate,
-          orderIndex: newIndex, // Используем новый индекс
-        });
+      const itemsWithClass = data.filter(
+        (item) => item.colorClass === className
+      );
+      const newIndex = itemsWithClass.length > 0 ? itemsWithClass.length : 0;
 
-        // Обновляем состояние, добавляя только что созданный элемент
-        setData((prevData) => [...prevData, response.data]);
-      }, 300); // Задержка в 1500 мс
+      // Отправляем запрос на добавление одного элемента
+      const response = await axios.post(`${apiUrl}/api/data`, {
+        ...newItem,
+        colorClass: className,
+        updatedBy: localStorage.getItem("username"),
+        date: selectedDate,
+        orderIndex: newIndex, // Используем новый индекс
+      });
+
+      // Обновляем состояние, добавляя только что созданный элемент
+      setData((prevData) => [...prevData, response.data]);
     } catch (error) {
       console.error("Error adding single data with class:", error);
     }
@@ -374,28 +382,6 @@ const Home = () => {
     setHighlightId(null);
   };
 
-  // const handleDateChange = (e, itemId) => {
-  //   const { value } = e.target;
-  //   const username = localStorage.getItem("username");
-
-  //   if (username !== "Olya") {
-  //     alert(`У вас нет прав!. Узнать - ${"Olya"}`);
-  //     return;
-  //   }
-  //   const updatedData = data.map((item) =>
-  //     item._id === itemId ? { ...item, date: value } : item
-  //   );
-  //   setData(updatedData);
-
-  //   axios
-  //     .put(`${apiUrl}/api/data/${itemId}`, {
-  //       ...updatedData.find((item) => item._id === itemId),
-  //       date: value,
-  //       updatedBy: username,
-  //     })
-  //     .catch((error) => console.error("Error updating date:", error));
-  // };
-
   const handleAddNewDriver = async () => {
     if (newDriver.trim() === "") return;
     const driverExists = drivers.some(
@@ -447,14 +433,6 @@ const Home = () => {
     const monthName = format(date, "MMMM", { locale: ru });
     return monthNamesInGenitive[monthName] || monthName;
   };
-
-  // const formatDate = (date) => {
-  //   const d = new Date(date);
-  //   const year = d.getFullYear();
-  //   const month = String(d.getMonth() + 1).padStart(2, "0");
-  //   const day = String(d.getDate()).padStart(2, "0");
-  //   return `${year}-${month}-${day}`;
-  // };
 
   const handleMonthChange = (direction) => {
     const newMonth =
@@ -593,6 +571,12 @@ const Home = () => {
     data,
     getPreviousMonth(currentMonth)
   );
+  const sortedDrivers = useMemo(() => {
+    return drivers.slice().sort((a, b) => a.name.localeCompare(b.name));
+  }, [drivers]);
+  const memoizedUsers = useMemo(() => {
+    return users;
+  }, [users]);
   return (
     <div>
       <button onClick={toggleVisibilityBlock}>
@@ -965,14 +949,11 @@ const Home = () => {
                         }
                       >
                         <option value="">Выбрать</option>
-                        {drivers
-                          .slice()
-                          .sort((a, b) => a.name.localeCompare(b.name))
-                          .map((driver) => (
-                            <option key={driver._id} value={driver.name}>
-                              {driver.name}
-                            </option>
-                          ))}
+                        {sortedDrivers.map((driver) => (
+                          <option key={driver._id} value={driver.name}>
+                            {driver.name}
+                          </option>
+                        ))}
                       </select>
                     </td>
                     <td className="tow-table-td">
@@ -1112,7 +1093,7 @@ const Home = () => {
                         onChange={(e) => handleInputChange(e, item._id, "user")}
                       >
                         <option value="">Выбрать</option>
-                        {users.map((user) => (
+                        {memoizedUsers.map((user) => (
                           <option key={user._id} value={user.username}>
                             {user.name}
                           </option>
