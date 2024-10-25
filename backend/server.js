@@ -49,21 +49,15 @@ wss.on("connection", (ws) => {
   });
 });
 
+// Функция для уведомления клиентов
 const notifyClients = (data) => {
-  const simplifiedData = {
-    action: data.action,
-    item: {
-      id: data.item._id,
-      name: data.item.name, // Добавьте только те поля, которые действительно необходимы
-    },
-  };
-
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(simplifiedData));
+      client.send(JSON.stringify(data));
     }
   });
 };
+
 // REST API Routes
 app.delete("/api/data/:id", async (req, res) => {
   try {
