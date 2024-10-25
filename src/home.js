@@ -12,9 +12,11 @@ import { format, addMonths, subMonths } from "date-fns";
 import { ru } from "date-fns/locale";
 import { debounce } from "lodash";
 import Select from "react-select";
-
+import LoadingSpinner from "./components/LoadingSpinner";
 const Home = () => {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [drivers, setDrivers] = useState([]);
   const [users, setUsers] = useState([]);
   const [newDriver, setNewDriver] = useState("");
@@ -23,6 +25,17 @@ const Home = () => {
   const [highlightId, setHighlightId] = useState(null);
   const apiUrl = process.env.REACT_APP_API_URL;
   const userNameRoot = localStorage.getItem("username");
+  const [selectedDate, setSelectedDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const currentDayRef = useRef(null);
+  const initialRender = useRef(true);
+  const today = new Date();
+  const formattedToday = format(today, "dd");
+  const debouncedUpdateRef = useRef(null);
+  const [inputValues, setInputValues] = useState({});
+  const socket = useRef(null);
   const [newItem, setNewItem] = useState({
     doneCheck: "",
     date: new Date().toISOString().split("T")[0],
@@ -40,28 +53,26 @@ const Home = () => {
     orderIndex: Number,
   });
 
-  const [selectedDate, setSelectedDate] = useState(
-    new Date().toISOString().split("T")[0]
-  );
-  const [currentMonth, setCurrentMonth] = useState(new Date());
-  const currentDayRef = useRef(null);
-  const initialRender = useRef(true);
-  const today = new Date();
-  const formattedToday = format(today, "dd");
-  const debouncedUpdateRef = useRef(null);
-  const [inputValues, setInputValues] = useState({});
-
-  const socket = useRef(null); // Создайте ссылку для WebSocket
-
   const toggleVisibilityBlock = () => {
     setIsVisibleBlock(!isVisibleBlock);
   };
   const fetchData = useCallback(async () => {
+    setLoading(true);
+    setError(null); // Сбрасываем ошибку перед новым запросом
+    const controller = new AbortController(); // Создаем AbortController для отмены запросов
     try {
       // Загружаем данные через Axios
-      const response = await axios.get(`${apiUrl}/api/data`);
-      setData(response.data);
-      setTotalRecords(response.data.length);
+      const response = await axios.get(`${apiUrl}/api/data`, {
+        signal: controller.signal, // Передаем сигнал для отмены
+      });
+
+      // Проверка структуры данных
+      if (Array.isArray(response.data)) {
+        setData(response.data);
+        setTotalRecords(response.data.length);
+      } else {
+        console.error("Received data is not an array:", response.data);
+      }
 
       // Параллельные запросы для пользователей и водителей
       const [cachedUsers, cachedDrivers] = await Promise.all([
@@ -71,32 +82,54 @@ const Home = () => {
 
       const usersPromise = cachedUsers
         ? Promise.resolve(JSON.parse(cachedUsers))
-        : axios.get(`${apiUrl}/api/users`).then((res) => {
-            sessionStorage.setItem("users", JSON.stringify(res.data));
-            return res.data;
-          });
+        : axios
+            .get(`${apiUrl}/api/users`, { signal: controller.signal })
+            .then((res) => {
+              sessionStorage.setItem("users", JSON.stringify(res.data));
+              return res.data;
+            });
 
       const driversPromise = cachedDrivers
         ? Promise.resolve(JSON.parse(cachedDrivers))
-        : axios.get(`${apiUrl}/api/drivers`).then((res) => {
-            sessionStorage.setItem("drivers", JSON.stringify(res.data));
-            return res.data;
-          });
+        : axios
+            .get(`${apiUrl}/api/drivers`, { signal: controller.signal })
+            .then((res) => {
+              sessionStorage.setItem("drivers", JSON.stringify(res.data));
+              return res.data;
+            });
 
-      const [users, drivers] = await Promise.all([
+      const [usersData, driversData] = await Promise.all([
         usersPromise,
         driversPromise,
       ]);
-      setUsers(users);
-      setDrivers(drivers);
+      setUsers(usersData);
+      setDrivers(driversData);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      if (axios.isCancel(error)) {
+        console.log("Request canceled:", error.message);
+      } else {
+        setError("Error fetching data: " + (error.message || error));
+        console.error("Error fetching data:", error);
+      }
+    } finally {
+      setLoading(false); // Устанавливаем состояние загрузки в false
     }
+
+    return () => {
+      controller.abort(); // Отменяем запрос при размонтировании компонента
+    };
   }, [apiUrl]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
   useEffect(() => {
     const connectWebSocket = () => {
       socket.current = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
-
+      socket.current.onopen = () => {
+        console.log("WebSocket connected");
+      };
       socket.current.onmessage = (event) => {
         const messageData = JSON.parse(event.data);
         setData((prevData) => {
@@ -133,9 +166,6 @@ const Home = () => {
       }
     };
   }, [apiUrl]);
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
 
   const handleUpdateOrder = async (itemId, newOrderIndex) => {
     try {
@@ -194,12 +224,11 @@ const Home = () => {
 
   useEffect(() => {
     if (initialRender.current && currentDayRef.current) {
-      setTimeout(() => {
-        currentDayRef.current.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }, 0);
+      currentDayRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+
       initialRender.current = false;
     }
   }, [data]);
@@ -585,6 +614,8 @@ const Home = () => {
     value: driver.name,
     label: driver.name,
   }));
+  if (loading) return <LoadingSpinner />;
+  if (error) return <p>{error}</p>;
   return (
     <div>
       <button onClick={toggleVisibilityBlock}>
