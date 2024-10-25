@@ -136,6 +136,7 @@ const Home = () => {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
   const handleUpdateOrder = async (itemId, newOrderIndex) => {
     try {
       await axios.put(`${apiUrl}/api/data/${itemId}`, {
