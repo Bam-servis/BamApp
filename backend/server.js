@@ -58,7 +58,6 @@ const notifyClients = (data) => {
   });
 };
 
-// REST API Routes
 app.delete("/api/data/:id", async (req, res) => {
   try {
     const result = await Data.findByIdAndDelete(req.params.id);
