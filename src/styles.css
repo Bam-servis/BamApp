@@ -486,6 +486,9 @@ th {
   font-weight: bold;
 }
 
+.weekend {
+  background-color: #007bff !important;
+}
 /* Стиль для контейнера спиннера */
 .spinner-container {
   display: flex;

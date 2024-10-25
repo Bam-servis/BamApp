@@ -451,7 +451,7 @@ const Home = () => {
 
   const regularItems = data.filter((item) => item.colorClass !== "highlight");
 
-  // Группировка данных по дням
+  // Группировка данных по дням для выбранного месяца
   const groupedByDate = regularItems.reduce((acc, item) => {
     const itemDate = new Date(item.date);
     const itemDay = format(itemDate, "dd"); // Получаем день месяца элемента
@@ -498,12 +498,12 @@ const Home = () => {
     ...highlightedItems,
   ];
 
-  // Фильтрация для текущего месяца
+  // Фильтрация данных в зависимости от выбранного месяца
   const filteredData = finalData.filter((item) => {
     const itemDate = new Date(item.date);
     return (
-      itemDate.getMonth() === today.getMonth() &&
-      itemDate.getFullYear() === today.getFullYear()
+      itemDate.getMonth() === currentMonth.getMonth() &&
+      itemDate.getFullYear() === currentMonth.getFullYear()
     );
   });
 
@@ -573,6 +573,7 @@ const Home = () => {
     data,
     getPreviousMonth(currentMonth)
   );
+
   const sortedDrivers = useMemo(() => {
     return drivers.slice().sort((a, b) => a.name.localeCompare(b.name));
   }, [drivers]);
@@ -874,6 +875,8 @@ const Home = () => {
                         ? "row-comand"
                         : item.doneCheck === "comand-inComlp"
                         ? "comand-inComlp"
+                        : item.doneCheck === "weekend"
+                        ? "weekend"
                         : item.doneCheck === "inProgress"
                         ? "row-in-progress"
                         : "row-pending"
@@ -909,6 +912,7 @@ const Home = () => {
                         <option value="inCompleted">В Ожидании</option>
                         <option value="completed">Свободный</option>
                         <option value="inStay">Не закрыта</option>
+                        <option value="weekend">Выходной</option>
                       </select>
                     </td>
 
