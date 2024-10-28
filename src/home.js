@@ -331,7 +331,7 @@ const Home = () => {
           console.error("Error updating data:", error);
         }
       },
-      500
+      200
     ); // Устанавливаем задержку 500 мс
 
     return () => {
