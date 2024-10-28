@@ -35,7 +35,6 @@ const Home = () => {
   const formattedToday = format(today, "dd");
   const debouncedUpdateRef = useRef(null);
   const [inputValues, setInputValues] = useState({});
-  const socket = useRef(null);
   const [newItem, setNewItem] = useState({
     doneCheck: "",
     date: new Date().toISOString().split("T")[0],
@@ -123,49 +122,6 @@ const Home = () => {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
-
-  useEffect(() => {
-    const connectWebSocket = () => {
-      socket.current = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
-      socket.current.onopen = () => {
-        console.log("WebSocket connected");
-      };
-      socket.current.onmessage = (event) => {
-        const messageData = JSON.parse(event.data);
-        setData((prevData) => {
-          switch (messageData.action) {
-            case "update":
-              console.log("Processing update for item:", messageData.item);
-              return prevData.map((item) =>
-                item._id === messageData.item._id
-                  ? { ...item, ...messageData.item }
-                  : item
-              );
-            case "delete":
-              return prevData.filter((item) => item._id !== messageData.id); // Удаляем элемент
-            default:
-              return prevData;
-          }
-        });
-      };
-
-      socket.current.onclose = () => {
-        setTimeout(connectWebSocket, 1000); // Переподключаемся
-      };
-
-      socket.current.onerror = () => {
-        setTimeout(connectWebSocket, 5000);
-      };
-    };
-
-    connectWebSocket();
-
-    return () => {
-      if (socket.current) {
-        socket.current.close();
-      }
-    };
-  }, [apiUrl]);
 
   const handleUpdateOrder = async (itemId, newOrderIndex) => {
     try {
@@ -329,11 +285,11 @@ const Home = () => {
           console.error("Error updating data:", error);
         }
       },
-      500
-    ); // Устанавливаем задержку 500 мс
+      300
+    );
 
     return () => {
-      debouncedUpdateRef.current.cancel(); // Отмена предыдущего дебаунса при размонтировании
+      debouncedUpdateRef.current.cancel();
     };
   }, [updateData]);
 
