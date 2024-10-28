@@ -35,6 +35,7 @@ const Home = () => {
   const formattedToday = format(today, "dd");
   const debouncedUpdateRef = useRef(null);
   const [inputValues, setInputValues] = useState({});
+  const socket = useRef(null);
   const [newItem, setNewItem] = useState({
     doneCheck: "",
     date: new Date().toISOString().split("T")[0],
@@ -123,6 +124,49 @@ const Home = () => {
     fetchData();
   }, [fetchData]);
 
+  useEffect(() => {
+    const connectWebSocket = () => {
+      socket.current = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
+      socket.current.onopen = () => {
+        console.log("WebSocket connected");
+      };
+      socket.current.onmessage = (event) => {
+        const messageData = JSON.parse(event.data);
+        setData((prevData) => {
+          switch (messageData.action) {
+            case "update":
+              console.log("Processing update for item:", messageData.item);
+              return prevData.map((item) =>
+                item._id === messageData.item._id
+                  ? { ...item, ...messageData.item }
+                  : item
+              );
+            case "delete":
+              return prevData.filter((item) => item._id !== messageData.id); // Удаляем элемент
+            default:
+              return prevData;
+          }
+        });
+      };
+
+      socket.current.onclose = () => {
+        setTimeout(connectWebSocket, 1000); // Переподключаемся
+      };
+
+      socket.current.onerror = () => {
+        setTimeout(connectWebSocket, 5000);
+      };
+    };
+
+    connectWebSocket();
+
+    return () => {
+      if (socket.current) {
+        socket.current.close();
+      }
+    };
+  }, [apiUrl]);
+
   const handleUpdateOrder = async (itemId, newOrderIndex) => {
     try {
       await axios.put(`${apiUrl}/api/data/${itemId}`, {
@@ -179,14 +223,16 @@ const Home = () => {
   };
 
   useEffect(() => {
-    if (initialRender.current && currentDayRef.current) {
-      currentDayRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
+    setTimeout(() => {
+      if (initialRender.current && currentDayRef.current) {
+        currentDayRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
 
-      initialRender.current = false;
-    }
+        initialRender.current = false;
+      }
+    }, 1000);
   }, [data]);
 
   const addEntriesForSelectedDate = async () => {
@@ -285,11 +331,11 @@ const Home = () => {
           console.error("Error updating data:", error);
         }
       },
-      300
-    );
+      500
+    ); // Устанавливаем задержку 500 мс
 
     return () => {
-      debouncedUpdateRef.current.cancel();
+      debouncedUpdateRef.current.cancel(); // Отмена предыдущего дебаунса при размонтировании
     };
   }, [updateData]);
 
