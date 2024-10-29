@@ -12,11 +12,8 @@ import { format, addMonths, subMonths } from "date-fns";
 import { ru } from "date-fns/locale";
 import { debounce } from "lodash";
 import Select from "react-select";
-import LoadingSpinner from "./components/LoadingSpinner";
 const Home = () => {
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [drivers, setDrivers] = useState([]);
   const [users, setUsers] = useState([]);
   const [newDriver, setNewDriver] = useState("");
@@ -28,6 +25,8 @@ const Home = () => {
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split("T")[0]
   );
+  const [selectedDriver, setSelectedDriver] = useState(null);
+
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const currentDayRef = useRef(null);
   const initialRender = useRef(true);
@@ -56,75 +55,37 @@ const Home = () => {
   const toggleVisibilityBlock = () => {
     setIsVisibleBlock(!isVisibleBlock);
   };
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    setError(null); // Сбрасываем ошибку перед новым запросом
-    const controller = new AbortController(); // Создаем AbortController для отмены запросов
+  const fetchData = async () => {
     try {
-      // Загружаем данные через Axios
-      const response = await axios.get(`${apiUrl}/api/data`, {
-        signal: controller.signal, // Передаем сигнал для отмены
-      });
-
-      // Проверка структуры данных
-      if (Array.isArray(response.data)) {
-        setData(response.data);
-        setTotalRecords(response.data.length);
-      } else {
-        console.error("Received data is not an array:", response.data);
-      }
-
-      // Параллельные запросы для пользователей и водителей
-      const [cachedUsers, cachedDrivers] = await Promise.all([
-        sessionStorage.getItem("users"),
-        sessionStorage.getItem("drivers"),
-      ]);
-
-      const usersPromise = cachedUsers
-        ? Promise.resolve(JSON.parse(cachedUsers))
-        : axios
-            .get(`${apiUrl}/api/users`, { signal: controller.signal })
-            .then((res) => {
-              sessionStorage.setItem("users", JSON.stringify(res.data));
-              return res.data;
-            });
-
-      const driversPromise = cachedDrivers
-        ? Promise.resolve(JSON.parse(cachedDrivers))
-        : axios
-            .get(`${apiUrl}/api/drivers`, { signal: controller.signal })
-            .then((res) => {
-              sessionStorage.setItem("drivers", JSON.stringify(res.data));
-              return res.data;
-            });
-
-      const [usersData, driversData] = await Promise.all([
-        usersPromise,
-        driversPromise,
-      ]);
-      setUsers(usersData);
-      setDrivers(driversData);
+      const response = await axios.get(`${apiUrl}/api/data`);
+      setData(response.data);
+      const totalCount = response.data.length;
+      setTotalRecords(totalCount);
     } catch (error) {
-      if (axios.isCancel(error)) {
-        console.log("Request canceled:", error.message);
-      } else {
-        setError("Error fetching data: " + (error.message || error));
-        console.error("Error fetching data:", error);
-      }
-    } finally {
-      setLoading(false); // Устанавливаем состояние загрузки в false
+      console.error("Error fetching data:", error);
     }
+  };
 
-    return () => {
-      controller.abort(); // Отменяем запрос при размонтировании компонента
+  useEffect(() => {
+    const fetchDrivers = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/api/drivers`);
+        setDrivers(response.data);
+      } catch (error) {
+        console.error("Error fetching drivers:", error);
+      }
     };
-  }, [apiUrl]);
-
-  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/api/users`);
+        setUsers(response.data);
+      } catch (error) {
+        console.error("Error fetching setUsers:", error);
+      }
+    };
     fetchData();
-  }, [fetchData]);
-
-  useEffect(() => {
+    fetchUsers();
+    fetchDrivers();
     const connectWebSocket = () => {
       socket.current = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
       socket.current.onopen = () => {
@@ -136,6 +97,16 @@ const Home = () => {
           switch (messageData.action) {
             case "update":
               console.log("Processing update for item:", messageData.item);
+              // Проверка на изменения
+              const updatedItem = prevData.find(
+                (item) => item._id === messageData.item._id
+              );
+              if (
+                updatedItem &&
+                JSON.stringify(updatedItem) === JSON.stringify(messageData.item)
+              ) {
+                return prevData; // Нет изменений, не обновляем состояние
+              }
               return prevData.map((item) =>
                 item._id === messageData.item._id
                   ? { ...item, ...messageData.item }
@@ -166,59 +137,53 @@ const Home = () => {
       }
     };
   }, [apiUrl]);
-
-  const handleUpdateOrder = async (itemId, newOrderIndex) => {
+  const handleBatchUpdateOrder = async (updates) => {
     try {
-      await axios.put(`${apiUrl}/api/data/${itemId}`, {
-        orderIndex: newOrderIndex,
-      });
-      fetchData(); // Перезагрузка данных после обновления
+      await Promise.all(
+        updates.map(({ itemId, newOrderIndex }) =>
+          axios.put(`${apiUrl}/api/data/${itemId}`, {
+            orderIndex: newOrderIndex,
+          })
+        )
+      );
+      fetchData(); // Перезагрузка данных после всех обновлений
     } catch (error) {
       console.error("Error updating data:", error);
     }
   };
-
   // Функция для перемещения элемента вверх
   const moveItemUp = (itemId, currentOrderIndex, day) => {
-    // Получаем элементы текущего дня с классом highlight
     const itemsInCurrentDay = groupedByDayData[day].filter(
       (item) => item.colorClass === "highlight"
     );
-
-    // Находим индекс элемента в массиве элементов с классом highlight
     const currentIndexInHighlightedItems = itemsInCurrentDay.findIndex(
       (item) => item._id === itemId
     );
 
-    // Проверяем, что элемент можно переместить вверх
     if (currentIndexInHighlightedItems > 0) {
       const itemAbove = itemsInCurrentDay[currentIndexInHighlightedItems - 1];
-
-      // Меняем порядок для текущего элемента и элемента выше
-      handleUpdateOrder(itemId, currentOrderIndex - 1);
-      handleUpdateOrder(itemAbove._id, currentOrderIndex); // Меняем порядок элемента, который находится выше
+      handleBatchUpdateOrder([
+        { itemId, newOrderIndex: currentOrderIndex - 1 },
+        { itemId: itemAbove._id, newOrderIndex: currentOrderIndex },
+      ]);
     }
   };
 
   // Функция для перемещения элемента вниз
   const moveItemDown = (itemId, currentOrderIndex, day) => {
-    // Получаем элементы текущего дня с классом highlight
     const itemsInCurrentDay = groupedByDayData[day].filter(
       (item) => item.colorClass === "highlight"
     );
-
-    // Находим индекс элемента в массиве элементов с классом highlight
     const currentIndexInHighlightedItems = itemsInCurrentDay.findIndex(
       (item) => item._id === itemId
     );
 
-    // Проверяем, что элемент можно переместить вниз
     if (currentIndexInHighlightedItems < itemsInCurrentDay.length - 1) {
       const itemBelow = itemsInCurrentDay[currentIndexInHighlightedItems + 1];
-
-      // Меняем порядок для текущего элемента и элемента ниже
-      handleUpdateOrder(itemId, currentOrderIndex + 1);
-      handleUpdateOrder(itemBelow._id, currentOrderIndex); // Меняем порядок элемента, который находится ниже
+      handleBatchUpdateOrder([
+        { itemId, newOrderIndex: currentOrderIndex + 1 },
+        { itemId: itemBelow._id, newOrderIndex: currentOrderIndex },
+      ]);
     }
   };
 
@@ -315,46 +280,6 @@ const Home = () => {
     [apiUrl]
   );
 
-  useEffect(() => {
-    debouncedUpdateRef.current = debounce(
-      async (itemId, fieldName, updatedValue) => {
-        try {
-          const responseData = await updateData(
-            itemId,
-            fieldName,
-            updatedValue
-          );
-          setData((prevData) =>
-            prevData.map((item) => (item._id === itemId ? responseData : item))
-          );
-        } catch (error) {
-          console.error("Error updating data:", error);
-        }
-      },
-      200
-    ); // Устанавливаем задержку 500 мс
-
-    return () => {
-      debouncedUpdateRef.current.cancel(); // Отмена предыдущего дебаунса при размонтировании
-    };
-  }, [updateData]);
-
-  const handleInputChange = (e, itemId, fieldName) => {
-    const { value, type, checked } = e.target;
-    const updatedValue = type === "checkbox" ? checked : value;
-
-    // Сохраняем текущее значение в локальном состоянии
-    setInputValues((prevValues) => ({
-      ...prevValues,
-      [itemId]: {
-        ...prevValues[itemId],
-        [fieldName]: value,
-      },
-    }));
-
-    // Вызываем дебаунс-функцию обновления
-    debouncedUpdateRef.current(itemId, fieldName, updatedValue);
-  };
   const handleSelectChange = async (e, itemId) => {
     const { value } = e.target;
 
@@ -475,72 +400,116 @@ const Home = () => {
         : addMonths(currentMonth, 1);
     setCurrentMonth(newMonth);
   };
+  // Обрабатываем данные
+  const processedData = useMemo(() => {
+    const highlightedItems = data
+      .filter((item) => item.colorClass === "highlight")
+      .sort((a, b) => a.orderIndex - b.orderIndex);
 
-  // Фильтрация по цвету
-  const highlightedItems = data
-    .filter((item) => item.colorClass === "highlight")
-    .sort((a, b) => a.orderIndex - b.orderIndex);
+    const regularItems = data.filter((item) => item.colorClass !== "highlight");
 
-  const regularItems = data.filter((item) => item.colorClass !== "highlight");
+    const groupedByDate = regularItems.reduce((acc, item) => {
+      const itemDate = new Date(item.date);
+      const itemDay = format(itemDate, "dd");
+      const itemMonth = itemDate.getMonth();
+      const itemYear = itemDate.getFullYear();
+      const formattedItemDate = `${itemYear}-${itemMonth + 1}-${itemDay}`;
 
-  // Группировка данных по дням для выбранного месяца
-  const groupedByDate = regularItems.reduce((acc, item) => {
-    const itemDate = new Date(item.date);
-    const itemDay = format(itemDate, "dd"); // Получаем день месяца элемента
-    const itemMonth = itemDate.getMonth(); // Получаем месяц элемента
-    const itemYear = itemDate.getFullYear(); // Получаем год элемента
-
-    const formattedItemDate = `${itemYear}-${itemMonth + 1}-${itemDay}`; // Форматируем дату для группировки
-
-    if (!acc[formattedItemDate]) {
-      acc[formattedItemDate] = []; // Инициализируем новый массив для этой даты, если еще нет
-    }
-    acc[formattedItemDate].push(item); // Добавляем элемент в соответствующую дату
-
-    return acc;
-  }, {});
-
-  // Сортировка групп по индексу внутри каждой даты
-  const sortedGroupedByDate = Object.keys(groupedByDate).map((dateKey) => {
-    const items = groupedByDate[dateKey];
-
-    // Группировка по водителям для текущей даты
-    const driverGroupedData = items.reduce((acc, item) => {
-      const driverGroup = acc.find((group) => group[0].driver === item.driver);
-      if (driverGroup) {
-        driverGroup.push(item);
-      } else {
-        acc.push([item]);
+      if (!acc[formattedItemDate]) {
+        acc[formattedItemDate] = [];
       }
+      acc[formattedItemDate].push(item);
       return acc;
-    }, []);
+    }, {});
 
-    // Сортировка групп по индексу
-    const sortedGroups = driverGroupedData.map((group) =>
-      group.sort((a, b) => a.orderIndex - b.orderIndex)
-    );
+    const sortedGroupedByDate = Object.keys(groupedByDate).map((dateKey) => {
+      const items = groupedByDate[dateKey];
 
-    // Объединяем данные текущей даты
-    return sortedGroups.flat(); // Возвращаем объединенные данные для данной даты
-  });
+      const driverGroupedData = items.reduce((acc, item) => {
+        const driverGroup = acc.find(
+          (group) => group[0].driver === item.driver
+        );
+        if (driverGroup) {
+          driverGroup.push(item);
+        } else {
+          acc.push([item]);
+        }
+        return acc;
+      }, []);
 
-  // Объединение всех данных
-  const finalData = [
-    ...sortedGroupedByDate.flat(), // Все сгруппированные и отсортированные элементы
-    ...highlightedItems,
-  ];
+      return driverGroupedData
+        .map((group) => group.sort((a, b) => a.orderIndex - b.orderIndex))
+        .flat();
+    });
+
+    return [...sortedGroupedByDate.flat(), ...highlightedItems];
+  }, [data]); // Здесь только data как зависимость
 
   // Фильтрация данных в зависимости от выбранного месяца
-  const filteredData = finalData.filter((item) => {
-    const itemDate = new Date(item.date);
-    return (
-      itemDate.getMonth() === currentMonth.getMonth() &&
-      itemDate.getFullYear() === currentMonth.getFullYear()
-    );
-  });
+  const filteredData = useMemo(() => {
+    return processedData.filter((item) => {
+      const itemDate = new Date(item.date);
+      const isCurrentMonth =
+        itemDate.getMonth() === currentMonth.getMonth() &&
+        itemDate.getFullYear() === currentMonth.getFullYear();
+      // Логируем только когда происходит фильтрация
+      if (isCurrentMonth) {
+        console.log(itemDate);
+      }
+      return isCurrentMonth;
+    });
+  }, [processedData, currentMonth]);
 
-  // Группировка по дням
-  const groupedByDayData = groupByDay(filteredData);
+  const groupedByDayData = useMemo(
+    () => groupByDay(filteredData),
+    [filteredData]
+  );
+
+  useEffect(() => {
+    debouncedUpdateRef.current = debounce(
+      async (itemId, fieldName, updatedValue) => {
+        try {
+          const responseData = await updateData(
+            itemId,
+            fieldName,
+            updatedValue
+          );
+          setData((prevData) =>
+            prevData.map((item) => (item._id === itemId ? responseData : item))
+          );
+        } catch (error) {
+          console.error("Error updating data:", error);
+        }
+      },
+      500
+    );
+
+    return () => {
+      debouncedUpdateRef.current.cancel();
+    };
+  }, [updateData]);
+
+  const handleInputChange = useCallback(
+    (e, itemId, fieldName) => {
+      const { value, type, checked } = e.target;
+      const updatedValue = type === "checkbox" ? checked : value;
+
+      // Проверяем, изменилось ли значение
+      if (inputValues[itemId]?.[fieldName] !== updatedValue) {
+        setInputValues((prevValues) => ({
+          ...prevValues,
+          [itemId]: {
+            ...prevValues[itemId],
+            [fieldName]: updatedValue,
+          },
+        }));
+
+        // Вызываем дебаунс-функцию обновления
+        debouncedUpdateRef.current(itemId, fieldName, updatedValue);
+      }
+    },
+    [inputValues] // Можно заменить на [] для уменьшения перерасчетов
+  );
 
   const getColor = (value) => {
     switch (value) {
@@ -616,8 +585,7 @@ const Home = () => {
     value: driver.name,
     label: driver.name,
   }));
-  if (loading) return <LoadingSpinner />;
-  if (error) return <p>{error}</p>;
+
   return (
     <div>
       <button onClick={toggleVisibilityBlock}>
@@ -920,12 +888,14 @@ const Home = () => {
                       {item.colorClass === "highlight" && (
                         <>
                           <button
+                            type="button"
                             className="arrow"
                             onMouseEnter={() => setHighlightId(item._id)}
                             onMouseLeave={() => setHighlightId(null)}
-                            onClick={() =>
-                              moveItemUp(item._id, item.orderIndex, day)
-                            }
+                            onClick={(event) => {
+                              event.preventDefault();
+                              moveItemUp(item._id, item.orderIndex, day);
+                            }}
                             disabled={index === 0} // Отключить кнопку, если это первый элемент
                           >
                             ↑
@@ -1214,12 +1184,14 @@ const Home = () => {
                       {item.colorClass === "highlight" && (
                         <>
                           <button
+                            type="button"
                             className="arrow"
                             onMouseEnter={() => setHighlightId(item._id)}
                             onMouseLeave={() => setHighlightId(null)}
-                            onClick={() =>
-                              moveItemDown(item._id, item.orderIndex, day)
-                            }
+                            onClick={(event) => {
+                              event.preventDefault();
+                              moveItemDown(item._id, item.orderIndex, day);
+                            }}
                             disabled={
                               index === groupedByDayData[day].length - 1
                             } // Отключить кнопку, если это последний элемент

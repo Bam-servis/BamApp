@@ -7,7 +7,7 @@ import {
   Link,
 } from "react-router-dom";
 import Login from "./components/Login";
-// import Register from "./components/Register";
+import Register from "./components/Register";
 import Home from "./home";
 import Profile from "./components/Profile";
 
@@ -71,10 +71,10 @@ const App = () => {
               )
             }
           />
-          {/* <Route
+          <Route
             path="/register"
             element={auth.isAuthenticated ? <Navigate to="/" /> : <Register />}
-          /> */}
+          />
           <Route
             path="/"
             element={auth.isAuthenticated ? <Home /> : <Navigate to="/login" />}

@@ -12,9 +12,7 @@ const WebSocket = require("ws"); // Импортируем библиотеку 
 
 // Подставь свои данные
 const uri =
-  process.env.NODE_ENV === "production"
-    ? "mongodb+srv://Web-gpy:AQ626Daven@bam-servis.fjflq.mongodb.net/sample_mflix?retryWrites=true&w=majority"
-    : "mongodb://localhost:27017/mydatabase"; // Локальная база данных
+  "mongodb+srv://Web-gpy:AQ626Daven@bam-servis.fjflq.mongodb.net/sample_mflix?retryWrites=true&w=majority";
 
 const client = new MongoClient(uri);
 const app = express();
@@ -151,7 +149,7 @@ app.post("/api/drivers", async (req, res) => {
 // Подключение маршрутов для авторизации
 app.use("/api", authRoutes);
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3000;
 
 // Обработка WebSocket-подключений в express
 const server = app.listen(port, () => {});
