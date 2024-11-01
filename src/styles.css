@@ -635,7 +635,7 @@ th {
     margin-right: 15px;
   }
   .month {
-    display: none;
+    display: block;
     flex-direction: row;
   }
   .sybarenda {
