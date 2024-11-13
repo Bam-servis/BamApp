@@ -25,7 +25,6 @@ const Home = () => {
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split("T")[0]
   );
-  const [selectedDriver, setSelectedDriver] = useState(null);
 
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const currentDayRef = useRef(null);
@@ -51,11 +50,34 @@ const Home = () => {
     colorClass: "",
     orderIndex: Number,
   });
+  const inputs = Array.from(document.querySelectorAll("#inputTable input"));
 
+  inputs.forEach((input, index) => {
+    input.addEventListener("keydown", (event) => {
+      let newIndex;
+
+      switch (event.key) {
+        case "ArrowRight":
+          newIndex = index + 1;
+          break;
+        case "ArrowLeft":
+          newIndex = index - 1;
+          break;
+        default:
+          return;
+      }
+
+      // Проверяем, что новый индекс в пределах массива
+      if (newIndex >= 0 && newIndex < inputs.length) {
+        inputs[newIndex].focus();
+        event.preventDefault(); // Предотвращаем стандартное поведение клавиши
+      }
+    });
+  });
   const toggleVisibilityBlock = () => {
     setIsVisibleBlock(!isVisibleBlock);
   };
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const response = await axios.get(`${apiUrl}/api/data`);
       setData(response.data);
@@ -64,7 +86,7 @@ const Home = () => {
     } catch (error) {
       console.error("Error fetching data:", error);
     }
-  };
+  }, [apiUrl]);
 
   useEffect(() => {
     const fetchDrivers = async () => {
@@ -136,7 +158,7 @@ const Home = () => {
         socket.current.close();
       }
     };
-  }, [apiUrl]);
+  }, [fetchData, apiUrl]);
   const handleBatchUpdateOrder = async (updates) => {
     try {
       await Promise.all(
@@ -839,7 +861,7 @@ const Home = () => {
             >
               {day} {getMonthName(currentMonth)}
             </h2>
-            <table>
+            <table id="inputTable">
               <thead className="sticky">
                 <tr>
                   <th></th>
