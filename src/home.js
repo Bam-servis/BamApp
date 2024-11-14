@@ -118,8 +118,6 @@ const Home = () => {
         setData((prevData) => {
           switch (messageData.action) {
             case "update":
-              console.log("Processing update for item:", messageData.item);
-              // Проверка на изменения
               const updatedItem = prevData.find(
                 (item) => item._id === messageData.item._id
               );
@@ -465,19 +463,14 @@ const Home = () => {
     });
 
     return [...sortedGroupedByDate.flat(), ...highlightedItems];
-  }, [data]); // Здесь только data как зависимость
+  }, [data]);
 
-  // Фильтрация данных в зависимости от выбранного месяца
   const filteredData = useMemo(() => {
     return processedData.filter((item) => {
       const itemDate = new Date(item.date);
       const isCurrentMonth =
         itemDate.getMonth() === currentMonth.getMonth() &&
         itemDate.getFullYear() === currentMonth.getFullYear();
-      // Логируем только когда происходит фильтрация
-      if (isCurrentMonth) {
-        console.log(itemDate);
-      }
       return isCurrentMonth;
     });
   }, [processedData, currentMonth]);
