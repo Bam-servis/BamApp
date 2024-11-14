@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import dayjs from "dayjs";
-
+import "dayjs/locale/ru"; // Импорт русской локали
+dayjs.locale("ru");
 const Profile = () => {
   const [items, setItems] = useState([]);
   const [drivers, setDrivers] = useState([]);
   const [selectedDriver, setSelectedDriver] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState(dayjs().month()); // По умолчанию текущий месяц
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [user, setUser] = useState(null);
   const [allItems, setAllItems] = useState([]);
@@ -64,27 +66,32 @@ const Profile = () => {
     if (selectedDriver) {
       const ordersForSelectedDriver = allItems.filter(
         (item) =>
-          item.driver === selectedDriver && item.colorClass === "highlight"
+          item.driver === selectedDriver &&
+          item.colorClass === "highlight" &&
+          dayjs(item.date).month() === selectedMonth
       );
       setFilteredOrders(ordersForSelectedDriver);
     } else {
       setFilteredOrders([]);
     }
-  }, [selectedDriver, allItems]);
+  }, [selectedDriver, selectedMonth, allItems]);
 
   const handleDriverChange = (e) => {
     setSelectedDriver(e.target.value);
+  };
+
+  const handleMonthChange = (e) => {
+    setSelectedMonth(parseInt(e.target.value, 10));
   };
 
   return (
     <div>
       <h1 className="login-profile"> {user}</h1>
       <Link className="link-home" to="/">
-        <button>Вернутся на главную</button>
+        <button>Вернуться на главную</button>
       </Link>
       <div className="flex">
         <div className="statistic">
-          {" "}
           <p className="time-profile">
             Общее количество заказов:{" "}
             <span className="total">{items.length}</span>
@@ -117,6 +124,18 @@ const Profile = () => {
             {drivers.map((driver, index) => (
               <option key={index} value={driver}>
                 {driver}
+              </option>
+            ))}
+          </select>
+          <h2>Выберите Месяц:</h2>
+          <select
+            className="select"
+            onChange={handleMonthChange}
+            value={selectedMonth}
+          >
+            {Array.from({ length: 12 }, (_, index) => (
+              <option key={index} value={index}>
+                {dayjs().month(index).format("MMMM")}
               </option>
             ))}
           </select>
