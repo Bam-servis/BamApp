@@ -304,7 +304,7 @@ export const hardcodedData = [
     routeNumber: "",
     hours: "",
     isTrue: false,
-    vehicleNumber: "АР 9633-7",
+    vehicleNumber: "BA 3750-7",
     price: "",
   },
   {
