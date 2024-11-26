@@ -461,4 +461,15 @@ export const hardcodedData = [
     vehicleNumber: "BA-7 2910",
     price: "",
   },
+  {
+    orderIndex: 42,
+    brand: "Автогрейдер",
+    driver: "Семёнов И.М.",
+    customer: "",
+    routeNumber: "",
+    hours: "",
+    isTrue: false,
+    vehicleNumber: "IP-5 6516",
+    price: "",
+  },
 ];
