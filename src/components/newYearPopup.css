@@ -43,7 +43,6 @@
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
-  z-index: 1;
 }
 
 .popup-button:hover {
@@ -74,4 +73,9 @@
   left: 0;
   width: 0;
   height: 0;
+}
+@media (max-width: 768px) {
+  .popup-overlay {
+    display: none;
+  }
 }
