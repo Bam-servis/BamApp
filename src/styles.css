@@ -232,6 +232,53 @@ tr.highlight + .row-in-stay .row-row {
   background-color: #ffeb3b !important;
 }
 button {
+  background: radial-gradient(#ff8c00, rgb(219, 96, 96));
+  padding: 5px 25px;
+  border: none;
+  border-radius: 25px;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+button:active {
+  transform: scale(0.95);
+  background: radial-gradient(#ff8c00, rgb(212, 110, 110));
+}
+
+button::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 300%;
+  height: 300%;
+  background: #ff8c00;
+  transition: all 0.5s;
+  transform: rotate(45deg);
+  z-index: -1;
+}
+
+button:hover::before {
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+}
+.btn-del {
+  margin: 3px !important;
+  padding: 0 4px !important;
+}
+/* button {
   background-color: #007bff;
   color: white;
   border: none;
@@ -241,13 +288,10 @@ button {
   cursor: pointer;
   font-size: 14px;
 }
-.btn-del {
-  margin: 3px !important;
-  padding: 0 4px !important;
-}
+
 button:hover {
   background-color: #0056b3;
-}
+} */
 
 /* Стиль для выделенных строк в таблице */
 tr.highlight {
