@@ -12,6 +12,10 @@ import { format, addMonths, subMonths } from "date-fns";
 import { ru } from "date-fns/locale";
 import { debounce } from "lodash";
 import Select from "react-select";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import NewYearPopup from "../src/components/NewYearPopup.js"; // Подключаем компонент попапа
+
 const Home = () => {
   const [data, setData] = useState([]);
   const [drivers, setDrivers] = useState([]);
@@ -603,6 +607,7 @@ const Home = () => {
 
   return (
     <div>
+      <NewYearPopup />
       <button onClick={toggleVisibilityBlock}>
         {isVisibleBlock ? "Скрыть" : "Характеристики"}
       </button>
@@ -749,46 +754,61 @@ const Home = () => {
         <div className="wrapper">
           {userNameRoot !== "Andrey" && (
             <div className="data">
-              <div className="sybarenda">
-                <input
-                  type="date"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
+              <div className="block sybarenda">
+                <DatePicker
+                  selected={selectedDate}
+                  onChange={(date) => setSelectedDate(date)}
+                  className="input"
+                  placeholderText="Выберите дату"
+                  dateFormat="yyyy-MM-dd"
                 />
-                <span className="title">Добавить суб аренду</span>
-                <button onClick={() => addSingleItemWithClass("highlight")}>
+                <button
+                  className="popup-button goldb"
+                  onClick={() => addSingleItemWithClass("highlight")}
+                >
                   Добавить Суб Аренду
                 </button>
               </div>
-              <div className="baza">
-                <input
-                  type="date"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
+
+              <div className="block baza">
+                <DatePicker
+                  selected={selectedDate}
+                  onChange={(date) => setSelectedDate(date)}
+                  className="input"
+                  placeholderText="Выберите дату"
+                  dateFormat="yyyy-MM-dd"
                 />
-                <span className="title">Добавить базу</span>
                 <button
+                  className="popup-button add-entries"
                   onClick={addEntriesForSelectedDate}
-                  className="add-entries"
                 >
-                  Добавить
+                  Добавить Базу
                 </button>
               </div>
-              <div className="entrys">
-                <input
-                  type="date"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
+
+              <div className="block entrys">
+                <DatePicker
+                  selected={selectedDate}
+                  onChange={(date) => setSelectedDate(date)}
+                  className="input"
+                  placeholderText="Выберите дату"
+                  dateFormat="yyyy-MM-dd"
                 />
-                <span className="title">Добавить Обьект</span>
-                <button onClick={addNewItem}>Добавить</button>
+                <button className="popup-button" onClick={addNewItem}>
+                  Добавить Объект
+                </button>
               </div>
-              <div className="driv">
-                <span className="title">Добавить нового водителя</span>
-                <button onClick={handleAddNewDriver}>Добавить</button>
+
+              <div className="block driv">
+                <button
+                  className="popup-button drive-tn"
+                  onClick={handleAddNewDriver}
+                >
+                  Добавить Водителя
+                </button>
                 <input
                   type="text"
-                  className="drivers-new"
+                  className="input input-text drivers-new"
                   placeholder="Новый Водитель"
                   value={newDriver}
                   onChange={(e) => setNewDriver(e.target.value)}
