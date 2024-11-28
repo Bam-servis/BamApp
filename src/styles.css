@@ -1,0 +1,911 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+body {
+  background: url(../54433.jpg);
+  background-repeat: repeat;
+  background-size: 100%;
+  width: 100%;
+}
+
+.highlight {
+  background-color: #ffeb3b;
+}
+h2 {
+  text-transform: capitalize;
+  width: 170px;
+  padding: 5px 10px;
+  text-align: center;
+}
+.highlight-row {
+  background-color: rgba(67, 75, 67, 0.3) !important;
+}
+.time {
+  font-size: 20px;
+  display: flex;
+}
+.title {
+  font-size: 18px;
+  font-weight: bold;
+}
+.developer {
+  right: 20px;
+  color: black;
+  font-weight: bold;
+}
+.total {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: bold;
+  text-decoration: underline;
+  margin-left: 10px;
+}
+.statistic {
+  width: 500px;
+  text-shadow: -1px 2px 2px rgb(0 0 0);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.time-profile {
+  font-size: 17px;
+  display: flex;
+  background: rgb(0 0 0 / 21%);
+  padding: 5px;
+}
+.wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 50px;
+}
+.tow-table-td {
+  max-width: 500px !important;
+}
+.order {
+  display: flex;
+  border-top: 1px solid red;
+  align-items: center;
+  background: radial-gradient(gold, transparent);
+  justify-content: center;
+}
+.order:first-child {
+  border-top: none;
+}
+.order p {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 19px;
+  color: rgb(59, 20, 20);
+  padding: 5px 10px;
+  width: 100%;
+  max-width: 250px;
+  font-weight: bold;
+}
+.select {
+  width: 170px;
+}
+.orderZa {
+  border: 10px solid gold;
+  max-width: 300px;
+  text-align: center;
+  margin-left: 50px;
+}
+.ula {
+  padding: 0;
+}
+.order span {
+  border-top: 2px solid black;
+  margin-top: 5px;
+  font-size: 24px;
+  color: #fff;
+}
+.arenda {
+  margin: 0 auto;
+  width: 350px;
+  color: #fff;
+  text-transform: none;
+  font-size: 25px;
+  background: gold;
+}
+.no-order {
+  font-size: 20px;
+  color: red;
+  font-weight: bold;
+}
+.bam-servis {
+  margin: 0 auto;
+  width: 100%;
+  text-shadow: -4px 0px 0px black;
+  background: radial-gradient(gold, transparent);
+  color: #fff;
+  text-decoration: underline;
+  font-size: 35px;
+  padding: 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+.green-span {
+  height: 30px;
+  width: 100px;
+  background-color: green;
+  display: block;
+  margin-right: 5px;
+}
+
+.entry-block {
+  text-align: center;
+  display: flex;
+  text-shadow: -1px 2px 2px rgb(0 0 0);
+  color: #fff;
+  align-items: center;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.red-span {
+  height: 30px;
+  width: 100px;
+  background-color: red;
+  display: block;
+  margin-right: 5px;
+}
+.gold-span {
+  height: 30px;
+  width: 100px;
+  background-color: gold;
+  display: block;
+  margin-right: 5px;
+}
+.yellow-span {
+  height: 30px;
+  width: 100px;
+  background-color: yellow;
+  margin-right: 5px;
+
+  display: block;
+}
+.flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.login h1 {
+  text-transform: none;
+  text-align: center;
+  padding: 15px;
+}
+.link-home {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+.link-home button {
+  padding: 10px;
+  font-weight: bold;
+  font-size: 15px;
+}
+h1 {
+  width: 300px;
+  color: #fff;
+  text-align: center;
+  display: flex;
+  border-radius: 50px;
+  background: #916767b0;
+  text-transform: capitalize;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  border: 1px solid;
+}
+.highlight-delete {
+  background-color: #007bff !important;
+}
+tr.highlight + .row-inCompleted .row-row {
+  background-color: #ffeb3b !important;
+}
+tr.highlight + .row-completed .row-row {
+  background-color: #ffeb3b !important;
+}
+tr.highlight + .row-comand .row-row {
+  background-color: #ffeb3b !important;
+}
+tr.highlight + .row-in-progress .row-row {
+  background-color: #ffeb3b !important;
+}
+tr.highlight + .row-in-stay .row-row {
+  background-color: #ffeb3b !important;
+}
+button {
+  background: radial-gradient(#ff8c00, rgb(219, 96, 96));
+  padding: 5px 25px;
+  border: none;
+  border-radius: 25px;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  transform: scale(1.1) rotate(2deg); /* Добавлена легкая ротация */
+  background: linear-gradient(to right, #ff8c00, rgb(212, 110, 110));
+}
+
+button:active {
+  transform: scale(0.95);
+  background: radial-gradient(#ff8c00, rgb(212, 110, 110));
+}
+
+button::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 300%;
+  height: 300%;
+  background: #ff8c00;
+  transition: all 0.5s;
+  transform: rotate(45deg);
+  z-index: -1;
+}
+
+button:hover::before {
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+}
+.btn-del {
+  margin: 3px !important;
+  padding: 0 4px !important;
+}
+
+/* Стиль для выделенных строк в таблице */
+tr.highlight {
+  background-color: #ffeb3b;
+}
+
+/* Стиль для текущего дня */
+.is-today {
+  background-color: yellow;
+  font-weight: bold;
+  border: 2px solid red;
+  animation: pulse 1s infinite; /* Эффект пульсации */
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 10px yellow;
+  }
+  50% {
+    box-shadow: 0 0 20px orange;
+  }
+}
+textarea {
+  border-radius: 15px;
+  border: 1px solid #ccc;
+  width: 150px;
+  text-align: center;
+  display: flex;
+}
+.canvas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+#reload_href {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.errro {
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  font-size: 25px;
+  text-align: center;
+  background: aliceblue;
+}
+.login h1 {
+  padding: 5px;
+}
+.login-profile {
+  padding: 3px;
+}
+.login h2 {
+  color: #fff;
+  font-size: 25px;
+  text-transform: none;
+  width: 100%;
+  margin: 10px 0;
+  font-weight: bold;
+}
+.login input {
+  width: 225px !important;
+}
+.login button {
+  width: 150px !important;
+  height: 35px;
+}
+.login form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="password"],
+select {
+  text-align: center;
+  width: 100px;
+  border-radius: 15px;
+  border: 1px solid #ccc;
+}
+
+input[type="checkbox"] {
+  margin: 0 5px;
+}
+
+/* Стили для таблицы */
+table {
+  width: 90%;
+  color: black;
+  background-color: #fff;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+.table-flex {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.sticky-h1 {
+  position: sticky;
+  top: 60px;
+}
+th,
+td {
+  text-align: center;
+  width: 50px !important;
+  padding: 0;
+}
+
+th {
+  background-color: #f4f4f4;
+  text-align: center;
+  width: 50px !important;
+}
+.today-class {
+  background-color: yellow; /* или любой другой стиль, который вам нравится */
+  font-weight: bold;
+}
+.tooltip {
+  position: absolute;
+  background-color: #333;
+  color: #fff;
+  padding: 5px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+.nav-profile {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+.drivers-new {
+  padding: 10px !important;
+  width: 150px !important;
+}
+.sticky {
+  position: sticky;
+  top: 0;
+  height: 70px;
+  background-color: white; /* Фон для заголовков */
+  z-index: 1; /* Чтобы заголовки были над содержимым */
+  border-bottom: 2px solid #ccc; /* Для визуального разделения */
+  text-align: center;
+}
+.username {
+  font-size: 20px;
+  font-weight: bold;
+  color: #fff;
+  text-transform: capitalize;
+  border: 1px solid red;
+  padding: 5px;
+}
+.comand-inComlp {
+  background: linear-gradient(to bottom, #31996e 50%, rgb(3, 184, 175) 50%);
+}
+.row-comand {
+  background-color: #31996e !important;
+}
+.select-rem {
+  width: 120px;
+}
+
+.row-inCompleted {
+  background-color: rgb(3, 184, 175) !important;
+}
+.row-completed {
+  background-color: red !important;
+}
+
+.row-in-progress {
+  background-color: #a36c6c !important;
+}
+.row-in-stay {
+  background-color: red !important;
+}
+.input-ovner {
+  font-size: 16px;
+}
+.month {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.row-#ffeb3b {
+  background-color: #ffeb3b;
+}
+.sybarenda {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  border-bottom: 1px solid red;
+  padding: 10px 0;
+  width: 280px;
+}
+.baza {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid red;
+  padding: 10px 0;
+  width: 280px;
+  flex-direction: column;
+}
+.entrys {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  width: 280px;
+  justify-content: center;
+  text-align: center;
+  flex-direction: column;
+}
+
+.driv {
+  display: flex;
+  text-align: center;
+  border-top: 1px solid red;
+  padding: 10px 0;
+  width: 280px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.arrow {
+  padding: 0 15px;
+}
+.hover:hover {
+  border: 3px solid black;
+}
+.panel {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.weekend {
+  background-color: #007bff !important;
+}
+/* Стиль для контейнера спиннера */
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+/* Устанавливаем высоту селекта и убираем отступы */
+.css-u65186-control,
+.css-cmlrlu-control,
+.css-paxkez-control,
+.css-hlgwow,
+.css-o36i32 {
+  height: 22px !important; /* Высота селекта */
+  min-height: 22px !important; /* Минимальная высота */
+  padding: 0 !important; /* Убираем внутренние отступы */
+  margin: 0 !important; /* Убираем внешние отступы */
+}
+
+/* Устанавливаем высоту строки и размер шрифта для выбранного значения */
+.css-u65186-singleValue,
+.css-cmlrlu-singleValue,
+.css-cmlrlu-placeholder,
+.css-hlgwow,
+.css-o36i32 {
+  line-height: 22px !important; /* Высота строки */
+  font-size: 12px !important; /* Размер шрифта */
+}
+
+/* Устанавливаем высоту строки для опций */
+.css-u65186-option,
+.css-cmlrlu-option {
+  line-height: 22px !important; /* Высота строки для опций */
+  font-size: 12px !important; /* Размер шрифта для опций */
+}
+
+/* Стиль для спиннера */
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1); /* Цвет внешнего круга */
+  border-left-color: #09f; /* Цвет вращающейся части */
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  animation: spin 1s linear infinite;
+  position: relative; /* Для абсолютного позиционирования текста */
+}
+
+/* Анимация вращения спиннера */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Стиль для текста внутри спиннера */
+.spinner span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Центрирование текста */
+  font-size: 18px;
+  font-weight: bold;
+  color: #09f;
+  animation: pulse 0.5s infinite; /* Пульсация текста */
+  z-index: 1; /* Текст поверх спиннера */
+}
+
+/* Анимация пульсации текста */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+.logo-login {
+  background-image: url(../123.png);
+  width: 200px;
+  height: 162px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  border-radius: 80px;
+}
+
+.data:hover {
+  transform: translate(-60px, 50%);
+}
+
+.data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: fixed;
+  transform: translate(-295px, 50%);
+  transition: all 1s;
+  background-color: #fff;
+  z-index: 999999;
+  border-radius: 50px;
+  border: 1px solid red;
+  gap: 20px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Стиль для инпута (водитель) */
+.input-text {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  background-color: #f9f9f9;
+  transition: all 0.3s ease;
+}
+
+/* Эффект фокуса на инпуте */
+.input-text:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+  background-color: #e6f7ff;
+}
+
+/* Эффект при наведении на инпут */
+.input-text:hover {
+  border-color: #0056b3;
+  background-color: #e9ecef;
+}
+
+/* Стиль для выпадающего списка (календарь) */
+.react-datepicker__input-container input {
+  width: 100%;
+  padding: 10px 5px;
+  font-size: 16px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  background-color: #f9f9f9;
+  transition: all 0.3s ease;
+}
+
+/* Эффект фокуса на поле выбора даты */
+.react-datepicker__input-container input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+  background-color: #e6f7ff;
+}
+
+/* Стиль для календаря (даты) */
+.react-datepicker__day {
+  font-size: 14px;
+  color: #333;
+  transition: background-color 0.3s, color 0.3s;
+  padding: 8px;
+  border-radius: 5px;
+}
+
+/* Подсветка выбранной даты */
+.react-datepicker__day--selected {
+  background-color: #ffd700; /* Желтый цвет для выбранной даты */
+  color: white;
+}
+
+/* Эффект при наведении на дату */
+.react-datepicker__day:hover {
+  background-color: #ffeb99; /* Светло-желтый при наведении */
+  color: #333;
+}
+
+/* Стиль для кнопок */
+.btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.add-entries {
+  background: red !important;
+  padding: 10px !important;
+}
+.goldb {
+  background: gold !important;
+  padding: 10px !important;
+}
+.drive-tn {
+  background: rgba(42, 84, 20, 0.426) !important;
+  padding: 10px !important;
+}
+
+/* Эффект при наведении на кнопки */
+.btn:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+/* Эффект при нажатии на кнопку */
+.btn:active {
+  background-color: #004080;
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Стиль при фокусе на кнопке */
+.btn:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+/* Основные стили для календаря */
+.react-datepicker {
+  background-color: #ffffff !important;
+  border-radius: 10px !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+  font-family: Arial, sans-serif !important;
+  padding: 10px !important;
+}
+
+/* Заголовок дней недели */
+.react-datepicker__header {
+  background-color: #007bff !important;
+  color: white !important;
+  text-align: center !important;
+  padding: 10px 0 !important;
+  border-radius: 5px !important;
+}
+
+/* Стили для дней недели */
+.react-datepicker__day-name {
+  font-size: 14px !important;
+  color: #333 !important;
+  font-weight: bold !important;
+  padding: 5px !important;
+  width: 30px !important;
+  height: 30px !important;
+  line-height: 30px !important;
+  text-align: center !important;
+  border-radius: 5px !important;
+}
+
+/* Стили для дней в календаре */
+.react-datepicker__day {
+  font-size: 14px !important;
+  color: #333 !important;
+  margin: 2px !important;
+  border-radius: 5px !important;
+  transition: background-color 0.3s, color 0.3s !important;
+  display: inline-block;
+  width: 30px;
+
+  text-align: center;
+}
+
+/* Выбранный день (желтая обводка и заливка) */
+.react-datepicker__day--selected {
+  background-color: #ffd700 !important; /* Желтый фон */
+  color: white !important; /* Белый текст */
+  font-weight: bold !important; /* Жирный текст */
+  border-radius: 50% !important; /* Круглая форма */
+  width: 30px !important;
+
+  text-align: center !important;
+}
+
+/* Эффект при наведении на день (желтоватый фон) */
+.react-datepicker__day:hover {
+  background-color: #ffeb99 !important; /* Светло-желтый фон при наведении */
+  color: #333 !important; /* Цвет текста */
+}
+
+/* Для текущего дня (если он не выбран) */
+.react-datepicker__day--today {
+  font-weight: bold !important; /* Жирный шрифт */
+  color: #ffd700 !important; /* Желтый цвет */
+  background-color: transparent !important; /* Прозрачный фон */
+  border-radius: 50% !important; /* Круглая форма для текущего дня */
+}
+
+/* Стили для контейнера с датами */
+.react-datepicker__month-container {
+  margin-top: 10px !important;
+}
+
+/* Сетка для дней недели и дат */
+.react-datepicker__day-names {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr); /* Сетка для дней недели */
+  text-align: center;
+}
+
+@media (max-width: 800px) {
+  .disabled {
+    display: none;
+  }
+  .data {
+    /* position: static;
+     */
+    transform: translate(-295px, 0);
+  }
+  .login h1 {
+    color: #fff;
+  }
+  .login h2 {
+    color: #fff;
+  }
+  .nav-profile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .developer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    color: #000;
+
+    left: 50px;
+  }
+  .table-flex {
+    display: block;
+  }
+  .bam-servis {
+    text-align: center;
+  }
+
+  .wrapper {
+    flex-direction: column;
+  }
+
+  input[type="date"],
+  input[type="text"],
+  input[type="number"],
+  input[type="password"],
+  select {
+    margin-right: 15px;
+  }
+  .month {
+    display: block;
+    flex-direction: row;
+  }
+  .sybarenda {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .baza {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+  }
+  .entrys {
+    display: flex;
+    margin-bottom: 20px;
+    flex-direction: column;
+    align-items: center;
+  }
+  .tow-table-td {
+    max-width: 320px !important;
+  }
+  .driv {
+    flex-direction: column;
+    align-items: center;
+  }
+  .statistic {
+    display: none;
+    flex-direction: column;
+    text-shadow: -4px 0px 0px black;
+    color: #fff;
+    align-items: center;
+  }
+  .entry-block {
+    display: none;
+    margin-bottom: 15px;
+  }
+  body {
+    padding: 0;
+    background-size: cover;
+    height: 100vh;
+    background-repeat: repeat;
+  }
+}
