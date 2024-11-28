@@ -5,13 +5,13 @@
 }
 body {
   background: url(../54433.jpg);
-  background-repeat: no-repeat;
+  background-repeat: repeat;
   background-size: 100%;
   width: 100%;
 }
 
 .highlight {
-  background-color: #ffeb3b; /* Яркий желтый цвет для выделения */
+  background-color: #ffeb3b;
 }
 h2 {
   text-transform: capitalize;
@@ -20,12 +20,7 @@ h2 {
   text-align: center;
 }
 .highlight-row {
-  background-color: rgba(
-    67,
-    75,
-    67,
-    0.3
-  ) !important; /* Цвет выделенной строки */
+  background-color: rgba(67, 75, 67, 0.3) !important;
 }
 .time {
   font-size: 20px;
@@ -246,8 +241,8 @@ button {
 }
 
 button:hover {
-  transform: scale(1.1);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  transform: scale(1.1) rotate(2deg); /* Добавлена легкая ротация */
+  background: linear-gradient(to right, #ff8c00, rgb(212, 110, 110));
 }
 
 button:active {
@@ -278,20 +273,6 @@ button:hover::before {
   margin: 3px !important;
   padding: 0 4px !important;
 }
-/* button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  margin: 5px;
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-button:hover {
-  background-color: #0056b3;
-} */
 
 /* Стиль для выделенных строк в таблице */
 tr.highlight {
@@ -300,10 +281,20 @@ tr.highlight {
 
 /* Стиль для текущего дня */
 .is-today {
+  background-color: yellow;
+  font-weight: bold;
   border: 2px solid red;
-  width: 170px;
-  padding: 5px 10px;
-  text-align: center;
+  animation: pulse 1s infinite; /* Эффект пульсации */
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 10px yellow;
+  }
+  50% {
+    box-shadow: 0 0 20px orange;
+  }
 }
 textarea {
   border-radius: 15px;

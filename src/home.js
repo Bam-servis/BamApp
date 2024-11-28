@@ -15,6 +15,7 @@ import Select from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import NewYearPopup from "../src/components/NewYearPopup.js"; // Подключаем компонент попапа
+import useWebSocket from "../src/components/useWebSocket.js";
 
 const Home = () => {
   const [data, setData] = useState([]);
@@ -37,7 +38,6 @@ const Home = () => {
   const formattedToday = format(today, "dd");
   const debouncedUpdateRef = useRef(null);
   const [inputValues, setInputValues] = useState({});
-  const socket = useRef(null);
   const [newItem, setNewItem] = useState({
     doneCheck: "",
     date: new Date().toISOString().split("T")[0],
@@ -70,8 +70,6 @@ const Home = () => {
         default:
           return;
       }
-
-      // Проверяем, что новый индекс в пределах массива
       if (newIndex >= 0 && newIndex < inputs.length) {
         inputs[newIndex].focus();
         event.preventDefault(); // Предотвращаем стандартное поведение клавиши
@@ -112,55 +110,35 @@ const Home = () => {
     fetchData();
     fetchUsers();
     fetchDrivers();
-    const connectWebSocket = () => {
-      socket.current = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
-      socket.current.onopen = () => {
-        console.log("WebSocket connected");
-      };
-      socket.current.onmessage = (event) => {
-        const messageData = JSON.parse(event.data);
-        setData((prevData) => {
-          switch (messageData.action) {
-            case "update":
-              const updatedItem = prevData.find(
-                (item) => item._id === messageData.item._id
-              );
-              if (
-                updatedItem &&
-                JSON.stringify(updatedItem) === JSON.stringify(messageData.item)
-              ) {
-                return prevData; // Нет изменений, не обновляем состояние
-              }
-              return prevData.map((item) =>
-                item._id === messageData.item._id
-                  ? { ...item, ...messageData.item }
-                  : item
-              );
-            case "delete":
-              return prevData.filter((item) => item._id !== messageData.id); // Удаляем элемент
-            default:
-              return prevData;
-          }
-        });
-      };
-
-      socket.current.onclose = () => {
-        setTimeout(connectWebSocket, 1000); // Переподключаемся
-      };
-
-      socket.current.onerror = () => {
-        setTimeout(connectWebSocket, 5000);
-      };
-    };
-
-    connectWebSocket();
-
-    return () => {
-      if (socket.current) {
-        socket.current.close();
-      }
-    };
   }, [fetchData, apiUrl]);
+
+  const handleWebSocketMessage = useCallback((messageData) => {
+    setData((prevData) => {
+      switch (messageData.action) {
+        case "update":
+          return prevData.map((item) =>
+            item._id === messageData.item._id
+              ? { ...item, ...messageData.item }
+              : item
+          );
+        case "delete":
+          return prevData.filter((item) => item._id !== messageData.id);
+        default:
+          return prevData;
+      }
+    });
+  }, []);
+
+  const sendMessage = useWebSocket(
+    `${apiUrl.replace(/^http/, "ws")}/ws`,
+    handleWebSocketMessage
+  );
+
+  useEffect(() => {
+    if (data.length > 0) {
+      sendMessage({ action: "init", payload: "Initial load complete" });
+    }
+  }, [data, sendMessage]);
   const handleBatchUpdateOrder = async (updates) => {
     try {
       await Promise.all(
@@ -175,7 +153,6 @@ const Home = () => {
       console.error("Error updating data:", error);
     }
   };
-  // Функция для перемещения элемента вверх
   const moveItemUp = (itemId, currentOrderIndex, day) => {
     const itemsInCurrentDay = groupedByDayData[day].filter(
       (item) => item.colorClass === "highlight"
@@ -249,23 +226,18 @@ const Home = () => {
   };
   const addSingleItemWithClass = async (className) => {
     try {
-      // Устанавливаем таймаут перед выполнением основной логики
-
       const itemsWithClass = data.filter(
         (item) => item.colorClass === className
       );
       const newIndex = itemsWithClass.length > 0 ? itemsWithClass.length : 0;
-
-      // Отправляем запрос на добавление одного элемента
       const response = await axios.post(`${apiUrl}/api/data`, {
         ...newItem,
         colorClass: className,
         updatedBy: localStorage.getItem("username"),
         date: selectedDate,
-        orderIndex: newIndex, // Используем новый индекс
+        orderIndex: newIndex,
       });
 
-      // Обновляем состояние, добавляя только что созданный элемент
       setData((prevData) => [...prevData, response.data]);
     } catch (error) {
       console.error("Error adding single data with class:", error);
@@ -295,10 +267,10 @@ const Home = () => {
           [fieldName]: updatedValue,
           updatedBy: username,
         });
-        return response.data; // Возвращаем обновленные данные
+        return response.data;
       } catch (error) {
         console.error("Error saving data:", error);
-        throw error; // Пробрасываем ошибку
+        throw error;
       }
     },
     [apiUrl]
